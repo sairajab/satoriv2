@@ -1,0 +1,336 @@
+/s/chromatin/p/nobackup/Saira/original/satori/data/Human_Promoters/encode_roadmap_inPromoter 164
+Loaded model for finetunig... 0.4395749753012377
+Epoch :  1
+Train Results (Loss and AUC):  0.5569887797995264 0.7412077787969666
+Best Validation Loss: 0.515 and AUC: 0.74 
+
+Epoch-1 lr: 0.005 valid_loss: 0.5149436400217169
+Epoch :  2
+Train Results (Loss and AUC):  0.49293204447830535 0.7757776083188832
+Best Validation Loss: 0.491 and AUC: 0.78 
+
+Epoch-2 lr: 0.005 valid_loss: 0.49088132995016437
+Epoch :  3
+Train Results (Loss and AUC):  0.48118059678250047 0.7906766480173144
+Best Validation Loss: 0.476 and AUC: 0.79 
+
+Epoch-3 lr: 0.005 valid_loss: 0.47561439082903023
+Epoch :  4
+Train Results (Loss and AUC):  0.4722411170542001 0.8007570774352536
+Best Validation Loss: 0.475 and AUC: 0.80 
+
+Epoch-4 lr: 0.005 valid_loss: 0.4746268339016858
+Epoch :  5
+Train Results (Loss and AUC):  0.4704906472479962 0.8024421455321582
+Epoch-5 lr: 0.005 valid_loss: 0.477363621487337
+Epoch :  6
+Train Results (Loss and AUC):  0.46753833583559856 0.8043241791469966
+Best Validation Loss: 0.472 and AUC: 0.80 
+
+Epoch-6 lr: 0.005 valid_loss: 0.47177811405237985
+Epoch :  7
+Train Results (Loss and AUC):  0.46343200932066125 0.8081334048137869
+Epoch-7 lr: 0.005 valid_loss: 0.5570645718013539
+Epoch :  8
+Train Results (Loss and AUC):  0.4634659796594137 0.8086594964094439
+Best Validation Loss: 0.464 and AUC: 0.81 
+
+Epoch-8 lr: 0.005 valid_loss: 0.46435505590018106
+Epoch :  9
+Train Results (Loss and AUC):  0.4537876044890009 0.8174080443505868
+Epoch-9 lr: 0.005 valid_loss: 0.46661126525963054
+Epoch :  10
+Train Results (Loss and AUC):  0.4544293064190202 0.8165021026233492
+Epoch-10 lr: 0.005 valid_loss: 0.478950172662735
+Epoch :  11
+Train Results (Loss and AUC):  0.4527162630634614 0.8170561599170971
+Epoch-11 lr: 0.005 valid_loss: 0.4854049884221133
+Epoch :  12
+Train Results (Loss and AUC):  0.44980018983883074 0.8202314863094466
+Epoch-12 lr: 0.005 valid_loss: 0.4845110397128498
+Epoch :  13
+Train Results (Loss and AUC):  0.44841959007293825 0.8213352240855448
+Best Validation Loss: 0.453 and AUC: 0.82 
+
+Epoch-13 lr: 0.005 valid_loss: 0.45263891360339
+Epoch :  14
+Train Results (Loss and AUC):  0.4490454084423172 0.8209596925231317
+Epoch-14 lr: 0.005 valid_loss: 0.456738499157569
+Epoch :  15
+Train Results (Loss and AUC):  0.4467491264563488 0.8234347941441664
+Epoch-15 lr: 0.005 valid_loss: 0.4527864324695924
+Epoch :  16
+Train Results (Loss and AUC):  0.44840027505614194 0.8217160037578143
+Epoch-16 lr: 0.005 valid_loss: 0.45433501373319063
+Epoch :  17
+Train Results (Loss and AUC):  0.44363153842558345 0.8258940021356028
+Epoch-17 lr: 0.005 valid_loss: 0.4568136553553974
+Epoch :  18
+Train Results (Loss and AUC):  0.44316223144052497 0.8261869935468658
+Epoch-18 lr: 0.005 valid_loss: 0.49603026491754193
+Epoch :  19
+Train Results (Loss and AUC):  0.4487772107603081 0.8203283275607333
+Epoch-19 lr: 0.005 valid_loss: 0.45376233668888316
+Epoch :  20
+Train Results (Loss and AUC):  0.4450014030119501 0.8242139196009843
+Best Validation Loss: 0.452 and AUC: 0.82 
+
+Epoch-20 lr: 0.005 valid_loss: 0.4523048471002018
+Epoch :  21
+Train Results (Loss and AUC):  0.4426847152920612 0.8259724234674493
+Best Validation Loss: 0.452 and AUC: 0.83 
+
+Epoch-21 lr: 0.005 valid_loss: 0.4515705213827245
+Epoch :  22
+Train Results (Loss and AUC):  0.443758306852785 0.8260439471430262
+Best Validation Loss: 0.450 and AUC: 0.83 
+
+Epoch-22 lr: 0.005 valid_loss: 0.4502958637826583
+Epoch :  23
+Train Results (Loss and AUC):  0.43852013900098075 0.8299022174945055
+Epoch-23 lr: 0.005 valid_loss: 0.4556624933200724
+Epoch :  24
+Train Results (Loss and AUC):  0.4378529595562732 0.8305664470032555
+Epoch-24 lr: 0.005 valid_loss: 0.4782804382197997
+Epoch :  25
+Train Results (Loss and AUC):  0.4399086396138831 0.8296726129371514
+Epoch-25 lr: 0.005 valid_loss: 0.4523887213538675
+Epoch :  26
+Train Results (Loss and AUC):  0.44157728289504605 0.8270953009867221
+Epoch-26 lr: 0.005 valid_loss: 0.46124280024977293
+Epoch :  27
+Train Results (Loss and AUC):  0.43973216689734096 0.8288802629783031
+Best Validation Loss: 0.449 and AUC: 0.83 
+
+Epoch-27 lr: 0.005 valid_loss: 0.4489608652451459
+Epoch :  28
+Train Results (Loss and AUC):  0.43640562401239175 0.8320636755253055
+Epoch-28 lr: 0.005 valid_loss: 0.45622529615374174
+Epoch :  29
+Train Results (Loss and AUC):  0.43741874857599955 0.8309358854576142
+Epoch-29 lr: 0.005 valid_loss: 0.46906162097173576
+Epoch :  30
+Train Results (Loss and AUC):  0.43779638062519244 0.8312347041493793
+Epoch-30 lr: 0.005 valid_loss: 0.4625062837320216
+Epoch :  31
+Train Results (Loss and AUC):  0.43746886973878946 0.830801443674843
+Epoch-31 lr: 0.005 valid_loss: 0.4500168807366315
+Epoch :  32
+Train Results (Loss and AUC):  0.4335265079415946 0.8342198410457472
+Epoch-32 lr: 0.005 valid_loss: 0.46291567297542796
+Epoch :  33
+Train Results (Loss and AUC):  0.43339832803331707 0.8342475663587181
+Epoch-33 lr: 0.005 valid_loss: 0.45319461997817545
+Epoch :  34
+Train Results (Loss and AUC):  0.4327920328182389 0.834101562693358
+Epoch-34 lr: 0.005 valid_loss: 0.45233416119042563
+Epoch :  35
+Train Results (Loss and AUC):  0.4362599409248934 0.8312592358300717
+Epoch-35 lr: 0.005 valid_loss: 0.4527483871754478
+Epoch :  36
+Train Results (Loss and AUC):  0.43414000442707873 0.8336891064150538
+Epoch-36 lr: 0.005 valid_loss: 0.45032962192507353
+Epoch :  37
+Train Results (Loss and AUC):  0.4361539375351136 0.831480476778152
+Epoch-37 lr: 0.005 valid_loss: 0.4497428746784435
+Epoch :  38
+Train Results (Loss and AUC):  0.4355522108125878 0.8329640084513318
+Epoch-38 lr: 0.0025 valid_loss: 0.45435796502758474
+Epoch :  39
+Train Results (Loss and AUC):  0.42478418517782984 0.8406448503452646
+Best Validation Loss: 0.446 and AUC: 0.84 
+
+Epoch-39 lr: 0.0025 valid_loss: 0.44626850590986367
+Epoch :  40
+Train Results (Loss and AUC):  0.42331686065378915 0.8424437990909588
+Epoch-40 lr: 0.0025 valid_loss: 0.45019927883849425
+Epoch :  41
+Train Results (Loss and AUC):  0.42272422280177535 0.8426108207845969
+Epoch-41 lr: 0.0025 valid_loss: 0.45104139780297
+Epoch :  42
+Train Results (Loss and AUC):  0.4231750293668494 0.8422251354759931
+Epoch-42 lr: 0.0025 valid_loss: 0.4626317322254181
+Epoch :  43
+Train Results (Loss and AUC):  0.42180119795971605 0.842964737509608
+Best Validation Loss: 0.444 and AUC: 0.84 
+
+Epoch-43 lr: 0.0025 valid_loss: 0.44428424186566295
+Epoch :  44
+Train Results (Loss and AUC):  0.42726443857553015 0.8392133590931563
+Epoch-44 lr: 0.0025 valid_loss: 0.44543831663973193
+Epoch :  45
+Train Results (Loss and AUC):  0.4213056444643013 0.8436995753057398
+Epoch-45 lr: 0.0025 valid_loss: 0.44542553845573873
+Epoch :  46
+Train Results (Loss and AUC):  0.42096418489414045 0.8441402249045288
+Epoch-46 lr: 0.0025 valid_loss: 0.44582097144687877
+Epoch :  47
+Train Results (Loss and AUC):  0.4215615215789841 0.8439760643923967
+Best Validation Loss: 0.444 and AUC: 0.84 
+
+Epoch-47 lr: 0.0025 valid_loss: 0.4435406116878285
+Epoch :  48
+Train Results (Loss and AUC):  0.4222056962639453 0.8428019506278779
+Epoch-48 lr: 0.0025 valid_loss: 0.45779453217983246
+Epoch :  49
+Train Results (Loss and AUC):  0.42236095595072554 0.8431745663656153
+Epoch-49 lr: 0.0025 valid_loss: 0.44535772414768443
+Epoch :  50
+Train Results (Loss and AUC):  0.41891681764978 0.84543985832104
+Epoch-50 lr: 0.0025 valid_loss: 0.44719107712016387
+Epoch :  51
+Train Results (Loss and AUC):  0.4187270714097234 0.8456593414740388
+Epoch-51 lr: 0.0025 valid_loss: 0.4528863649157917
+Epoch :  52
+Train Results (Loss and AUC):  0.41689516669775106 0.8469971460954292
+Epoch-52 lr: 0.0025 valid_loss: 0.46315303883131814
+Epoch :  53
+Train Results (Loss and AUC):  0.4191288718258042 0.8452616265760287
+Epoch-53 lr: 0.0025 valid_loss: 0.4507138255764456
+Epoch :  54
+Train Results (Loss and AUC):  0.4170943369348365 0.8466317913468085
+Epoch-54 lr: 0.0025 valid_loss: 0.44632437562241273
+Epoch :  55
+Train Results (Loss and AUC):  0.41751709640265466 0.8462437983614266
+Epoch-55 lr: 0.0025 valid_loss: 0.44636047675329094
+Epoch :  56
+Train Results (Loss and AUC):  0.41607996546121007 0.8475605945561606
+Epoch-56 lr: 0.0025 valid_loss: 0.44782504001084494
+Epoch :  57
+Train Results (Loss and AUC):  0.41650633615662297 0.8478155984664598
+Epoch-57 lr: 0.0025 valid_loss: 0.4928004662780201
+Epoch :  58
+Train Results (Loss and AUC):  0.42341938531063644 0.8414346925813138
+Epoch-58 lr: 0.00125 valid_loss: 0.45254240930080414
+Epoch :  59
+Train Results (Loss and AUC):  0.41092028040962525 0.8514622596245903
+Epoch-59 lr: 0.00125 valid_loss: 0.44861387680558595
+Epoch :  60
+Train Results (Loss and AUC):  0.41140044106537077 0.8510234320239716
+Epoch-60 lr: 0.00125 valid_loss: 0.44595487766406117
+Epoch :  61
+Train Results (Loss and AUC):  0.41143527255958345 0.8510379323988583
+Epoch-61 lr: 0.00125 valid_loss: 0.47194232660181384
+Epoch :  62
+Train Results (Loss and AUC):  0.40932854339779623 0.8526897708377904
+Best Validation Loss: 0.443 and AUC: 0.85 
+
+Epoch-62 lr: 0.00125 valid_loss: 0.4426904180470635
+Epoch :  63
+Train Results (Loss and AUC):  0.40770582334104793 0.8539627031519664
+Best Validation Loss: 0.442 and AUC: 0.85 
+
+Epoch-63 lr: 0.00125 valid_loss: 0.4418085515499115
+Epoch :  64
+Train Results (Loss and AUC):  0.4089108687567424 0.8532303030729168
+Epoch-64 lr: 0.00125 valid_loss: 0.470113093362135
+Epoch :  65
+Train Results (Loss and AUC):  0.40919126013675367 0.8529681881320991
+Epoch-65 lr: 0.00125 valid_loss: 0.44647828445715065
+Epoch :  66
+Train Results (Loss and AUC):  0.405998245061162 0.854801272081498
+Epoch-66 lr: 0.00125 valid_loss: 0.44301940763697906
+Epoch :  67
+Train Results (Loss and AUC):  0.40841303855539807 0.8531526570248252
+Epoch-67 lr: 0.00125 valid_loss: 0.47778261496740226
+Epoch :  68
+Train Results (Loss and AUC):  0.4070126082763136 0.8544508434789504
+Epoch-68 lr: 0.00125 valid_loss: 0.44255954903714795
+Epoch :  69
+Train Results (Loss and AUC):  0.4082568214839721 0.8528847805330995
+Epoch-69 lr: 0.00125 valid_loss: 0.44605788939139424
+Epoch :  70
+Train Results (Loss and AUC):  0.41136131660047787 0.8517320356647888
+Epoch-70 lr: 0.00125 valid_loss: 0.44906510500346913
+Epoch :  71
+Train Results (Loss and AUC):  0.40737867259596244 0.8539728240176545
+Epoch-71 lr: 0.00125 valid_loss: 0.44988832140670104
+Epoch :  72
+Train Results (Loss and AUC):  0.4044667282497069 0.8563532746944424
+Epoch-72 lr: 0.00125 valid_loss: 0.4445807819857317
+Epoch :  73
+Train Results (Loss and AUC):  0.4048901233807146 0.8559393270767415
+Epoch-73 lr: 0.00125 valid_loss: 0.4843538324622547
+Epoch :  74
+Train Results (Loss and AUC):  0.4048801768256957 0.8557837455061065
+Epoch-74 lr: 0.000625 valid_loss: 0.44639773754512563
+Epoch :  75
+Train Results (Loss and AUC):  0.40130282992339994 0.8589156031598015
+Epoch-75 lr: 0.000625 valid_loss: 0.44548004339723024
+Epoch :  76
+Train Results (Loss and AUC):  0.4004429174235547 0.8594588053576826
+Epoch-76 lr: 0.000625 valid_loss: 0.44572506844997406
+Epoch :  77
+Train Results (Loss and AUC):  0.39823016045562715 0.8607888448328322
+Epoch-77 lr: 0.000625 valid_loss: 0.4458963073351804
+Epoch :  78
+Train Results (Loss and AUC):  0.400165830031935 0.8594068461446817
+Epoch-78 lr: 0.000625 valid_loss: 0.45550181059276357
+Epoch :  79
+Train Results (Loss and AUC):  0.399673684294444 0.8600101079833654
+Epoch-79 lr: 0.000625 valid_loss: 0.442058908588746
+Epoch :  80
+Train Results (Loss and AUC):  0.3990810894104372 0.8604481094888847
+Epoch-80 lr: 0.000625 valid_loss: 0.44894691863480735
+Epoch :  81
+Train Results (Loss and AUC):  0.40047197732101963 0.8593503734513129
+Epoch-81 lr: 0.000625 valid_loss: 0.44541727357050953
+Epoch :  82
+Train Results (Loss and AUC):  0.39727301518601105 0.8613086269456383
+Epoch-82 lr: 0.000625 valid_loss: 0.44424381852149963
+Epoch :  83
+Train Results (Loss and AUC):  0.39699653940028456 0.8612523009899871
+Epoch-83 lr: 0.000625 valid_loss: 0.4442266576430377
+Epoch :  84
+Train Results (Loss and AUC):  0.4007556999782961 0.8594813912805639
+Epoch-84 lr: 0.000625 valid_loss: 0.4521668246563743
+Epoch :  85
+Train Results (Loss and AUC):  0.3975238200411739 0.8613668387054033
+Epoch-85 lr: 0.0003125 valid_loss: 0.44292859382489147
+Epoch :  86
+Train Results (Loss and AUC):  0.3937368333100315 0.8638593814111969
+Epoch-86 lr: 0.0003125 valid_loss: 0.4588391044560601
+Epoch :  87
+Train Results (Loss and AUC):  0.3946893686750328 0.8637518059869763
+Epoch-87 lr: 0.0003125 valid_loss: 0.4479162491419736
+Epoch :  88
+Train Results (Loss and AUC):  0.3943390408194209 0.8639453235986229
+Epoch-88 lr: 0.0003125 valid_loss: 0.4419494455351549
+Epoch :  89
+Train Results (Loss and AUC):  0.39360569818431596 0.8640975454540626
+Epoch-89 lr: 0.0003125 valid_loss: 0.4444228927878773
+Epoch :  90
+Train Results (Loss and AUC):  0.3936744793112498 0.8640764022567708
+Epoch-90 lr: 0.0003125 valid_loss: 0.4489061359096976
+Epoch :  91
+Train Results (Loss and AUC):  0.39210265180672027 0.8649005381115287
+Epoch-91 lr: 0.0003125 valid_loss: 0.4664526187321719
+Epoch :  92
+Train Results (Loss and AUC):  0.39240221517631807 0.8648896685089958
+Epoch-92 lr: 0.0003125 valid_loss: 0.4442446310730541
+Epoch :  93
+Train Results (Loss and AUC):  0.3917464253653484 0.8654676062422969
+Epoch-93 lr: 0.0003125 valid_loss: 0.44746268759755525
+Epoch :  94
+Train Results (Loss and AUC):  0.3941734747953683 0.8640722202442387
+Epoch-94 lr: 0.0003125 valid_loss: 0.44243331078220816
+Epoch :  95
+Train Results (Loss and AUC):  0.3912991360727563 0.8657871963519946
+Epoch-95 lr: 0.0003125 valid_loss: 0.44558555238387165
+Epoch :  96
+Train Results (Loss and AUC):  0.39065562039015284 0.866434231457544
+Epoch-96 lr: 0.00015625 valid_loss: 0.4471868425607681
+Epoch :  97
+Train Results (Loss and AUC):  0.3897306011862544 0.8667665892843994
+Epoch-97 lr: 0.00015625 valid_loss: 0.4459022730588913
+Epoch :  98
+Train Results (Loss and AUC):  0.3894661386089631 0.8669112252254261
+Epoch-98 lr: 0.00015625 valid_loss: 0.4435923318652546
+Epoch :  99
+Train Results (Loss and AUC):  0.3885918047772833 0.8678248421642595
+Epoch-99 lr: 0.00015625 valid_loss: 0.4438239581444684
+Epoch :  100
+Train Results (Loss and AUC):  0.38950636839292135 0.8668666903994628
+Epoch-100 lr: 0.00015625 valid_loss: 0.4437049671131022
+Test Loss: 0.440 and AUC: 0.84 
+

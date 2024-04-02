@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 import pickle
 
-plt.style.use('seaborn-white')
+#plt.style.use('seaborn-white')
 
 
 def filter_data_on_thresholds(dfx, intr_pval_cutoff=0.05, motifA_pval_cutoff=0.01, motifB_pval_cutoff=0.01):
@@ -163,6 +163,7 @@ def preprocess_for_comparison(dfx, annotation_df=None, for_arabidopsis=False, m1
         else:
             df['TF1'] = df['motif1']
             df['TF2'] = df['motif2']
+
     df['TF_Interaction'] = df.apply(lambda x: x['TF1']+r'$\longleftrightarrow$'+x['TF2'], axis=1)
     df = df[df['TF1']!=df['TF2']]
     df = df.reset_index(drop=True)

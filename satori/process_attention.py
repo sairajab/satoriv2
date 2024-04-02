@@ -75,7 +75,10 @@ def score_individual_head(data):
 	
 	attn_mat = np.asarray([attn_mat[:,feat_size*i:feat_size*(i+1)] for i in range(0,params['num_multiheads'])]) 
 	attn_mat = np.max(attn_mat, axis=0) #out of the 8 attn matrices, get the max value at the corresponding positions
-	
+	print("Attention Mat")
+	print(attn_mat.shape)
+	#print(seq_inf_dict)
+ 
 	for i in range(0, attn_mat.shape[0]):
 		if i not in seq_inf_dict:
 			continue
@@ -265,7 +268,7 @@ def estimate_interactions(num_filters, params, tomtom_data, motif_dir, verbose =
 	return seq_info_dict_list
 
 
-def estimate_interactions_bg(num_filters, params, tomtom_data, motif_dir, verbose = False, CNNfirstpool = 6, sequence_len = 200, pos_score_cutoff = 0.65, seq_limit = -1, attn_cutoff = 0.25, for_background = False, numWorkers=1, storeInterCNN = True, considerTopHit = True, useAll=False):
+def estimate_interactions_bg(num_filters, params, tomtom_data, motif_dir, verbose = False, CNNfirstpool = 6, sequence_len = 200, pos_score_cutoff = 0.55, seq_limit = -1, attn_cutoff = 0.25, for_background = False, numWorkers=1, storeInterCNN = True, considerTopHit = True, useAll=False):
 	global Prob_Attention_All_neg# = res_test[3]
 	global Seqs_neg# = res_test[6]
 	global LabelPreds_neg# = res_test[4]
@@ -276,7 +279,9 @@ def estimate_interactions_bg(num_filters, params, tomtom_data, motif_dir, verbos
 	
 	seq_info_dict_list = []
 	final_all = [['Batch','ExNo','SeqHeader','SingleHeadNo','PositionA','PositionB','AveragePosDiff','AttnScore','PositionAInfo','PositionBInfo']]
-	count = 0		
+	count = 0	
+	print(len(Seqs_neg) * len(Seqs_neg[0]),len(Prob_Attention_All_neg), tp_pos_dict )
+
 	for k in range(0,len(Prob_Attention_All_neg)): #going through all batches
 		start_time = time.time()
 		if count == seq_limit: #break if seq_limit number of sequences tested
@@ -305,6 +310,7 @@ def estimate_interactions_bg(num_filters, params, tomtom_data, motif_dir, verbos
 				for h_i in range(0,len(headers)):
 					header = headers[h_i]
 					if header in tp_pos_dict:
+						print("header in tp", header)         
 						tp_indices.append(h_i)
 						TPs[h_i] = tp_pos_dict[header]
 		Seqs_tp = Seqs_neg[k][tp_indices]
@@ -342,6 +348,8 @@ def analyze_interactions(argSpace, Interact_dir, tomtom_data, plot_dist=True):
 	if plot_dist:
 		resMain = Filter_Intr_Attn[Filter_Intr_Attn!=-1]                                                                                                                                               
 		resBg = Filter_Intr_Attn_neg[Filter_Intr_Attn_neg!=-1]
+		with open(Interact_dir+'/attn_score_main_bg.pckl','wb') as f:
+			pickle.dump([resMain,resBg],f)
 		resMainHist = np.histogram(resMain,bins=20)
 		resBgHist = np.histogram(resBg,bins=20)
 		plt.plot(resMainHist[1][1:],resMainHist[0]/sum(resMainHist[0]),linestyle='--',marker='o',color='g',label='main')
@@ -386,6 +394,15 @@ def analyze_interactions(argSpace, Interact_dir, tomtom_data, plot_dist=True):
 	
 	#attnLimits = [0.01, 0.02, 0.03] + [argSpace.attnCutoff * i for i in range(1,11)] #save results for 10 different attention cutoff values (maximum per interaction) eg. [0.05, 0.10, 0.15, 0.20, 0.25, ...]
 	attnLimits = [argSpace.attnCutoff] if argSpace.attnCutoff==0.12 else [0.12, argSpace.attnCutoff]
+	attnCutoff = np.mean(Filter_Intr_Attn[Filter_Intr_Attn!=-1])
+	print(attnCutoff)
+ 
+	if argSpace.attnCutoff == 0.04:
+ 
+		attnLimits = [attnCutoff]
+	else: 
+		attnLimits = [argSpace.attnCutoff]
+
 	for attnLimit in attnLimits:
 		pval_info = []#{}
 		for i in range(0,Filter_Intr_Attn.shape[0]):                                                                                                                                                   
@@ -495,9 +512,12 @@ def infer_intr_attention(experiment_blob, params, argSpace):
 	if not os.path.exists(Interact_dir):
 	    os.makedirs(Interact_dir)
 	tomtom_data = np.loadtxt(motif_dir_pos+'/tomtom/tomtom.tsv',dtype=str,delimiter='\t')
+	#tomtom_data = np.loadtxt(motif_dir_pos+'/CNN_filters/cnnfilters.tsv',dtype=str,delimiter='\t')
+ 
 	if argSpace.intBackground != None:
 		tomtom_data_neg = np.loadtxt(motif_dir_neg+'/tomtom/tomtom.tsv',dtype=str,delimiter='\t')
-	num_filters = params['CNN_filters']
+		#tomtom_data_neg = np.loadtxt(motif_dir_pos+'/CNN_filters/cnnfilters.tsv',dtype=str,delimiter='\t')
+	num_filters = params['CNN_filters'][0]
 	CNNfirstpool = params['CNN_poolsize']
 	batchSize = params['batch_size']
 	sequence_len = len(Seqs[0][0][1])
@@ -538,12 +558,12 @@ def infer_intr_attention(experiment_blob, params, argSpace):
 		seq_info_dict_list_neg = estimate_interactions_bg(num_filters, params, tomtom_data_neg, motif_dir_neg, verbose = argSpace.verbose, CNNfirstpool = CNNfirstpool, 
 											   sequence_len = sequence_len, pos_score_cutoff = argSpace.scoreCutoff, seq_limit = argSpace.intSeqLimit, attn_cutoff = argSpace.attnCutoff,
 											   for_background = True, numWorkers = argSpace.numWorkers, storeInterCNN = argSpace.storeInterCNN, considerTopHit = True) 
-	with open(Interact_dir+'/interaction_keys_dict.pckl','wb') as f:
-		pickle.dump(Filter_Intr_Keys,f)
-	with open(Interact_dir+'/background_results_raw.pckl','wb') as f:
-		pickle.dump([Filter_Intr_Attn_neg,Filter_Intr_Pos_neg, seq_info_dict_list_neg],f)	
-	with open(Interact_dir+'/main_results_raw.pckl','wb') as f:
-		pickle.dump([Filter_Intr_Attn,Filter_Intr_Pos, seq_info_dict_list],f)
+	# with open(Interact_dir+'/interaction_keys_dict.pckl','wb') as f:
+	# 	pickle.dump(Filter_Intr_Keys,f)
+	# with open(Interact_dir+'/background_results_raw.pckl','wb') as f:
+	# 	pickle.dump([Filter_Intr_Attn_neg,Filter_Intr_Pos_neg, seq_info_dict_list_neg],f)	
+	# with open(Interact_dir+'/main_results_raw.pckl','wb') as f:
+	# 	pickle.dump([Filter_Intr_Attn,Filter_Intr_Pos, seq_info_dict_list],f)
 	
 	analyze_interactions(argSpace, Interact_dir, tomtom_data)
 	

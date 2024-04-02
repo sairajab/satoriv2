@@ -2,17 +2,21 @@
 import os
 import sys
 import torch
+import random
 sys.path.insert(0,'satori')
 
 from argparse import ArgumentParser
 from torch.backends import cudnn
+import numpy
 
 #local imports
 from satori.experiment import run_experiment, motif_analysis, get_results_for_shuffled
+from satori.process_attention_mh import infer_intr_attention as mh_infer_intr_attention
 from satori.process_attention import infer_intr_attention
 from satori.process_fis import infer_intr_FIS
 from satori.utils import get_params_dict, annotate_motifs
-
+from model_selection import Calibration
+from analyze_motif_interaction import *
 ####################################################################################################################
 ##################################--------------Argument Parsing--------------######################################
 def parseArgs():
@@ -40,6 +44,9 @@ def parseArgs():
     parser.add_argument('--motifanalysis', dest='motifAnalysis',
                         action='store_true', default=False,
                         help="Analyze CNN filters for motifs and search them against known TF database.")
+    parser.add_argument('--filtersanalysis', dest='filterAnalysis',
+                        action='store_true', default=False,
+                        help="Analyze CNN filters for motifs based on annotation file.")
     parser.add_argument('--scorecutoff', dest='scoreCutoff', type=float,
                         action='store', default=0.65,
                         help="In case of binary labels, the positive probability cutoff to use.")
@@ -53,6 +60,10 @@ def parseArgs():
     parser.add_argument('-i','--interactions', dest='featInteractions',
                         action='store_true', default=False,
                         help="Self attention based feature(TF) interactions analysis.")
+    parser.add_argument('--interactionanalysis', dest='interactionsAnalysis',
+                        action='store_true', default=False,
+                        help="interactions analysis with ground truth values")
+    
     parser.add_argument('-b','--background', dest='intBackground', type=str,
                         action='store', default=None,
                         help="Background used in interaction analysis: shuffle (for di-nucleotide shuffled sequences with embedded motifs.), negative (for negative test set). Default is not to use background (and significance test).")
@@ -96,18 +107,48 @@ def parseArgs():
                         help="Input file prefix for the bed/text file and the corresponding fasta file (sequences).")
     parser.add_argument('hparamfile',type=str,
                         help='Name of the hyperparameters file to be used.')
+    parser.add_argument('--gt_pairs', dest='pairs_file',
+                        action='store', default='',
+                        help="Path to groud truth pairs file")
+    parser.add_argument('--finetune_model', dest='finetune_model_path',
+                        action='store', default=None,
+                        help="Path to the pre-trained model ")
+    parser.add_argument('--set_seed', dest='set_seed',
+                        action='store_true', default=False,
+                        help="Set seed or not")  
+
+    parser.add_argument('--seed', dest='seed',
+                        action='store', type=int, default=0,
+                        help="Seed to intialize model")   
+    parser.add_argument('--motifweights', dest='load_motif_weights',
+                        action='store_true', default=False,
+                        help="Load weights of first CNN from motifs PWM and freeze them, by default false hence weights are randomly intialized and trained.).")  
 
     args = parser.parse_args()
 
     return args
 ####################################################################################################################
 
+
+def setup_seed(seed):
+    random.seed(seed)                          
+    numpy.random.seed(seed)                       
+    torch.manual_seed(seed)                    
+    torch.cuda.manual_seed(seed)               
+    torch.cuda.manual_seed_all(seed)           
+    torch.backends.cudnn.deterministic = True 
+    
+    
 def main():
     #CUDA for pytorch
+    head = "max"
     use_cuda = torch.cuda.is_available()
     device = torch.device(torch.cuda.current_device() if use_cuda else "cpu")
     cudnn.benchmark = True
     arg_space = parseArgs()
+    if arg_space.set_seed:
+        print("Calling ...", arg_space.seed)
+        setup_seed(arg_space.seed)
     #create params dictionary
     params_dict = get_params_dict(arg_space.hparamfile)
     experiment_blob = run_experiment(device, arg_space, params_dict)
@@ -116,6 +157,7 @@ def main():
     CNNWeights = experiment_blob['CNN_weights']
 
     if arg_space.motifAnalysis:
+        #print(test_resBlob)
         motif_dir_pos, _ = motif_analysis(test_resBlob, CNNWeights, arg_space, params_dict)
         if arg_space.intBackground == 'negative':
             motif_dir_neg, _ = motif_analysis(test_resBlob, CNNWeights,  arg_space, params_dict, for_background=True)
@@ -145,10 +187,37 @@ def main():
             experiment_blob['res_test_bg'] = test_resBlob_bg[0]
             experiment_blob['test_loader_bg'] = test_resBlob_bg[1]
         if arg_space.methodType in ['SATORI','BOTH']:
-            infer_intr_attention(experiment_blob, params_dict, arg_space)
+            if head == "multi":
+                mh_infer_intr_attention(experiment_blob, params_dict, arg_space)
+            else:
+                infer_intr_attention(experiment_blob, params_dict, arg_space)
+        
         if arg_space.methodType in ['FIS','BOTH']:
             infer_intr_FIS(experiment_blob, params_dict, arg_space, device)
+            
+    if arg_space.interactionsAnalysis:
+        
+        print(arg_space.load_motif_weights)
+        motif_weights = arg_space.load_motif_weights
+        pairs_file = arg_space.pairs_file
+                   
+        if arg_space.methodType in ['SATORI','BOTH']:            
+            _,_,_,_ = run_interaction_evaluation(output_dir+"/",pairs_file, motif_weights=motif_weights)
+                
+        if arg_space.methodType in ['FIS','BOTH']:
+            _,_,_,_ = run_interaction_evaluation(output_dir + "/",pairs_file, method="FIS", motif_weights=motif_weights)
+
+        print("DONE!!!")
+
+def hyperparameter_selection():
+
+    arg_space = parseArgs()
+    
+
+    best_Res = Calibration(arg_space)
+
+    print(best_Res)
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":                 
     main()

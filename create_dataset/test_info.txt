@@ -1,0 +1,6 @@
+This dataset has 3 interacting pairs from a set of 60pairs in it and in negative sequence one by chance (1-3) motifs per sequence from a set of 45 motifs
+Pos	1	1	1:DMRT2[177]:ZBTB1[156]:OSR2[33]:SOHLH2[10]
+Pos	1	2	1:ZSCAN10[33]:HES2[9]:CGBP[251]:TFAP2E[227]
+Neg	2	3	0:ZKSCAN1[225]:ARID3C[160]:ARID5A[85]
+Neg	2	4	0:ZNF187[163]:ARID3C[229]:DMRTC2[80]
+Neg	2	5	0:DNMT1[84]:KLF12[6]:NHLH2[230]

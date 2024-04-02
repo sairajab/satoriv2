@@ -1,0 +1,29 @@
+cuda:0
+Calling ... 0
+test/validation split val: 0.10
+{'input_channels': 4, 'use_embeddings': False, 'embd_window': 5, 'embd_size': 50, 'embd_kmersize': 3, 'num_multiheads': 8, 'singlehead_size': 64, 'multihead_size': 512, 'use_pooling': False, 'pooling_val': 4, 'readout_strategy': 'none', 'use_RNN': False, 'RNN_hiddensize': 100, 'use_CNN': True, 'CNN1_useexponential': False, 'use_posEnc': False, 'CNN_filters': [200], 'CNN_filtersize': [13], 'use_CNNpool': True, 'CNN_poolsize': 4, 'CNN_padding': 0, 'get_CNNout': True, 'get_seqs': True, 'get_pattn': True, 'batch_size': 64, 'num_epochs': 50, 'relativeAttn': False, 'Learnable_relativeAttn': False, 'mixed_attn': False, 'mixed_attn_config': '0.25', 'sqrt_dist': False, 'num_attnlayers': 1, 'entropy_loss': False, 'entropy_reg_value': '0.01', 'residual_connection': True, 'multiple_linear': False, 'exp_name': 'arabidopsis', 'cnn_attention_block': False, 'linear_layer_size': 512}
+600 147
+█ |----------------------------------------| 0.00% [0/50 00:00<?]Train Results (Loss and AUC):  1.637582609089472 0.5794347968654551
+Best Validation Loss: 1.191 and AUC: 0.69 
+
+Epoch-1 lr: 0.001 valid_loss: 1.191354966008818
+ |----------------------------------------| 2.00% [1/50 08:12<6:41:49]Train Results (Loss and AUC):  1.0369481071990023 0.6572140949104764
+Best Validation Loss: 0.844 and AUC: 0.70 
+
+Epoch-2 lr: 0.001 valid_loss: 0.8436927119374791
+ |█---------------------------------------| 4.00% [2/50 16:21<6:32:25]Train Results (Loss and AUC):  0.9275903897259825 0.6742746413888361
+Epoch-3 lr: 0.001 valid_loss: 1.3331400883662237
+ |██--------------------------------------| 6.00% [3/50 24:08<6:18:19]Train Results (Loss and AUC):  0.8779983801226462 0.6839147018890467
+Epoch-4 lr: 0.001 valid_loss: 0.9518321876402025
+ |███-------------------------------------| 8.00% [4/50 32:21<6:12:06]Train Results (Loss and AUC):  0.8461626659798366 0.6887016491148166
+Epoch-5 lr: 0.001 valid_loss: 0.8814888919070686
+ |████------------------------------------| 10.00% [5/50 40:33<6:04:59]Train Results (Loss and AUC):  0.8098391845021197 0.6935369451576191
+Epoch-6 lr: 0.001 valid_loss: 0.9009662866592407
+ |████------------------------------------| 12.00% [6/50 48:36<5:56:31]Train Results (Loss and AUC):  0.7845839178049436 0.6955703662023457
+Best Validation Loss: 0.822 and AUC: 0.59 
+
+Epoch-7 lr: 0.001 valid_loss: 0.822472227342201
+ |█████-----------------------------------| 14.00% [7/50 56:44<5:48:32]Train Results (Loss and AUC):  0.7504758720115948 0.7010260626313911
+Epoch-8 lr: 0.001 valid_loss: 0.9577747647896474
+ |██████----------------------------------| 16.00% [8/50 1:04:49<5:40:19]Train Results (Loss and AUC):  0.7288341608098758 0.7055124757424673
+slurmstepd: error: *** JOB 8208 ON kestrel1 CANCELLED AT 2024-03-02T01:07:40 ***

@@ -207,7 +207,7 @@ def meme_intro(meme_file, seqs):
     return meme_out
 
 
-def name_filters(num_filters, tomtom_file, meme_db_file):
+def name_filters(num_filters, tomtom_file, meme_db_file, out_dir):
     ''' Name the filters using Tomtom matches.
     Attrs:
         num_filters (int) : total number of filters
@@ -218,6 +218,7 @@ def name_filters(num_filters, tomtom_file, meme_db_file):
     '''
     # name by number
     filter_names = ['f%d'%fi for fi in range(num_filters)]
+    filter_names_multiple = ['f%d'%fi for fi in range(num_filters)]
 
     # name by protein
     if tomtom_file is not None and meme_db_file is not None:
@@ -243,9 +244,38 @@ def name_filters(num_filters, tomtom_file, meme_db_file):
 
         # assign filter's best match
         for fi in filter_motifs:
-            top_motif = sorted(filter_motifs[fi])[0][1]
+            motifs_sorted = sorted(filter_motifs[fi])
+            min_motif = motifs_sorted[0][0]
+            
+            indices_of_min_values = [i for i, x in enumerate(motifs_sorted) if x[0] == min_motif]
+            for i in indices_of_min_values:
+                top_motif = motifs_sorted[i][1] 
+                filter_names_multiple[fi] += '_%s' % motif_protein[top_motif]
+            
+            top_motif = motifs_sorted[0][1]
             filter_names[fi] += '_%s' % motif_protein[top_motif]
+            
+        table_out = open('%s/table_mutiple.txt'%out_dir, 'w')
 
+        # print header for later panda reading
+        header_cols = ('', 'annotation')
+        print('%3s %20s' % header_cols, file=table_out)
+
+        for f in range(num_filters):
+
+                # grab annotation
+                annotation = ''
+                name_pieces = filter_names_multiple[f].split('_')
+                if len(name_pieces) > 1:
+                    for names in name_pieces[1:]:
+                        annotation += "," + names
+
+                row_cols = (f, annotation)
+                print( '%-3d  %20s' % row_cols, file=table_out)
+
+
+        table_out.close()
+        
     return np.array(filter_names)
 
 
@@ -537,6 +567,7 @@ def plot_filter_heat(param_matrix, out_pdf):
 
 ##Changes made by Fahad Ullah
 def plot_filter_logo(filter_outs, filter_size, seqs, out_prefix, raw_t=0, maxpct_t=None):    
+    #print("cnn_shape", filter_outs.shape)
     if maxpct_t:
         all_outs = np.ravel(filter_outs)
         all_outs_mean = all_outs.mean()
@@ -651,41 +682,43 @@ def get_motif_fig(filter_weights, filter_outs, out_dir, seqs, sample_i = 0):
     if data_type=='RNA':
         subprocess.call(tomtom_dir+' -dist '+tomtom_dist+' -thresh '+str(tomtom_pval)+' -oc %s/tomtom %s/filters_meme.txt %s' % (out_dir, out_dir, 'motifs_database/Ray2013_rbp_RNA.meme'), shell=True) #was pearson before
     else:
-        subprocess.call(tomtom_dir+' -dist '+tomtom_dist+' -thresh '+str(tomtom_pval)+' -oc %s/tomtom %s/filters_meme.txt %s' % (out_dir, out_dir, dbpath), shell=True) #was pearson before
+        subprocess.call(tomtom_dir+' -dist '+tomtom_dist+' -thresh '+str(tomtom_pval)+' -oc %s/tomtom %s/filters_meme.txt %s' % (out_dir, out_dir, dbpath), shell=True) #was pearson before #--norc (check for +ve strand only)
     subprocess.call('cp %s/tomtom/tomtom.tsv %s/tomtom/tomtom.txt' %(out_dir, out_dir), shell=True)
     
     # read in annotations
     if data_type=='RNA':
-        filter_names = name_filters(num_filters, '%s/tomtom/tomtom.txt'%out_dir, 'motifs_database/Ray2013_rbp_RNA.meme')
+        filter_names = name_filters(num_filters, '%s/tomtom/tomtom.txt'%out_dir, 'motifs_database/Ray2013_rbp_RNA.meme', out_dir)
     else:
-        filter_names = name_filters(num_filters, '%s/tomtom/tomtom.txt'%out_dir, dbpath)
+        filter_names = name_filters(num_filters, '%s/tomtom/tomtom.txt'%out_dir, dbpath, out_dir)
     #################################################################
     # print a table of information
     #################################################################
-    table_out = open('%s/table.txt'%out_dir, 'w')
+    if not os.path.exists('%s/table.txt'%out_dir):
+        
+        table_out = open('%s/table.txt'%out_dir, 'w')
 
-    # print header for later panda reading
-    header_cols = ('', 'consensus', 'annotation', 'ic', 'mean', 'std')
-    print('%3s  %19s  %10s  %5s  %6s  %6s' % header_cols, file=table_out)
+        # print header for later panda reading
+        header_cols = ('', 'consensus', 'annotation', 'ic', 'mean', 'std')
+        print('%3s  %19s  %10s  %5s  %6s  %6s' % header_cols, file=table_out)
 
-    for f in range(num_filters):
-        # collapse to a consensus motif
-        consensus = filter_motif(filter_weights[f,:,:])
+        for f in range(num_filters):
+            # collapse to a consensus motif
+            consensus = filter_motif(filter_weights[f,:,:])
 
-        # grab annotation
-        annotation = '.'
-        name_pieces = filter_names[f].split('_')
-        if len(name_pieces) > 1:
-            annotation = name_pieces[1]
+            # grab annotation
+            annotation = '.'
+            name_pieces = filter_names[f].split('_')
+            if len(name_pieces) > 1:
+                annotation = name_pieces[1]
 
-        # plot density of filter output scores
-        fmean, fstd = plot_score_density(np.ravel(filter_outs[:,f, :]), '%s/filter%d_dens.pdf' % (out_dir,f))
+            # plot density of filter output scores
+            fmean, fstd = plot_score_density(np.ravel(filter_outs[:,f, :]), '%s/filter%d_dens.pdf' % (out_dir,f))
 
-        row_cols = (f, consensus, annotation, filters_ic[f], fmean, fstd)
-        print( '%-3d  %19s  %10s  %5.2f  %6.4f  %6.4f' % row_cols, file=table_out)
+            row_cols = (f, consensus, annotation, filters_ic[f], fmean, fstd)
+            print( '%-3d  %19s  %10s  %5.2f  %6.4f  %6.4f' % row_cols, file=table_out)
 
 
-    table_out.close()
+        table_out.close()
 
 
     #################################################################
@@ -726,7 +759,7 @@ def get_motif(filter_weights_old, filter_outs, testing, dpath, y = [], index = 0
     kmer_len=kmer
     stride=s
     tomtom_dir=tomtom
-    print (filter_weights_old.shape)
+    #print (filter_weights_old.shape)
     filter_weights = []
     for x in filter_weights_old:
         #normalized, scale = preprocess_data(x)

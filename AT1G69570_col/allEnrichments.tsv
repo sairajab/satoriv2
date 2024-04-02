@@ -1,0 +1,5 @@
+userSet	dbSet	collection	pValueLog	oddsRatio	support	rnkPV	rnkOR	rnkSup	maxRnk	meanRnk	b	c	d	description	cellType	tissue	antibody	treatment	dataSource	filename	size
+1	3	interacting_tfs	3.59692267283706	2.22011740390794	30	1	1	4	4	2	106	8548	67055	interacting_tfs	NA	NA	NA	NA	NA	MYB_tnt_MYB51_col.target.all.bed	206
+1	2	interacting_tfs	0	0.550554265219208	686	2	2	1	2	1.67	9158	7892	58003	interacting_tfs	NA	NA	NA	NA	NA	G2like_tnt_AT2G40260_colamp.target.all.bed	22215
+1	1	interacting_tfs	0	0.173555373746415	100	2	3	2	3	2.33	4274	8478	62887	interacting_tfs	NA	NA	NA	NA	NA	G2like_tnt_AT2G20400_col.target.all.bed	6765
+1	4	interacting_tfs	0	0.169550251012417	41	2	4	3	4	3	1850	8537	65311	interacting_tfs	NA	NA	NA	NA	NA	MYB_tnt_MYB67_col.target.all.bed	2829

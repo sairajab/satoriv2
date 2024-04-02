@@ -1,0 +1,4 @@
+,TF_Interaction,TF1_Family,TF2_Family,adjusted_pval
+36,DNMT1$\longleftrightarrow$EGR1,C2H2 ZF,CxxC,0.0039273294613515
+89,DNMT1$\longleftrightarrow$ZBTB7A,CxxC,C2H2 ZF,0.0121702428077344
+0,CTCF$\longleftrightarrow$EGR1,C2H2 ZF,C2H2 ZF,0.0169793448316272

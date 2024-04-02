@@ -1,0 +1,2536 @@
+Error: mkl-service + Intel(R) MKL: MKL_THREADING_LAYER=INTEL is incompatible with libgomp.so.1 library.
+	Try to import numpy first or set the threading layer accordingly. Set MKL_SERVICE_FORCE_INTEL to force it.
+cuda:0
+test/validation split val: 0.10
+{'input_channels': 4, 'use_embeddings': False, 'embd_window': 5, 'embd_size': 50, 'embd_kmersize': 3, 'num_multiheads': 4, 'singlehead_size': 64, 'multihead_size': 100, 'use_pooling': False, 'pooling_val': 4, 'readout_strategy': 'normalize', 'use_RNN': False, 'RNN_hiddensize': 100, 'use_CNN': True, 'CNN1_useexponential': False, 'use_posEnc': False, 'CNN_filters': [200], 'CNN_filtersize': [15], 'use_CNNpool': True, 'CNN_poolsize': 10, 'CNN_padding': 4, 'get_CNNout': True, 'get_seqs': True, 'get_pattn': True, 'batch_size': 128, 'num_epochs': 60, 'relativeAttn': True, 'Learnable_relativeAttn': True, 'mixed_attn': False, 'mixed_attn_config': '0.25', 'sqrt_dist': False}
+19
+Stride: 10
+Kernel Size: (20, 20)
+Padding: (0, 0)
+█ |----------------------------------------| 0.00% [0/60 00:00<?]Train Results (Loss and AUC):  0.6914166992505392 0.5482798669208613
+Best Validation Loss: 0.691 and AUC: 0.57 
+
+ |----------------------------------------| 1.67% [1/60 00:32<32:06]Train Results (Loss and AUC):  0.6736123107274373 0.5808125281807744
+Best Validation Loss: 0.686 and AUC: 0.59 
+
+ |█---------------------------------------| 3.33% [2/60 00:59<28:55]Train Results (Loss and AUC):  0.6585422250429789 0.5939843664526988
+Best Validation Loss: 0.662 and AUC: 0.60 
+
+ |██--------------------------------------| 5.00% [3/60 01:26<27:28]Train Results (Loss and AUC):  0.6574874178568522 0.6035270729290791
+Best Validation Loss: 0.654 and AUC: 0.63 
+
+ |██--------------------------------------| 6.67% [4/60 01:54<26:37]Train Results (Loss and AUC):  0.6484718146324158 0.6294516892475805
+ |███-------------------------------------| 8.33% [5/60 02:21<25:54]Train Results (Loss and AUC):  0.6435979278882344 0.6416438289296905
+ |████------------------------------------| 10.00% [6/60 02:48<25:18]Train Results (Loss and AUC):  0.6391756955782573 0.6489222249856572
+Best Validation Loss: 0.637 and AUC: 0.67 
+
+ |████------------------------------------| 11.67% [7/60 03:16<24:45]Train Results (Loss and AUC):  0.6358890604972839 0.6570451416131459
+ |█████-----------------------------------| 13.33% [8/60 03:43<24:12]Train Results (Loss and AUC):  0.6386145292917887 0.6499180817440179
+ |██████----------------------------------| 15.00% [9/60 04:10<23:41]Train Results (Loss and AUC):  0.6351804695129395 0.6595228295703687
+ |██████----------------------------------| 16.67% [10/60 04:37<23:09]Train Results (Loss and AUC):  0.6291233525276184 0.6673875077948012
+Best Validation Loss: 0.633 and AUC: 0.67 
+
+ |███████---------------------------------| 18.33% [11/60 05:05<22:40]Train Results (Loss and AUC):  0.6317880716323853 0.661518017923973
+ |████████--------------------------------| 20.00% [12/60 05:32<22:09]Train Results (Loss and AUC):  0.6266570801734924 0.6710809615840468
+Best Validation Loss: 0.625 and AUC: 0.69 
+
+ |████████--------------------------------| 21.67% [13/60 05:59<21:39]Train Results (Loss and AUC):  0.6241311450004577 0.6744725258683134
+ |█████████-------------------------------| 23.33% [14/60 06:26<21:11]Train Results (Loss and AUC):  0.6229247500101726 0.6794732772160237
+ |██████████------------------------------| 25.00% [15/60 06:54<20:42]Train Results (Loss and AUC):  0.6197596249580384 0.6824347331635372
+Best Validation Loss: 0.620 and AUC: 0.69 
+
+ |██████████------------------------------| 26.67% [16/60 07:21<20:13]Train Results (Loss and AUC):  0.6030703301429748 0.7056905904184315
+Best Validation Loss: 0.605 and AUC: 0.72 
+
+ |███████████-----------------------------| 28.33% [17/60 07:48<19:45]Train Results (Loss and AUC):  0.6075406552950541 0.7003176511157813
+ |████████████----------------------------| 30.00% [18/60 08:15<19:16]Train Results (Loss and AUC):  0.6074074554443359 0.7005435460527462
+ |████████████----------------------------| 31.67% [19/60 08:43<18:48]Train Results (Loss and AUC):  0.6034455904960633 0.7022866725059996
+ |█████████████---------------------------| 33.33% [20/60 09:10<18:21]Train Results (Loss and AUC):  0.6039902084668477 0.6997687620412868
+ |██████████████--------------------------| 35.00% [21/60 09:37<17:53]Train Results (Loss and AUC):  0.6142174105644226 0.6881348805590657
+ |██████████████--------------------------| 36.67% [22/60 10:05<17:25]Train Results (Loss and AUC):  0.6089364919662476 0.6942892937085425
+Epoch 00023: reducing learning rate of group 0 to 5.0000e-04.
+ |███████████████-------------------------| 38.33% [23/60 10:32<16:57]Train Results (Loss and AUC):  0.5998582280476888 0.704701459062574
+Best Validation Loss: 0.604 and AUC: 0.71 
+
+ |████████████████------------------------| 40.00% [24/60 11:00<16:30]Train Results (Loss and AUC):  0.5970003833770752 0.7095265892008612
+Best Validation Loss: 0.603 and AUC: 0.71 
+
+ |████████████████------------------------| 41.67% [25/60 11:27<16:02]Train Results (Loss and AUC):  0.596324315071106 0.7103940011691231
+Best Validation Loss: 0.602 and AUC: 0.71 
+
+ |█████████████████-----------------------| 43.33% [26/60 11:55<15:35]Train Results (Loss and AUC):  0.5969482855796814 0.708988925762128
+ |██████████████████----------------------| 45.00% [27/60 12:22<15:07]Train Results (Loss and AUC):  0.5958161404927571 0.7117591945207887
+Best Validation Loss: 0.600 and AUC: 0.71 
+
+ |██████████████████----------------------| 46.67% [28/60 12:49<14:39]Train Results (Loss and AUC):  0.5948714480400086 0.7128312502754395
+Best Validation Loss: 0.600 and AUC: 0.71 
+
+ |███████████████████---------------------| 48.33% [29/60 13:17<14:12]Train Results (Loss and AUC):  0.5947234764099121 0.712232461985508
+Best Validation Loss: 0.599 and AUC: 0.71 
+
+ |████████████████████--------------------| 50.00% [30/60 13:44<13:44]Train Results (Loss and AUC):  0.59523823706309 0.7127359655871541
+Best Validation Loss: 0.599 and AUC: 0.71 
+
+ |████████████████████--------------------| 51.67% [31/60 14:12<13:17]Train Results (Loss and AUC):  0.5930807250340779 0.7159561271998343
+Best Validation Loss: 0.599 and AUC: 0.72 
+
+ |█████████████████████-------------------| 53.33% [32/60 14:39<12:49]Train Results (Loss and AUC):  0.5928144499460856 0.7148146063056134
+Best Validation Loss: 0.598 and AUC: 0.72 
+
+ |██████████████████████------------------| 55.00% [33/60 15:06<12:21]Train Results (Loss and AUC):  0.5916209642092387 0.7163617266291288
+Best Validation Loss: 0.597 and AUC: 0.72 
+
+ |██████████████████████------------------| 56.67% [34/60 15:34<11:54]Train Results (Loss and AUC):  0.5913467728296916 0.7164461056950927
+Best Validation Loss: 0.596 and AUC: 0.72 
+
+ |███████████████████████-----------------| 58.33% [35/60 16:01<11:26]Train Results (Loss and AUC):  0.5914791666666667 0.7167627897537138
+ |████████████████████████----------------| 60.00% [36/60 16:29<10:59]Train Results (Loss and AUC):  0.5928783133824667 0.7158998123957883
+Best Validation Loss: 0.596 and AUC: 0.72 
+
+ |████████████████████████----------------| 61.67% [37/60 16:56<10:31]Train Results (Loss and AUC):  0.5909185136159261 0.7184206820331115
+Best Validation Loss: 0.595 and AUC: 0.72 
+
+ |█████████████████████████---------------| 63.33% [38/60 17:23<10:04]Train Results (Loss and AUC):  0.5907574240366618 0.7193001659816003
+Best Validation Loss: 0.595 and AUC: 0.72 
+
+ |██████████████████████████--------------| 65.00% [39/60 17:51<09:36]Train Results (Loss and AUC):  0.589378424803416 0.7189528591248157
+Best Validation Loss: 0.594 and AUC: 0.72 
+
+ |██████████████████████████--------------| 66.67% [40/60 18:18<09:09]Train Results (Loss and AUC):  0.5895497471491495 0.7201728036502265
+Best Validation Loss: 0.594 and AUC: 0.72 
+
+ |███████████████████████████-------------| 68.33% [41/60 18:45<08:41]Train Results (Loss and AUC):  0.5904826925595601 0.719128503435335
+Best Validation Loss: 0.593 and AUC: 0.72 
+
+ |████████████████████████████------------| 70.00% [42/60 19:12<08:13]Train Results (Loss and AUC):  0.5886291120847066 0.7210145589923693
+ |████████████████████████████------------| 71.67% [43/60 19:39<07:46]Train Results (Loss and AUC):  0.5888420713742574 0.7208706788790032
+ |█████████████████████████████-----------| 73.33% [44/60 20:07<07:18]Train Results (Loss and AUC):  0.588297076702118 0.7200278344104254
+ |██████████████████████████████----------| 75.00% [45/60 20:34<06:51]Train Results (Loss and AUC):  0.5897314823468526 0.7202576384762994
+ |██████████████████████████████----------| 76.67% [46/60 21:01<06:24]Train Results (Loss and AUC):  0.5884407798449198 0.7201365704856859
+ |███████████████████████████████---------| 78.33% [47/60 21:29<05:56]Train Results (Loss and AUC):  0.5885700653394064 0.7207382068215648
+Best Validation Loss: 0.593 and AUC: 0.72 
+
+ |████████████████████████████████--------| 80.00% [48/60 21:56<05:29]Train Results (Loss and AUC):  0.5888992719650269 0.7212896854715797
+Best Validation Loss: 0.593 and AUC: 0.72 
+
+ |████████████████████████████████--------| 81.67% [49/60 22:23<05:01]Train Results (Loss and AUC):  0.5880500364303589 0.7219446874166237
+Best Validation Loss: 0.593 and AUC: 0.72 
+
+ |█████████████████████████████████-------| 83.33% [50/60 22:50<04:34]Train Results (Loss and AUC):  0.5873888203303019 0.7219865438717676
+Best Validation Loss: 0.592 and AUC: 0.72 
+
+ |██████████████████████████████████------| 85.00% [51/60 23:18<04:06]Train Results (Loss and AUC):  0.587763456662496 0.722069677811281
+Best Validation Loss: 0.592 and AUC: 0.72 
+
+ |██████████████████████████████████------| 86.67% [52/60 23:45<03:39]Train Results (Loss and AUC):  0.5886709148089091 0.7208728525433022
+ |███████████████████████████████████-----| 88.33% [53/60 24:12<03:11]Train Results (Loss and AUC):  0.5884237058957418 0.7209606115418884
+Best Validation Loss: 0.592 and AUC: 0.72 
+
+ |████████████████████████████████████----| 90.00% [54/60 24:39<02:44]Train Results (Loss and AUC):  0.5870895016988118 0.7221868723759567
+ |████████████████████████████████████----| 91.67% [55/60 25:07<02:17]Train Results (Loss and AUC):  0.5873621659278869 0.7220124061653533
+Best Validation Loss: 0.591 and AUC: 0.73 
+
+ |█████████████████████████████████████---| 93.33% [56/60 25:34<01:49]Train Results (Loss and AUC):  0.5873919523557027 0.7216747697669562
+Best Validation Loss: 0.591 and AUC: 0.73 
+
+ |██████████████████████████████████████--| 95.00% [57/60 26:02<01:22]Train Results (Loss and AUC):  0.5874571808973948 0.7213762700771773
+ |██████████████████████████████████████--| 96.67% [58/60 26:29<00:54]Train Results (Loss and AUC):  0.5874386390050252 0.7211190950433285
+ |███████████████████████████████████████-| 98.33% [59/60 26:56<00:27]Train Results (Loss and AUC):  0.5861154486338298 0.7230493676215151
+Best Validation Loss: 0.591 and AUC: 0.73 
+
+ |████████████████████████████████████████| 100.00% [60/60 27:23<00:00]Writing results to output directory 'results/final/CNN_L_REL_ATTN/single_d/ctf_5/E2/Motif_Analysis/tomtom'.
+Processing query 1 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.986874
+Processing query 2 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.998179
+Processing query 3 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=1
+Processing query 4 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.997494
+Processing query 5 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=1
+Processing query 6 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.979662
+Processing query 7 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.967091
+Processing query 8 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.986706
+Processing query 9 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=1
+Processing query 10 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.980379
+Processing query 11 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=1
+Processing query 12 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.974321
+Processing query 13 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.950884
+Processing query 14 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.981483
+Processing query 15 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.982725
+Processing query 16 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.97764
+Processing query 17 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.99544
+Processing query 18 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.994756
+Processing query 19 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.992604
+Processing query 20 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.99681
+Processing query 21 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.999548
+Processing query 22 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.99544
+Processing query 23 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.988082
+Processing query 24 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=1
+Processing query 25 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.969504
+Processing query 26 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.981202
+Processing query 27 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.99681
+Processing query 28 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.996125
+Processing query 29 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.99681
+Processing query 30 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=1
+Processing query 31 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.971659
+Processing query 32 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.983416
+Processing query 33 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.983174
+Processing query 34 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.979397
+Processing query 35 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.979267
+Processing query 36 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.996339
+Processing query 37 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.998864
+Processing query 38 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.987394
+Processing query 39 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.972257
+Processing query 40 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.983721
+Processing query 41 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.995864
+Processing query 42 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.990835
+Processing query 43 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.973043
+Processing query 44 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.983802
+Processing query 45 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.971937
+Processing query 46 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.974321
+Processing query 47 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.990648
+Processing query 48 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.989963
+Processing query 49 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=1
+Processing query 50 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.979137
+Processing query 51 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.998179
+Processing query 52 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.987394
+Processing query 53 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.957154
+Processing query 54 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.986964
+Processing query 55 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.998864
+Processing query 56 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.991214
+Processing query 57 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.975586
+Processing query 58 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=1
+Processing query 59 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.979662
+Processing query 60 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.974426
+Processing query 61 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.966752
+Processing query 62 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=1
+Processing query 63 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.99544
+Processing query 64 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.999548
+Processing query 65 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=1
+Processing query 66 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.988082
+Processing query 67 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.997027
+Processing query 68 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.985856
+Processing query 69 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.977073
+Processing query 70 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.983954
+Processing query 71 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.976271
+Processing query 72 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.954381
+Processing query 73 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.984799
+Processing query 74 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.968426
+Processing query 75 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.977192
+Processing query 76 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.992407
+Processing query 77 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.990835
+Processing query 78 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.973836
+Processing query 79 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.97764
+Processing query 80 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=1
+Processing query 81 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.977192
+Processing query 82 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.993387
+Processing query 83 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=1
+Processing query 84 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.969504
+Processing query 85 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.992407
+Processing query 86 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.971145
+Processing query 87 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.995651
+Processing query 88 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.993587
+Processing query 89 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.990147
+Processing query 90 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.990648
+Processing query 91 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.991023
+Processing query 92 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.987394
+Processing query 93 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.990332
+Processing query 94 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.985856
+Processing query 95 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=1
+Processing query 96 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.993587
+Processing query 97 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.99681
+Processing query 98 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.992017
+Processing query 99 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.990332
+Processing query 100 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.99681
+Processing query 101 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.98791
+Processing query 102 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.972163
+Processing query 103 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.9648
+Processing query 104 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.992407
+Processing query 105 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.976385
+Processing query 106 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.969128
+Processing query 107 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.998179
+Processing query 108 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.97764
+Processing query 109 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.985653
+Processing query 110 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.996125
+Processing query 111 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.989963
+Processing query 112 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.982578
+Processing query 113 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.993387
+Processing query 114 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.984108
+Processing query 115 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.975009
+Processing query 116 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.998864
+Processing query 117 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.996125
+Processing query 118 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.97088
+Processing query 119 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=1
+Processing query 120 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.991523
+Processing query 121 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.986018
+Processing query 122 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.986706
+Processing query 123 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.979267
+Processing query 124 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.982771
+Processing query 125 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.992407
+Processing query 126 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.994963
+Processing query 127 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.998179
+Processing query 128 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.945251
+Processing query 129 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.977312
+Processing query 130 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.976385
+Processing query 131 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=1
+Processing query 132 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.998179
+Processing query 133 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=1
+Processing query 134 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.937986
+Processing query 135 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.973734
+Processing query 136 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.98791
+Processing query 137 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.987394
+Processing query 138 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.990147
+Processing query 139 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.97394
+Processing query 140 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=1
+Processing query 141 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.995651
+Processing query 142 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.990332
+Processing query 143 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.982578
+Processing query 144 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.964915
+Processing query 145 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.999548
+Processing query 146 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.970192
+Processing query 147 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.971659
+Processing query 148 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.976385
+Processing query 149 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.974902
+Processing query 150 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.984108
+Processing query 151 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.976271
+Processing query 152 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.955069
+Processing query 153 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.982873
+Processing query 154 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.998179
+Processing query 155 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.997248
+Processing query 156 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.980092
+Processing query 157 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.994963
+Processing query 158 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=1
+Processing query 159 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.964744
+Processing query 160 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.966385
+Processing query 161 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.987913
+Processing query 162 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.994071
+Processing query 163 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.975697
+Processing query 164 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.992399
+Processing query 165 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.970192
+Processing query 166 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.977761
+Processing query 167 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=1
+Processing query 168 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.98189
+Processing query 169 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.959211
+Processing query 170 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.96619
+Processing query 171 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.986348
+Processing query 172 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.980787
+Processing query 173 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.987566
+Processing query 174 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.990835
+Processing query 175 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.993587
+Processing query 176 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.992017
+Processing query 177 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.964212
+Processing query 178 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.98533
+Processing query 179 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.980514
+Processing query 180 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.979009
+Processing query 181 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.963201
+Processing query 182 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.982725
+Processing query 183 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.983416
+Processing query 184 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.993387
+Processing query 185 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.975009
+Processing query 186 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.973734
+Processing query 187 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.986018
+Processing query 188 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.986706
+Processing query 189 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.976956
+Processing query 190 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.99544
+Processing query 191 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=1
+Processing query 192 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.956473
+Processing query 193 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.993587
+Processing query 194 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.950149
+Processing query 195 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.974532
+Processing query 196 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.992105
+Processing query 197 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.997494
+Processing query 198 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.991523
+Processing query 199 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.971235
+Processing query 200 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.984108
+Unable to parse more as there are unhandled errors:
+tomtom@release has invalid value "" at /s/chopin/k/grad/saira55/lib/meme-5.0.3/perl/CheckingSAX.pm line 44, <$fh> line 3.
+Warning: tomtom_xml_to_html exited abnormally and may have failed to create HTML output.
+Writing results to output directory 'results/final/CNN_L_REL_ATTN/single_d/ctf_5/E2/Motif_Analysis_Negative/tomtom'.
+Processing query 1 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.984108
+Processing query 2 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.997716
+Processing query 3 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.99681
+Processing query 4 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.993587
+Processing query 5 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=1
+Processing query 6 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.981341
+Processing query 7 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.962329
+Processing query 8 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.989279
+Processing query 9 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.993098
+Processing query 10 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.975449
+Processing query 11 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.998179
+Processing query 12 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.997248
+Processing query 13 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.957245
+Processing query 14 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.981625
+Processing query 15 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.987566
+Processing query 16 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.983721
+Processing query 17 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.99544
+Processing query 18 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.994071
+Processing query 19 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.992407
+Processing query 20 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.998864
+Processing query 21 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.997494
+Processing query 22 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.990147
+Processing query 23 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=1
+Processing query 24 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=1
+Processing query 25 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.975809
+Processing query 26 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.984799
+Processing query 27 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.988082
+Processing query 28 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.993387
+Processing query 29 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.993387
+Processing query 30 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=1
+Processing query 31 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.972945
+Processing query 32 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.979267
+Processing query 33 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.985118
+Processing query 34 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.974044
+Processing query 35 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.977433
+Processing query 36 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.997716
+Processing query 37 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.990332
+Processing query 38 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.998864
+Processing query 39 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.984799
+Processing query 40 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.987043
+Processing query 41 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.988434
+Processing query 42 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.986348
+Processing query 43 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.991333
+Processing query 44 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.990648
+Processing query 45 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.975676
+Processing query 46 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.98654
+Processing query 47 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.990648
+Processing query 48 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=1
+Processing query 49 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.987394
+Processing query 50 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.986182
+Processing query 51 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.99681
+Processing query 52 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.979529
+Processing query 53 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.965556
+Processing query 54 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.976734
+Processing query 55 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.989459
+Processing query 56 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.993587
+Processing query 57 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.978702
+Processing query 58 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.989279
+Processing query 59 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.989824
+Processing query 60 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.97394
+Processing query 61 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.979137
+Processing query 62 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=1
+Processing query 63 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.990835
+Processing query 64 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.994275
+Processing query 65 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.997716
+Processing query 66 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.98442
+Processing query 67 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.994275
+Processing query 68 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.983954
+Processing query 69 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.990147
+Processing query 70 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.98533
+Processing query 71 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.988594
+Processing query 72 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.960701
+Processing query 73 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.976036
+Processing query 74 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.971751
+Processing query 75 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.977884
+Processing query 76 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.998864
+Processing query 77 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.988771
+Processing query 78 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.981341
+Processing query 79 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.983954
+Processing query 80 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=1
+Processing query 81 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.98189
+Processing query 82 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.992702
+Processing query 83 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.996339
+Processing query 84 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.974426
+Processing query 85 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.991333
+Processing query 86 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.972446
+Processing query 87 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.99681
+Processing query 88 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.992407
+Processing query 89 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.989459
+Processing query 90 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.988594
+Processing query 91 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.987566
+Processing query 92 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.981341
+Processing query 93 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.989129
+Processing query 94 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.982033
+Processing query 95 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=1
+Processing query 96 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.997494
+Processing query 97 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.996125
+Processing query 98 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.997027
+Processing query 99 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.997494
+Processing query 100 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.996125
+Processing query 101 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.984642
+Processing query 102 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.982033
+Processing query 103 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.975922
+Processing query 104 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.99681
+Processing query 105 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.9765
+Processing query 106 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.976853
+Processing query 107 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.996125
+Processing query 108 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.990147
+Processing query 109 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.98533
+Processing query 110 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.998179
+Processing query 111 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.985983
+Processing query 112 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.992899
+Processing query 113 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.992702
+Processing query 114 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.985171
+Processing query 115 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.974321
+Processing query 116 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.998864
+Processing query 117 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.989459
+Processing query 118 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.972945
+Processing query 119 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=1
+Processing query 120 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.994071
+Processing query 121 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.988949
+Processing query 122 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.985817
+Processing query 123 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.983266
+Processing query 124 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.981625
+Processing query 125 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.997494
+Processing query 126 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.994071
+Processing query 127 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.998864
+Processing query 128 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.94739
+Processing query 129 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.982578
+Processing query 130 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.984108
+Processing query 131 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=1
+Processing query 132 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.994756
+Processing query 133 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=1
+Processing query 134 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.941678
+Processing query 135 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.976617
+Processing query 136 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.990648
+Processing query 137 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.986018
+Processing query 138 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.989459
+Processing query 139 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.974532
+Processing query 140 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.99681
+Processing query 141 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.986516
+Processing query 142 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.986874
+Processing query 143 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.981625
+Processing query 144 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.964434
+Processing query 145 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.983416
+Processing query 146 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.986706
+Processing query 147 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.966385
+Processing query 148 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.98065
+Processing query 149 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.987394
+Processing query 150 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.988434
+Processing query 151 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.980228
+Processing query 152 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.955753
+Processing query 153 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.980787
+Processing query 154 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.994481
+Processing query 155 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.991023
+Processing query 156 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.980092
+Processing query 157 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=1
+Processing query 158 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=1
+Processing query 159 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.971659
+Processing query 160 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.967022
+Processing query 161 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.964549
+Processing query 162 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.996339
+Processing query 163 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.990332
+Processing query 164 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.992702
+Processing query 165 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.982725
+Processing query 166 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.987394
+Processing query 167 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.992211
+Processing query 168 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.988771
+Processing query 169 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.955069
+Processing query 170 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.969049
+Processing query 171 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.985491
+Processing query 172 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.984642
+Processing query 173 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.988949
+Processing query 174 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.986874
+Processing query 175 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.99681
+Processing query 176 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.992017
+Processing query 177 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.968502
+Processing query 178 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.982324
+Processing query 179 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.987394
+Processing query 180 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.981748
+Processing query 181 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.969666
+Processing query 182 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.988594
+Processing query 183 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.986018
+Processing query 184 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.999092
+Processing query 185 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.975117
+Processing query 186 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.967797
+Processing query 187 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.988771
+Processing query 188 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.975697
+Processing query 189 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.980787
+Processing query 190 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.996125
+Processing query 191 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.99544
+Processing query 192 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.959239
+Processing query 193 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.991523
+Processing query 194 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.962715
+Processing query 195 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.992017
+Processing query 196 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.988949
+Processing query 197 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.997494
+Processing query 198 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.98964
+Processing query 199 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.953678
+Processing query 200 out of 200 
+Estimating pi_0 from all 1468 observed p-values.
+Estimating pi_0.
+Estimated pi_0=0.987738
+Unable to parse more as there are unhandled errors:
+tomtom@release has invalid value "" at /s/chopin/k/grad/saira55/lib/meme-5.0.3/perl/CheckingSAX.pm line 44, <$fh> line 3.
+Warning: tomtom_xml_to_html exited abnormally and may have failed to create HTML output.
+Test Loss: 0.585 and AUC: 0.74 
+
+batch number:  1
+batch number:  2
+batch number:  3
+batch number:  4
+batch number:  5
+batch number:  6
+batch number:  7
+batch number:  8
+batch number:  9
+batch number:  10
+batch number:  11
+batch number:  12
+batch number:  13
+batch number:  14
+batch number:  15
+batch number:  16
+batch number:  17
+batch number:  18
+batch number:  19
+batch number:  20
+batch number:  21
+batch number:  22
+batch number:  23
+batch number:  24
+batch number:  25
+batch number:  26
+batch number:  27
+batch number:  28
+batch number:  29
+batch number:  30
+batch number:  31
+batch number:  32
+batch number:  33
+batch number:  34
+batch number:  35
+batch number:  36
+batch number:  37
+batch number:  38
+batch number:  39
+batch number:  40
+batch number:  41
+batch number:  42
+batch number:  43
+batch number:  44
+batch number:  45
+batch number:  46
+(200, 4, 15)
+plot motif fig results/final/CNN_L_REL_ATTN/single_d/ctf_5/E2/Motif_Analysis
+Filter 0
+Filter 1
+Filter 2
+Filter 3
+Filter 4
+Filter 5
+Filter 6
+Filter 7
+Filter 8
+Filter 9
+Filter 10
+Filter 11
+Filter 12
+Filter 13
+Filter 14
+Filter 15
+Filter 16
+Filter 17
+Filter 18
+Filter 19
+Filter 20
+Filter 21
+Filter 22
+Filter 23
+Filter 24
+Filter 25
+Filter 26
+Filter 27
+Filter 28
+Filter 29
+Filter 30
+Filter 31
+Filter 32
+Filter 33
+Filter 34
+Filter 35
+Filter 36
+Filter 37
+Filter 38
+Filter 39
+Filter 40
+Filter 41
+Filter 42
+Filter 43
+Filter 44
+Filter 45
+Filter 46
+Filter 47
+Filter 48
+Filter 49
+Filter 50
+Filter 51
+Filter 52
+Filter 53
+Filter 54
+Filter 55
+Filter 56
+Filter 57
+Filter 58
+Filter 59
+Filter 60
+Filter 61
+Filter 62
+Filter 63
+Filter 64
+Filter 65
+Filter 66
+Filter 67
+Filter 68
+Filter 69
+Filter 70
+Filter 71
+Filter 72
+Filter 73
+Filter 74
+Filter 75
+Filter 76
+Filter 77
+Filter 78
+Filter 79
+Filter 80
+Filter 81
+Filter 82
+Filter 83
+Filter 84
+Filter 85
+Filter 86
+Filter 87
+Filter 88
+Filter 89
+Filter 90
+Filter 91
+Filter 92
+Filter 93
+Filter 94
+Filter 95
+Filter 96
+Filter 97
+Filter 98
+Filter 99
+Filter 100
+Filter 101
+Filter 102
+Filter 103
+Filter 104
+Filter 105
+Filter 106
+Filter 107
+Filter 108
+Filter 109
+Filter 110
+Filter 111
+Filter 112
+Filter 113
+Filter 114
+Filter 115
+Filter 116
+Filter 117
+Filter 118
+Filter 119
+Filter 120
+Filter 121
+Filter 122
+Filter 123
+Filter 124
+Filter 125
+Filter 126
+Filter 127
+Filter 128
+Filter 129
+Filter 130
+Filter 131
+Filter 132
+Filter 133
+Filter 134
+Filter 135
+Filter 136
+Filter 137
+Filter 138
+Filter 139
+Filter 140
+Filter 141
+Filter 142
+Filter 143
+Filter 144
+Filter 145
+Filter 146
+Filter 147
+Filter 148
+Filter 149
+Filter 150
+Filter 151
+Filter 152
+Filter 153
+Filter 154
+Filter 155
+Filter 156
+Filter 157
+Filter 158
+Filter 159
+Filter 160
+Filter 161
+Filter 162
+Filter 163
+Filter 164
+Filter 165
+Filter 166
+Filter 167
+Filter 168
+Filter 169
+Filter 170
+Filter 171
+Filter 172
+Filter 173
+Filter 174
+Filter 175
+Filter 176
+Filter 177
+Filter 178
+Filter 179
+Filter 180
+Filter 181
+Filter 182
+Filter 183
+Filter 184
+Filter 185
+Filter 186
+Filter 187
+Filter 188
+Filter 189
+Filter 190
+Filter 191
+Filter 192
+Filter 193
+Filter 194
+Filter 195
+Filter 196
+Filter 197
+Filter 198
+Filter 199
+results/final/CNN_L_REL_ATTN/single_d/ctf_5/E2/Motif_Analysis/tomtom/tomtom.txt /s/jawar/i/nobackup/Saira/motif_databases/Jaspar.meme
+(1014, 194, 200)
+batch number:  1
+batch number:  2
+batch number:  3
+batch number:  4
+batch number:  5
+batch number:  6
+batch number:  7
+batch number:  8
+batch number:  9
+batch number:  10
+batch number:  11
+batch number:  12
+batch number:  13
+batch number:  14
+batch number:  15
+batch number:  16
+batch number:  17
+batch number:  18
+batch number:  19
+batch number:  20
+batch number:  21
+batch number:  22
+batch number:  23
+batch number:  24
+batch number:  25
+batch number:  26
+batch number:  27
+batch number:  28
+batch number:  29
+batch number:  30
+batch number:  31
+batch number:  32
+batch number:  33
+batch number:  34
+batch number:  35
+batch number:  36
+batch number:  37
+batch number:  38
+batch number:  39
+batch number:  40
+batch number:  41
+batch number:  42
+batch number:  43
+batch number:  44
+batch number:  45
+batch number:  46
+(200, 4, 15)
+plot motif fig results/final/CNN_L_REL_ATTN/single_d/ctf_5/E2/Motif_Analysis_Negative
+Filter 0
+Filter 1
+Filter 2
+Filter 3
+Filter 4
+Filter 5
+Filter 6
+Filter 7
+Filter 8
+Filter 9
+Filter 10
+Filter 11
+Filter 12
+Filter 13
+Filter 14
+Filter 15
+Filter 16
+Filter 17
+Filter 18
+Filter 19
+Filter 20
+Filter 21
+Filter 22
+Filter 23
+Filter 24
+Filter 25
+Filter 26
+Filter 27
+Filter 28
+Filter 29
+Filter 30
+Filter 31
+Filter 32
+Filter 33
+Filter 34
+Filter 35
+Filter 36
+Filter 37
+Filter 38
+Filter 39
+Filter 40
+Filter 41
+Filter 42
+Filter 43
+Filter 44
+Filter 45
+Filter 46
+Filter 47
+Filter 48
+Filter 49
+Filter 50
+Filter 51
+Filter 52
+Filter 53
+Filter 54
+Filter 55
+Filter 56
+Filter 57
+Filter 58
+Filter 59
+Filter 60
+Filter 61
+Filter 62
+Filter 63
+Filter 64
+Filter 65
+Filter 66
+Filter 67
+Filter 68
+Filter 69
+Filter 70
+Filter 71
+Filter 72
+Filter 73
+Filter 74
+Filter 75
+Filter 76
+Filter 77
+Filter 78
+Filter 79
+Filter 80
+Filter 81
+Filter 82
+Filter 83
+Filter 84
+Filter 85
+Filter 86
+Filter 87
+Filter 88
+Filter 89
+Filter 90
+Filter 91
+Filter 92
+Filter 93
+Filter 94
+Filter 95
+Filter 96
+Filter 97
+Filter 98
+Filter 99
+Filter 100
+Filter 101
+Filter 102
+Filter 103
+Filter 104
+Filter 105
+Filter 106
+Filter 107
+Filter 108
+Filter 109
+Filter 110
+Filter 111
+Filter 112
+Filter 113
+Filter 114
+Filter 115
+Filter 116
+Filter 117
+Filter 118
+Filter 119
+Filter 120
+Filter 121
+Filter 122
+Filter 123
+Filter 124
+Filter 125
+Filter 126
+Filter 127
+Filter 128
+Filter 129
+Filter 130
+Filter 131
+Filter 132
+Filter 133
+Filter 134
+Filter 135
+Filter 136
+Filter 137
+Filter 138
+Filter 139
+Filter 140
+Filter 141
+Filter 142
+Filter 143
+Filter 144
+Filter 145
+Filter 146
+Filter 147
+Filter 148
+Filter 149
+Filter 150
+Filter 151
+Filter 152
+Filter 153
+Filter 154
+Filter 155
+Filter 156
+Filter 157
+Filter 158
+Filter 159
+Filter 160
+Filter 161
+Filter 162
+Filter 163
+Filter 164
+Filter 165
+Filter 166
+Filter 167
+Filter 168
+Filter 169
+Filter 170
+Filter 171
+Filter 172
+Filter 173
+Filter 174
+Filter 175
+Filter 176
+Filter 177
+Filter 178
+Filter 179
+Filter 180
+Filter 181
+Filter 182
+Filter 183
+Filter 184
+Filter 185
+Filter 186
+Filter 187
+Filter 188
+Filter 189
+Filter 190
+Filter 191
+Filter 192
+Filter 193
+Filter 194
+Filter 195
+Filter 196
+Filter 197
+Filter 198
+Filter 199
+results/final/CNN_L_REL_ATTN/single_d/ctf_5/E2/Motif_Analysis_Negative/tomtom/tomtom.txt /s/jawar/i/nobackup/Saira/motif_databases/Jaspar.meme
+(821, 194, 200)
+Positive and Negative Population:  1014 821
+generating sequence position information...
+Done!
+Done for Batch:  0 Sequences Done:  19 Time Taken: 1 seconds
+generating sequence position information...
+Done!
+Done for Batch:  1 Sequences Done:  44 Time Taken: 2 seconds
+generating sequence position information...
+Done!
+Done for Batch:  2 Sequences Done:  59 Time Taken: 1 seconds
+generating sequence position information...
+Done!
+Done for Batch:  3 Sequences Done:  81 Time Taken: 2 seconds
+generating sequence position information...
+Done!
+Done for Batch:  4 Sequences Done:  99 Time Taken: 1 seconds
+generating sequence position information...
+Done!
+Done for Batch:  5 Sequences Done:  122 Time Taken: 2 seconds
+generating sequence position information...
+Done!
+Done for Batch:  6 Sequences Done:  148 Time Taken: 2 seconds
+generating sequence position information...
+Done!
+Done for Batch:  7 Sequences Done:  170 Time Taken: 1 seconds
+generating sequence position information...
+Done!
+Done for Batch:  8 Sequences Done:  194 Time Taken: 2 seconds
+generating sequence position information...
+Done!
+Done for Batch:  9 Sequences Done:  213 Time Taken: 1 seconds
+generating sequence position information...
+Done!
+Done for Batch:  10 Sequences Done:  230 Time Taken: 1 seconds
+generating sequence position information...
+Done!
+Done for Batch:  11 Sequences Done:  258 Time Taken: 2 seconds
+generating sequence position information...
+Done!
+Done for Batch:  12 Sequences Done:  285 Time Taken: 2 seconds
+generating sequence position information...
+Done!
+Done for Batch:  13 Sequences Done:  304 Time Taken: 1 seconds
+generating sequence position information...
+Done!
+Done for Batch:  14 Sequences Done:  330 Time Taken: 2 seconds
+generating sequence position information...
+Done!
+Done for Batch:  15 Sequences Done:  349 Time Taken: 1 seconds
+generating sequence position information...
+Done!
+Done for Batch:  16 Sequences Done:  369 Time Taken: 1 seconds
+generating sequence position information...
+Done!
+Done for Batch:  17 Sequences Done:  387 Time Taken: 1 seconds
+generating sequence position information...
+Done!
+Done for Batch:  18 Sequences Done:  402 Time Taken: 1 seconds
+generating sequence position information...
+Done!
+Done for Batch:  19 Sequences Done:  423 Time Taken: 1 seconds
+generating sequence position information...
+Done!
+Done for Batch:  20 Sequences Done:  438 Time Taken: 1 seconds
+generating sequence position information...
+Done!
+Done for Batch:  21 Sequences Done:  467 Time Taken: 2 seconds
+generating sequence position information...
+Done!
+Done for Batch:  22 Sequences Done:  488 Time Taken: 1 seconds
+generating sequence position information...
+Done!
+Done for Batch:  23 Sequences Done:  508 Time Taken: 1 seconds
+generating sequence position information...
+Done!
+Done for Batch:  24 Sequences Done:  533 Time Taken: 2 seconds
+generating sequence position information...
+Done!
+Done for Batch:  25 Sequences Done:  557 Time Taken: 2 seconds
+generating sequence position information...
+Done!
+Done for Batch:  26 Sequences Done:  578 Time Taken: 2 seconds
+generating sequence position information...
+Done!
+Done for Batch:  27 Sequences Done:  593 Time Taken: 1 seconds
+generating sequence position information...
+Done!
+Done for Batch:  28 Sequences Done:  615 Time Taken: 1 seconds
+generating sequence position information...
+Done!
+Done for Batch:  29 Sequences Done:  635 Time Taken: 1 seconds
+generating sequence position information...
+Done!
+Done for Batch:  30 Sequences Done:  662 Time Taken: 2 seconds
+generating sequence position information...
+Done!
+Done for Batch:  31 Sequences Done:  679 Time Taken: 1 seconds
+generating sequence position information...
+Done!
+Done for Batch:  32 Sequences Done:  698 Time Taken: 1 seconds
+generating sequence position information...
+Done!
+Done for Batch:  33 Sequences Done:  718 Time Taken: 1 seconds
+generating sequence position information...
+Done!
+Done for Batch:  34 Sequences Done:  739 Time Taken: 1 seconds
+generating sequence position information...
+Done!
+Done for Batch:  35 Sequences Done:  754 Time Taken: 1 seconds
+generating sequence position information...
+Done!
+Done for Batch:  36 Sequences Done:  775 Time Taken: 1 seconds
+generating sequence position information...
+Done!
+Done for Batch:  37 Sequences Done:  802 Time Taken: 2 seconds
+generating sequence position information...
+Done!
+Done for Batch:  38 Sequences Done:  821 Time Taken: 1 seconds
+generating sequence position information...
+Done!
+Done for Batch:  39 Sequences Done:  848 Time Taken: 2 seconds
+generating sequence position information...
+Done!
+Done for Batch:  40 Sequences Done:  872 Time Taken: 2 seconds
+generating sequence position information...
+Done!
+Done for Batch:  41 Sequences Done:  898 Time Taken: 2 seconds
+generating sequence position information...
+Done!
+Done for Batch:  42 Sequences Done:  927 Time Taken: 2 seconds
+generating sequence position information...
+Done!
+Done for Batch:  43 Sequences Done:  950 Time Taken: 2 seconds
+generating sequence position information...
+Done!
+Done for Batch:  44 Sequences Done:  972 Time Taken: 2 seconds
+generating sequence position information...
+Done!
+Done for Batch:  45 Sequences Done:  994 Time Taken: 2 seconds
+generating sequence position information...
+Done!
+Done for Batch:  46 Sequences Done:  1014 Time Taken: 1 seconds
+generating sequence position information...
+Done!
+Done for Batch:  0 Sequences Done:  17 Time Taken: 1 seconds
+generating sequence position information...
+Done!
+Done for Batch:  1 Sequences Done:  35 Time Taken: 1 seconds
+generating sequence position information...
+Done!
+Done for Batch:  2 Sequences Done:  51 Time Taken: 1 seconds
+generating sequence position information...
+Done!
+Done for Batch:  3 Sequences Done:  70 Time Taken: 1 seconds
+generating sequence position information...
+Done!
+Done for Batch:  4 Sequences Done:  83 Time Taken: 1 seconds
+generating sequence position information...
+Done!
+Done for Batch:  5 Sequences Done:  101 Time Taken: 1 seconds
+generating sequence position information...
+Done!
+Done for Batch:  6 Sequences Done:  115 Time Taken: 1 seconds
+generating sequence position information...
+Done!
+Done for Batch:  7 Sequences Done:  127 Time Taken: 1 seconds
+generating sequence position information...
+Done!
+Done for Batch:  8 Sequences Done:  141 Time Taken: 1 seconds
+generating sequence position information...
+Done!
+Done for Batch:  9 Sequences Done:  166 Time Taken: 1 seconds
+generating sequence position information...
+Done!
+Done for Batch:  10 Sequences Done:  193 Time Taken: 1 seconds
+generating sequence position information...
+Done!
+Done for Batch:  11 Sequences Done:  214 Time Taken: 1 seconds
+generating sequence position information...
+Done!
+Done for Batch:  12 Sequences Done:  230 Time Taken: 1 seconds
+generating sequence position information...
+Done!
+Done for Batch:  13 Sequences Done:  248 Time Taken: 1 seconds
+generating sequence position information...
+Done!
+Done for Batch:  14 Sequences Done:  261 Time Taken: 1 seconds
+generating sequence position information...
+Done!
+Done for Batch:  15 Sequences Done:  277 Time Taken: 1 seconds
+generating sequence position information...
+Done!
+Done for Batch:  16 Sequences Done:  298 Time Taken: 1 seconds
+generating sequence position information...
+Done!
+Done for Batch:  17 Sequences Done:  314 Time Taken: 1 seconds
+generating sequence position information...
+Done!
+Done for Batch:  18 Sequences Done:  333 Time Taken: 1 seconds
+generating sequence position information...
+Done!
+Done for Batch:  19 Sequences Done:  352 Time Taken: 1 seconds
+generating sequence position information...
+Done!
+Done for Batch:  20 Sequences Done:  370 Time Taken: 1 seconds
+generating sequence position information...
+Done!
+Done for Batch:  21 Sequences Done:  392 Time Taken: 1 seconds
+generating sequence position information...
+Done!
+Done for Batch:  22 Sequences Done:  410 Time Taken: 1 seconds
+generating sequence position information...
+Done!
+Done for Batch:  23 Sequences Done:  423 Time Taken: 1 seconds
+generating sequence position information...
+Done!
+Done for Batch:  24 Sequences Done:  441 Time Taken: 1 seconds
+generating sequence position information...
+Done!
+Done for Batch:  25 Sequences Done:  465 Time Taken: 1 seconds
+generating sequence position information...
+Done!
+Done for Batch:  26 Sequences Done:  481 Time Taken: 1 seconds
+generating sequence position information...
+Done!
+Done for Batch:  27 Sequences Done:  505 Time Taken: 1 seconds
+generating sequence position information...
+Done!
+Done for Batch:  28 Sequences Done:  526 Time Taken: 1 seconds
+generating sequence position information...
+Done!
+Done for Batch:  29 Sequences Done:  540 Time Taken: 1 seconds
+generating sequence position information...
+Done!
+Done for Batch:  30 Sequences Done:  550 Time Taken: 1 seconds
+generating sequence position information...
+Done!
+Done for Batch:  31 Sequences Done:  572 Time Taken: 1 seconds
+generating sequence position information...
+Done!
+Done for Batch:  32 Sequences Done:  589 Time Taken: 1 seconds
+generating sequence position information...
+Done!
+Done for Batch:  33 Sequences Done:  609 Time Taken: 1 seconds
+generating sequence position information...
+Done!
+Done for Batch:  34 Sequences Done:  621 Time Taken: 1 seconds
+generating sequence position information...
+Done!
+Done for Batch:  35 Sequences Done:  638 Time Taken: 1 seconds
+generating sequence position information...
+Done!
+Done for Batch:  36 Sequences Done:  661 Time Taken: 1 seconds
+generating sequence position information...
+Done!
+Done for Batch:  37 Sequences Done:  680 Time Taken: 1 seconds
+generating sequence position information...
+Done!
+Done for Batch:  38 Sequences Done:  696 Time Taken: 1 seconds
+generating sequence position information...
+Done!
+Done for Batch:  39 Sequences Done:  713 Time Taken: 1 seconds
+generating sequence position information...
+Done!
+Done for Batch:  40 Sequences Done:  729 Time Taken: 1 seconds
+generating sequence position information...
+Done!
+Done for Batch:  41 Sequences Done:  747 Time Taken: 1 seconds
+generating sequence position information...
+Done!
+Done for Batch:  42 Sequences Done:  760 Time Taken: 1 seconds
+generating sequence position information...
+Done!
+Done for Batch:  43 Sequences Done:  773 Time Taken: 1 seconds
+generating sequence position information...
+Done!
+Done for Batch:  44 Sequences Done:  788 Time Taken: 1 seconds
+generating sequence position information...
+Done!
+Done for Batch:  45 Sequences Done:  804 Time Taken: 1 seconds
+generating sequence position information...
+Done!
+Done for Batch:  46 Sequences Done:  821 Time Taken: 1 seconds
+0.39442873760553976
+Done for Attention Cutoff Value:  0.39442873760553976
+python satori.py data/ToyData/10_datasets/ctf_5 modelsparam/best_hyperparams_relative_ctf1.txt -w 8 --outDir results/final/CNN_L_REL_ATTN/single_d/ctf_5/E2 --mode train -v -s --background negative --intseqlimit 5000 --numlabels 2 --motifanalysis --interactions --method SATORI --attrbatchsize 32 --deskload --tomtompath /s/jawar/i/nobackup/Saira/meme/src/tomtom --database /s/jawar/i/nobackup/Saira/motif_databases/Jaspar.meme

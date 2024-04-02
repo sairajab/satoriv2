@@ -3,8 +3,8 @@ import numpy as np
 import os
 import pickle
 import torch
-
-from Bio.SeqUtils import GC
+import time
+from Bio.SeqUtils import gc_fraction as GC
 from captum.attr import IntegratedGradients
 from multiprocessing import Pool
 from scipy.stats import mannwhitneyu
@@ -78,7 +78,7 @@ def process_motif(seq,srcPos,fltrSize,seq_GC):
 def one_hot_encode(seq):
 	mapping = dict(zip("ACGT", range(4)))    
 	seq2 = [mapping[i] for i in seq]
-	return np.eye(4)[seq2].T.astype(np.long)	
+	return np.eye(4)[seq2].T.astype(np.longlong)	
 
 
 def generate_reference(seqLen, seq_GC=0.46):
@@ -156,7 +156,8 @@ def process_FIS(experiment_blob, intr_dir, params, argSpace, Filter_Intr_Keys=No
 
 	num_labels = argSpace.numLabels
 	pos_score_cutoff = argSpace.scoreCutoff
-	net = AttentionNet(argSpace, params, device=device, genPAttn=False).to(device)
+	net = AttentionNet(argSpace, params, device=device,seq_len=600 ,genPAttn=False).to(device)
+	print(net, argSpace)
 	try:    
 	    checkpoint = torch.load(saved_model_dir+'/model')
 	    net.load_state_dict(checkpoint['model_state_dict'])
@@ -175,9 +176,9 @@ def process_FIS(experiment_blob, intr_dir, params, argSpace, Filter_Intr_Keys=No
 	else:
 		dl = IntegratedGradients(model_wrapper)
 
-	num_filters = params['CNN_filters']
+	num_filters = params['CNN_filters'][0]
 	CNNfirstpool = params['CNN_poolsize'] 
-	CNNfiltersize = params['CNN_filtersize']
+	CNNfiltersize = params['CNN_filtersize'][0]
 	batchSize = params['batch_size']
 	#GC_content of the train set sequences
 	GC_content = GC(''.join(train_loader.dataset.df_seq_final['sequence'][train_indices].values))/100 #0.46 #argSpace.gcContent
@@ -189,7 +190,10 @@ def process_FIS(experiment_blob, intr_dir, params, argSpace, Filter_Intr_Keys=No
 	Filter_Intr_Pos = np.ones((len(Filter_Intr_Keys),numExamples)).astype(int)*-1
 
 	col_index = 0
+ 
+	
 	for batch_idx, batch in enumerate(test_loader):
+		start_time = time.time()
 		if col_index >= numExamples:
 				break
 
@@ -353,9 +357,13 @@ def process_FIS(experiment_blob, intr_dir, params, argSpace, Filter_Intr_Keys=No
 						Filter_Intr_Attn[row_index][col_index] = abs(FIS) #ideally we shouldn't take absolute but to compare it to SATORI, we need the abs
 						Filter_Intr_Pos[row_index][col_index] = pos_tuple_sub[subsize]
 			col_index += 1
+   			
 			print('batch: ',batch_idx,'example: ',i)
 			if col_index >= numExamples:
 				break
+		end_time = time.time()
+		print('batch: ',batch_idx, "Time Taken: %d seconds"%round(end_time-start_time))
+
 
 	if not for_background:
 		with open(intr_dir+'/interaction_keys_dict.pckl','wb') as f:
@@ -410,6 +418,7 @@ def analyze_motif_interactions(argSpace, motif_dir, motif_dir_neg, intr_dir, plo
 				continue
 		Bg_MaxMean = np.asarray(Bg_MaxMean)
 		Main_MaxMean = np.asarray(Main_MaxMean)
+		print("HELLO ", Main_MaxMean.shape)
 
 		plt.hist(Main_MaxMean[:,0],bins=20,color='g',label='main')
 		plt.hist(Bg_MaxMean[:,0],bins=20,color='r',alpha=0.5,label='background')
@@ -497,7 +506,7 @@ def infer_intr_FIS(experiment_blob, params, argSpace, device=None):
 	intr_dir = output_dir + '/Interactions_FIS'
 
 	if not os.path.exists(intr_dir+'/interaction_keys_dict.pckl'):
-		Filter_Intr_Keys = get_intr_filter_keys(params['CNN_filters']) 
+		Filter_Intr_Keys = get_intr_filter_keys(params['CNN_filters'][0]) 
 	if not os.path.exists(intr_dir+'/main_results_raw.pckl'):
 		tp_pos_dict = process_FIS(experiment_blob, intr_dir, params, argSpace, Filter_Intr_Keys=Filter_Intr_Keys, device=device)
 		_ = process_FIS(experiment_blob, intr_dir, params, argSpace, Filter_Intr_Keys=Filter_Intr_Keys, device=device, tp_pos_dict=tp_pos_dict, for_background=True)
