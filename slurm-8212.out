@@ -1,172 +1,0 @@
-cuda:0
-Calling ... 0
-test/validation split val: 0.10
-{'input_channels': 4, 'use_embeddings': False, 'embd_window': 5, 'embd_size': 50, 'embd_kmersize': 3, 'num_multiheads': 8, 'singlehead_size': 32, 'multihead_size': 100, 'use_pooling': False, 'pooling_val': 4, 'readout_strategy': 'normalize', 'use_RNN': False, 'RNN_hiddensize': 100, 'use_CNN': True, 'CNN1_useexponential': False, 'use_posEnc': False, 'CNN_filters': [256], 'CNN_filtersize': [13], 'use_CNNpool': True, 'CNN_poolsize': 6, 'CNN_padding': 6, 'get_CNNout': True, 'get_seqs': True, 'get_pattn': True, 'batch_size': 256, 'num_epochs': 40, 'relativeAttn': False, 'Learnable_relativeAttn': False, 'mixed_attn': False, 'mixed_attn_config': '0.25', 'sqrt_dist': False, 'num_attnlayers': 1, 'entropy_loss': False, 'entropy_reg_value': '0.01', 'residual_connection': True, 'exp_name': 'arabidopsis', 'multiple_linear': False, 'linear_layer_size': 512, 'cnn_attention_block': False}
-600 100
-█ |----------------------------------------| 0.00% [0/40 00:00<?]Train Results (Loss and AUC):  0.665675644199224 0.5138100396959424
-Best Validation Loss: 0.623 and AUC: 0.54 
-
-Epoch-1 lr: 0.001 valid_loss: 0.623093175476995
- |█---------------------------------------| 2.50% [1/40 00:56<36:39]Train Results (Loss and AUC):  0.6216155804789629 0.523642014792999
-Best Validation Loss: 0.607 and AUC: 0.55 
-
-Epoch-2 lr: 0.001 valid_loss: 0.6065922204790444
- |██--------------------------------------| 5.00% [2/40 01:54<36:19]Train Results (Loss and AUC):  0.6111744176676345 0.5306057279251424
-Best Validation Loss: 0.599 and AUC: 0.55 
-
-Epoch-3 lr: 0.001 valid_loss: 0.599083466776486
- |███-------------------------------------| 7.50% [3/40 02:51<35:17]Train Results (Loss and AUC):  0.6055997262185223 0.5347429938848327
-Best Validation Loss: 0.594 and AUC: 0.56 
-
-Epoch-4 lr: 0.001 valid_loss: 0.5942605065888372
- |████------------------------------------| 10.00% [4/40 03:47<34:09]Train Results (Loss and AUC):  0.6018544617128986 0.5392959291179544
-Best Validation Loss: 0.591 and AUC: 0.56 
-
-Epoch-5 lr: 0.001 valid_loss: 0.5909582551183372
- |█████-----------------------------------| 12.50% [5/40 04:44<33:12]Train Results (Loss and AUC):  0.5992627333162168 0.5435703592054582
-Best Validation Loss: 0.589 and AUC: 0.56 
-
-Epoch-6 lr: 0.001 valid_loss: 0.588627907736548
- |██████----------------------------------| 15.00% [6/40 05:40<32:06]Train Results (Loss and AUC):  0.5972693301577425 0.5468525547204751
-Best Validation Loss: 0.587 and AUC: 0.57 
-
-Epoch-7 lr: 0.001 valid_loss: 0.5865100087790653
- |███████---------------------------------| 17.50% [7/40 06:36<31:10]Train Results (Loss and AUC):  0.59559558875571 0.5492945107739056
-Best Validation Loss: 0.585 and AUC: 0.57 
-
-Epoch-8 lr: 0.001 valid_loss: 0.5850411324665464
- |████████--------------------------------| 20.00% [8/40 07:33<30:15]Train Results (Loss and AUC):  0.5943610212833584 0.5530041179518078
-Best Validation Loss: 0.584 and AUC: 0.57 
-
-Epoch-9 lr: 0.001 valid_loss: 0.5837146927570475
- |█████████-------------------------------| 22.50% [9/40 08:31<29:20]Train Results (Loss and AUC):  0.5931356672053685 0.5552966853068271
-Best Validation Loss: 0.582 and AUC: 0.58 
-
-Epoch-10 lr: 0.001 valid_loss: 0.5821180693034468
- |██████████------------------------------| 25.00% [10/40 09:27<28:23]Train Results (Loss and AUC):  0.5922329044649017 0.5573190302055916
-Best Validation Loss: 0.581 and AUC: 0.58 
-
-Epoch-11 lr: 0.001 valid_loss: 0.5809073037114637
- |███████████-----------------------------| 27.50% [11/40 10:22<27:21]Train Results (Loss and AUC):  0.5914815019640288 0.5605434121396095
-Best Validation Loss: 0.580 and AUC: 0.58 
-
-Epoch-12 lr: 0.001 valid_loss: 0.5801663707042563
- |████████████----------------------------| 30.00% [12/40 11:19<26:26]Train Results (Loss and AUC):  0.5908726768432258 0.5626134871883147
-Best Validation Loss: 0.579 and AUC: 0.58 
-
-Epoch-13 lr: 0.001 valid_loss: 0.5791720162177908
- |█████████████---------------------------| 32.50% [13/40 12:16<25:28]Train Results (Loss and AUC):  0.5902509233982266 0.5651438060014351
-Best Validation Loss: 0.579 and AUC: 0.58 
-
-Epoch-14 lr: 0.001 valid_loss: 0.5789408426860283
- |██████████████--------------------------| 35.00% [14/40 13:15<24:37]Train Results (Loss and AUC):  0.5897278606635818 0.5672130758913425
-Best Validation Loss: 0.578 and AUC: 0.58 
-
-Epoch-15 lr: 0.001 valid_loss: 0.5782963253300766
- |███████████████-------------------------| 37.50% [15/40 14:14<23:44]Train Results (Loss and AUC):  0.5893506510063302 0.568995616807722
-Best Validation Loss: 0.578 and AUC: 0.59 
-
-Epoch-16 lr: 0.001 valid_loss: 0.5777588342798168
- |████████████████------------------------| 40.00% [16/40 15:10<22:46]Train Results (Loss and AUC):  0.5887667094177442 0.5706828646172193
-Best Validation Loss: 0.577 and AUC: 0.59 
-
-Epoch-17 lr: 0.001 valid_loss: 0.5770186422200039
- |█████████████████-----------------------| 42.50% [17/40 16:09<21:51]Train Results (Loss and AUC):  0.5884800571228813 0.5717269581902245
-Best Validation Loss: 0.577 and AUC: 0.59 
-
-Epoch-18 lr: 0.001 valid_loss: 0.576660266210293
- |██████████████████----------------------| 45.00% [18/40 17:06<20:54]Train Results (Loss and AUC):  0.5879804358973524 0.5741575442780699
-Best Validation Loss: 0.576 and AUC: 0.59 
-
-Epoch-19 lr: 0.001 valid_loss: 0.5763706657393225
- |███████████████████---------------------| 47.50% [19/40 18:04<19:58]Train Results (Loss and AUC):  0.5876470742819135 0.5757738267013168
-Best Validation Loss: 0.576 and AUC: 0.59 
-
-Epoch-20 lr: 0.001 valid_loss: 0.5757803012584818
- |████████████████████--------------------| 50.00% [20/40 19:01<19:01]Train Results (Loss and AUC):  0.5872308747451193 0.5775594669826777
-Best Validation Loss: 0.575 and AUC: 0.59 
-
-Epoch-21 lr: 0.001 valid_loss: 0.5753210392491571
- |█████████████████████-------------------| 52.50% [21/40 19:57<18:03]Train Results (Loss and AUC):  0.5868324542761872 0.5780894510828325
-Best Validation Loss: 0.575 and AUC: 0.59 
-
-Epoch-22 lr: 0.001 valid_loss: 0.5748228358811346
- |██████████████████████------------------| 55.00% [22/40 20:55<17:07]Train Results (Loss and AUC):  0.5864408069925758 0.5800797676941298
-Best Validation Loss: 0.574 and AUC: 0.59 
-
-Epoch-23 lr: 0.001 valid_loss: 0.574410251502333
- |███████████████████████-----------------| 57.50% [23/40 21:53<16:10]Train Results (Loss and AUC):  0.5859101005378199 0.582074334154998
-Best Validation Loss: 0.574 and AUC: 0.60 
-
-Epoch-24 lr: 0.001 valid_loss: 0.573983293155144
- |████████████████████████----------------| 60.00% [24/40 22:51<15:14]Train Results (Loss and AUC):  0.5855758011085281 0.5832652557236382
-Best Validation Loss: 0.573 and AUC: 0.60 
-
-Epoch-25 lr: 0.001 valid_loss: 0.5733673233410408
- |█████████████████████████---------------| 62.50% [25/40 23:49<14:17]Train Results (Loss and AUC):  0.5850416923285554 0.5846159557636459
-Best Validation Loss: 0.573 and AUC: 0.60 
-
-Epoch-26 lr: 0.001 valid_loss: 0.5728036843497177
- |██████████████████████████--------------| 65.00% [26/40 24:46<13:20]Train Results (Loss and AUC):  0.5844918955037522 0.5864913313502577
-Best Validation Loss: 0.573 and AUC: 0.60 
-
-Epoch-27 lr: 0.001 valid_loss: 0.5725043313256626
- |███████████████████████████-------------| 67.50% [27/40 25:43<12:23]Train Results (Loss and AUC):  0.584016893043027 0.5869928250177208
-Best Validation Loss: 0.572 and AUC: 0.60 
-
-Epoch-28 lr: 0.001 valid_loss: 0.572167989508859
- |████████████████████████████------------| 70.00% [28/40 26:43<11:27]Train Results (Loss and AUC):  0.583556388580748 0.5885343598625754
-Best Validation Loss: 0.571 and AUC: 0.60 
-
-Epoch-29 lr: 0.001 valid_loss: 0.5711995342682148
- |█████████████████████████████-----------| 72.50% [29/40 27:42<10:30]Train Results (Loss and AUC):  0.5828602823065074 0.5905093638977204
-Best Validation Loss: 0.570 and AUC: 0.60 
-
-Epoch-30 lr: 0.001 valid_loss: 0.5701679166021019
- |██████████████████████████████----------| 75.00% [30/40 28:38<09:32]Train Results (Loss and AUC):  0.5823893767058081 0.591488602054928
-Best Validation Loss: 0.570 and AUC: 0.60 
-
-Epoch-31 lr: 0.001 valid_loss: 0.5700780358807794
- |███████████████████████████████---------| 77.50% [31/40 29:35<08:35]Train Results (Loss and AUC):  0.5819021788277852 0.5927109197291776
-Best Validation Loss: 0.569 and AUC: 0.60 
-
-Epoch-32 lr: 0.001 valid_loss: 0.5689886304838904
- |████████████████████████████████--------| 80.00% [32/40 30:31<07:37]Train Results (Loss and AUC):  0.5814443340628955 0.5943639471777171
-Best Validation Loss: 0.569 and AUC: 0.60 
-
-Epoch-33 lr: 0.001 valid_loss: 0.5687006732513165
- |█████████████████████████████████-------| 82.50% [33/40 31:29<06:40]Train Results (Loss and AUC):  0.580843490336586 0.5951320051395335
-Best Validation Loss: 0.568 and AUC: 0.60 
-
-Epoch-34 lr: 0.001 valid_loss: 0.5682868618389656
- |██████████████████████████████████------| 85.00% [34/40 32:28<05:43]Train Results (Loss and AUC):  0.5802192616360382 0.5960865943530052
-Best Validation Loss: 0.567 and AUC: 0.61 
-
-Epoch-35 lr: 0.001 valid_loss: 0.5674697006570881
- |███████████████████████████████████-----| 87.50% [35/40 33:23<04:46]Train Results (Loss and AUC):  0.5797029106913718 0.5972238533507803
-Best Validation Loss: 0.567 and AUC: 0.61 
-
-Epoch-36 lr: 0.001 valid_loss: 0.5670750583040303
- |████████████████████████████████████----| 90.00% [36/40 34:21<03:49]Train Results (Loss and AUC):  0.5791215602420431 0.5988669194924986
-Best Validation Loss: 0.567 and AUC: 0.61 
-
-Epoch-37 lr: 0.001 valid_loss: 0.5665881983165083
- |█████████████████████████████████████---| 92.50% [37/40 35:17<02:51]Train Results (Loss and AUC):  0.5784748112183272 0.5998652923867472
-Best Validation Loss: 0.566 and AUC: 0.61 
-
-Epoch-38 lr: 0.001 valid_loss: 0.5663391629169727
- |██████████████████████████████████████--| 95.00% [38/40 36:16<01:54]Train Results (Loss and AUC):  0.5782414802665874 0.6009371619499355
-Best Validation Loss: 0.566 and AUC: 0.61 
-
-Epoch-39 lr: 0.001 valid_loss: 0.5657327719803514
- |███████████████████████████████████████-| 97.50% [39/40 37:13<00:57]Train Results (Loss and AUC):  0.5777290089959238 0.6014356662289675
-Best Validation Loss: 0.565 and AUC: 0.61 
-
-Epoch-40 lr: 0.001 valid_loss: 0.5654184941587777
- |████████████████████████████████████████| 100.00% [40/40 38:11<00:00]Test Loss and mean AUC:  0.5712196186736778 0.6046313371485056
-Traceback (most recent call last):
-  File "/s/chromatin/p/nobackup/Saira/original/satori/satori.py", line 218, in <module>
-    main()
-  File "/s/chromatin/p/nobackup/Saira/original/satori/satori.py", line 169, in main
-    raise Exception("Please extract motifs from the network outputs first (hint: use --motifanalysis)")
-Exception: Please extract motifs from the network outputs first (hint: use --motifanalysis)
