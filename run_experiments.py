@@ -1,5 +1,5 @@
 import os
-from analyze_motif_interaction import *
+from evaluate_motif_interaction import *
 import numpy as np
 import subprocess
 import pandas

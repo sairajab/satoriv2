@@ -9,7 +9,7 @@ import numpy as np
 from einops.layers.torch import Rearrange
 from torch import nn, einsum
 import torch.nn.init as init
-from satori.sei_model import Sei_light, BSplineTransformation, Sei_model2
+from satori.sei_model import Sei_light, BSplineTransformation
 
 
 class CNNAttentionBlock(nn.Module):
