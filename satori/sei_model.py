@@ -186,11 +186,6 @@ class Sei_light(nn.Module):
                 nn.Dropout(p=0.5),
                 BSplineTransformation(self._spline_df, scaled=False))
 
-        # self.classifier = nn.Sequential(
-        #     nn.Linear(960 * self._spline_df, n_genomic_features),
-        #     nn.ReLU(inplace=True),
-        #     nn.Linear(n_genomic_features, n_genomic_features),
-        #     nn.Sigmoid())
 
     def forward(self, x):
         """Forward propagation of a batch.
@@ -223,60 +218,6 @@ class Sei_light(nn.Module):
             return reshape_out
             
         return out
-
-
-class Sei_model2(nn.Module):
-    def __init__(self, input_size, sequence_length=4096, n_genomic_features=21907):
-        super(Sei_model2, self).__init__()
-
-        self.conv1 = nn.Sequential(
-            nn.Conv1d(input_size, 480, kernel_size=9, padding=4),
-            nn.BatchNorm1d(num_features=480),
-            nn.ReLU(inplace=True),
-            nn.Conv1d(480, 480, kernel_size=9, padding=4),
-            nn.BatchNorm1d(num_features=480),
-            nn.ReLU(inplace=True))
-
-        self.dconv1 = nn.Sequential(
-            nn.Dropout(p=0.4),
-            nn.Conv1d(480, 480, kernel_size=5, dilation=2, padding=4),
-            nn.BatchNorm1d(num_features=480),
-            nn.ReLU(inplace=True))
-        self.dconv2 = nn.Sequential(
-            nn.Dropout(p=0.4),
-            nn.Conv1d(480, 480, kernel_size=5, dilation=4, padding=8),
-            nn.BatchNorm1d(num_features=480),
-            nn.ReLU(inplace=True))
-
-        self._spline_df = int(128/8)
-        self.spline_tr = nn.Sequential(
-            nn.Dropout(p=0.5),
-            BSplineTransformation(self._spline_df, scaled=False))
-
-        # self.classifier = nn.Sequential(
-        #     nn.Linear(960 * self._spline_df, n_genomic_features),
-        #     nn.ReLU(inplace=True),
-        #     nn.Linear(n_genomic_features, n_genomic_features),
-        #     nn.Sigmoid())
-
-    def forward(self, x):
-        """Forward propagation of a batch.
-        """
-        out1 = self.conv1(x)
-
-        dconv_out1 = self.dconv1(out1)
-        cat_out1 = out1 + dconv_out1
-
-        dconv_out2 = self.dconv2(cat_out1)
-        out = cat_out1 + dconv_out2
-
-        spline_out = self.spline_tr(out)
-
-        # print(spline_out.shape)
-        reshape_out = spline_out.view(
-            spline_out.size(0), 480 * self._spline_df)
-        # predict = self.classifier(reshape_out)
-        return reshape_out
 
 
 class Sei(nn.Module):

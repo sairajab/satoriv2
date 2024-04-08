@@ -37,5 +37,5 @@ multiple_linear|False| #number of linear layers after attention layer
 exp_name|arabidopsis|#name of experiment
 cnn_attention_block|False|
 linear_layer_size|512|
-sei|True|#use sei after attention
+sei|False|#use sei after attention
 

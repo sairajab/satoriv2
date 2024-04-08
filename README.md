@@ -25,7 +25,7 @@ and for motif analysis:
 ## Installation
 1. Download SATORI (via git clone):
 ```
-git clone git@github.com:fahadahaf/satori.git satori
+git clone git@github.com:sairajab/satoriv2.git satori
 ```
 2. Navigate to the cloned directory:
 ```
