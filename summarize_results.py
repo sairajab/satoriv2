@@ -3,7 +3,7 @@ import numpy as np
 from glob import glob
 import os
 def write_res(info_dict, auc, output_folder, th, method = "satori", summarize ="mean"):
-    #print(info_dict[0])
+
     print(output_folder)
     
     if summarize == "mean":
@@ -135,15 +135,13 @@ if __name__ == "__main__":
     
     print("Hello")
     
-    f = "results/newdata/ctf_80pairs_eq1/"
-    exclude = ["entropy_selection", "other_exps"]
+    f = "results/Data-40/"
 
     exps = glob(f + "*")
     print(exps)
     
     for exp in exps:
         if os.path.isdir(exp):
-            if exclude[0] not in exp and exclude[1] not in exp:
                 read_results_best(exp)
         
     combine_res(f)

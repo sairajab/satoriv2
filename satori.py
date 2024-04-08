@@ -15,8 +15,7 @@ from satori.process_attention_mh import infer_intr_attention as mh_infer_intr_at
 from satori.process_attention import infer_intr_attention
 from satori.process_fis import infer_intr_FIS
 from satori.utils import get_params_dict, annotate_motifs
-from model_selection import Calibration
-from analyze_motif_interaction import *
+from evaluate_motif_interaction import *
 ####################################################################################################################
 ##################################--------------Argument Parsing--------------######################################
 def parseArgs():
@@ -209,14 +208,14 @@ def main():
 
         print("DONE!!!")
 
-def hyperparameter_selection():
-
-    arg_space = parseArgs()
-    
-
-    best_Res = Calibration(arg_space)
-
-    print(best_Res)
+#def hyperparameter_selection():
+#
+#    arg_space = parseArgs()
+#    
+#
+#    best_Res = Calibration(arg_space)
+#
+#    print(best_Res)
 
 
 if __name__ == "__main__":                 

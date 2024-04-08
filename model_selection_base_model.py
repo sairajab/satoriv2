@@ -84,23 +84,6 @@ def Calibration(arg_space):
     params['mixed_attn'] = False
     params['mixed_attn_config'] = 0.25
 
-
-
-        
-    # num_multiheads|4#numMultiHeads #8,4
-    # singlehead_size|64#SingleHeadSize #32
-    # multihead_size|100#MultiHeadSize
-    # CNN1_useexponential|False#use Exponential function as an activation in the first CNN layer (ReLU is used if False)
-    # CNN_filters|[200]#number of CNN layer filters
-    # CNN_filtersize|[13]#size of the CNN filter
-    # batch_size|256#batch size
-    # num_epochs|10#number of epochs
-    # relativeAttn|False#Use relativeAttn or not
-    # Learnable_relativeAttn|False#Learn relativeAttn or not
-    # mixed_attn|False#Mix attention or nor
-    # mixed_attn_config|0.25#How much use Relative Attention
-    # num_attnlayers|1#number of attention layers
-    # entropy_loss|True#include entropy loss
     # entropy_reg_value|0.01#entropy regularization value
     epochs = [30, 40, 50, 60]
     attn_type = [True, False] #true for relative attn
@@ -144,18 +127,6 @@ def Calibration(arg_space):
 
                     train_loader, train_indices, test_loader, test_indices, valid_loader, valid_indices, output_dir = load_datasets(arg_space, params['batch_size'])
 
-
-                    # RNN_hidden_size_list=[20,50,80,100]
-                    # RNN_hidden_size=random.choice(RNN_hidden_size_list)
-                    # dropoutList=[0,0.15,0.3,0.45,0.6] 
-                    # dropprob=random.choice(dropoutList)
-                    # hidden_list=[True,False]
-                    # hidden=random.choice(hidden_list)
-                    # xavier_List=[True,True,False] 
-                    # xavier=random.choice(xavier_List)
-                    # hidden_size_list=[32,64]
-                    # hidden_size=random.choice(hidden_size_list)
-                    optim_list=['SGD','Adagrad','Adam']
                     optim=random.choice(optim_list)
                     learning_rate=logsampler(0.005,0.5) 
                     momentum_rate=sqrtsampler(0.95,0.99)  
