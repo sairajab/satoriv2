@@ -1,11 +1,11 @@
 # SATORI v0.2
-**SATORI** is a **S**elf-**AT**tenti**O**n based deep learning model that captures **R**egulatory element **I**nteractions in genomic sequences. It can be used to infer a global landscape of interactions in a given genomic dataset, with a minimal post-processing step.
+**SATORI V2** is based on **S**elf-**AT**tenti**O**n based deep learning model that captures **R**egulatory element **I**nteractions in genomic sequences. It can be used to infer a global landscape of interactions in a given genomic dataset, with a minimal post-processing step. This repository contains code for extensive evaluation of self-attention layer in order to predict feature interactions.
 
-## Manuscript
+## Original Manuscript
 Fahad Ullah, Asa Ben-Hur, A self-attention model for inferring cooperativity between regulatory features, Nucleic Acids Research, 2021;, gkab349, [https://doi.org/10.1093/nar/gkab349](https://doi.org/10.1093/nar/gkab349)
 
 ## Dependency
-**SATORI** is written in python 3. The following python packages are required:  
+**SATORI V2** is written in python 3. The following python packages are required:  
 [biopython (version 1.75)](https://biopython.org)  
 [captum (version 0.2.0)](https://captum.ai)  
 [fastprogress (version 0.1.21)](https://github.com/fastai/fastprogress)  
@@ -141,11 +141,15 @@ optional arguments:
 ```
 
 ## Tutorial
-### Pre-processing
-TO-DO
+### Simulated Data Generation
+Jaspar.meme file is required to load motif PWMs. Number of examples, data type and paths can be modified in ```generate_data.py``` .
+```
+cd create_dataset
+python generate_data.py
+```
 
 ### Example: binary classification
-For the TAL-GATA experiment:  
+For simulated data experiments:  
 ```
 satori.py data/TAL-GATA_ChIPSeq/Final_dataset_combined_uniq_neg80k_binaryFeat modelsparam/CNN-RNN-MH-noEmbds_hyperParams.txt -w 8 --outDir results/TAL-GATA_Analysis --mode train -v -s --background negative --intseqlimit 5000 --numlabels 2 --motifanalysis --interactions --method BOTH --attrbatchsize 18 --deskload --tomtompath PATH-TO-TOMTOM-TOOL --database PATH-TO-MEME-TF-DATABASE
 ```
