@@ -73,8 +73,6 @@ def trainRegular(model, device, iterator, optimizer, criterion, ent_loss=False, 
             device, dtype=torch.long)
         optimizer.zero_grad()
         outputs,PAttn = model(data)
-        # print(attn.type())
-        # attn_weights = torch.split(attn, 32, dim = -1)
         # calculate entropy of attn
         if ent_loss:
             epsilon = 1e-10
@@ -82,23 +80,6 @@ def trainRegular(model, device, iterator, optimizer, criterion, ent_loss=False, 
             attention_entropy = -torch.sum(PAttn * torch.log(PAttn), dim=-1)
             entropy_loss = attention_entropy.mean()
             
-            # attn_shape = PAttn.shape
-            # n_heads = attn_shape[-1] // attn_shape[1] 
-            # #print(n_heads)
-            # attn_mat_split = PAttn.chunk(n_heads, dim=-1)
-            # reshaped_PAattn = torch.stack(attn_mat_split, dim=1)
-            # #print(reshaped_PAattn[0 , 0, :, 0].sum())
-
-            #reshaped_PAattn = PAttn.view(attn_shape[0], n_heads, attn_shape[1], attn_shape[1])
-            #temp = -torch.sum(reshaped_PAattn * torch.log(reshaped_PAattn), dim=-1)
-            #print(temp.shape)
-            #entropy_loss_overheads = temp.mean()
-            
-            #print(entropy_loss, PAttn[0,0,0,:].sum())
-
-            
-            # temp =torch.cat([temp] + entropy_loss2 , dim = 0)
-            # print(temp)
             loss = criterion(outputs, target) + \
                 (entropy_reg_weight * entropy_loss)
         else:
@@ -213,24 +194,13 @@ def evaluateRegular(net, device, iterator, criterion, out_dirc, ent_loss=False, 
             data, target = data.to(device, dtype=torch.float), target.to(
                 device, dtype=torch.long)
             outputs, PAttn = net(data)  # dist
-            #print("HERE", ent_loss)
             if ent_loss:
                 epsilon = 1e-10
                 PAttn = PAttn + epsilon
                 attention_entropy = - \
                     torch.sum(PAttn * torch.log(PAttn), dim=-1)
                 entropy_loss = attention_entropy.mean()
-                # attn_shape = PAttn.shape
-                # n_heads = attn_shape[-1] // attn_shape[1] 
-  
-                # attn_mat_split = PAttn.chunk(n_heads, dim=-1)
-                # reshaped_PAattn = torch.stack(attn_mat_split, dim=0)
 
-                # #reshaped_PAattn = PAttn.view(attn_shape[0], n_heads, attn_shape[1], attn_shape[1])
-                # temp = -torch.sum(reshaped_PAattn * torch.log(reshaped_PAattn), dim=-1)
-                # entropy_loss_overheads = temp.mean()
-                # #print("Entropy loss",entropy_loss, PAttn.shape, attention_entropy.shape )
-                # print(entropy_loss_overheads)
                 loss = criterion(outputs, target) + \
                     (entropy_reg_weight * entropy_loss)
             else:
@@ -246,8 +216,7 @@ def evaluateRegular(net, device, iterator, criterion, out_dirc, ent_loss=False, 
                         os.makedirs(output_dir)
                     with open(output_dir+'/PAttn_batch-'+str(batch_idx)+'.pckl', 'wb') as f:
                         pickle.dump(PAttn.cpu().detach().numpy(), f)
-                    # with open(output_dir+'/dist_batch-'+str(batch_idx)+'.pckl','wb') as f:
-                    #     pickle.dump(dist.cpu().detach().numpy(),f)
+
                     PAttn_all[batch_idx] = output_dir+'/PAttn_batch-' + \
                         str(batch_idx)+'.pckl'  # paths to the pickle PAttention
                 else:
@@ -410,47 +379,21 @@ def run_experiment(device, arg_space, params):
             output_dir, tfs_pairs_path=arg_space.pairs_file).to(device)
         kernels_to_freeze = 100  # Freeze half of the kernels
 
-        print(net.layer1[0].weight.shape, weights_tensor.shape)
         net.layer1[0].weight = nn.parameter.Parameter(
             weights_tensor, requires_grad=True)
-        # Loop through the kernels and freeze half of them
-        # print(len(net.layer1[0].parameters()))
-        # for idx in range(kernels_to_freeze):
-        #     net.layer1[0].weight[idx].requires_grad = False
 
-        #     # if idx < kernels_to_freeze:
-        #     #     param.requires_grad = False  # Freeze the weight
-        #     print(idx, "HERE")
-        # else:
-        #     print(idx,param.requires_grad)
-
-    # dummy_input = torch.randn(10, 4, 200, device="cuda")
-    # torch.onnx.export(net, dummy_input, output_dir + "/model.onnx", verbose=True)
     if num_labels == 2:
 
         criterion = nn.CrossEntropyLoss(reduction='mean')
         optimizer = optim.SGD(net.parameters(), lr=0.01)
-        #optimizer = optim.Adam(net.parameters(), lr=0.001, weight_decay=0.001)
 
     else:
         criterion = nn.BCEWithLogitsLoss()
 
         optimizer = optim.Adam(net.parameters(), lr=0.001, weight_decay=0.001)
-        #optimizer = optim.SGD(net.parameters(), lr=0.001)
-        #optimizer = optim.AdamW(net.parameters(), lr=0.001,weight_decay=1e-5)
-
-        #optimizer = optim.RMSprop(net.parameters(), lr=0.001) #optim.Adam(net.parameters(), lr=0.001)
-        #optimizer = torch.optim.Adagrad(net.parameters(), lr=0.01,weight_decay=0.00001)
-
-    # best_optimizer = torch.optim.Adagrad(net.parameters(), lr=0.01,weight_decay=0.00001)
-    # optimizer = sgd #best_optimizer
-    # Define ReduceLROnPlateau scheduler
-    # scheduler = StepLR(optimizer, mode='min', factor=0.5, patience=5, verbose=True)
-    # scheduler = StepLR(optimizer, step_size=5, gamma=0.1)
+        
     scheduler = ReduceLROnPlateau(optimizer, 'min', patience=5, factor=0.5)
 
-    # scheduler1 = ExponentialLR(optimizer, gamma=0.5)
-    # scheduler2 = MultiStepLR(optimizer, milestones=[5, 10, 20], gamma=0.1)
 
     if arg_space.finetune_model_path != None:
         try:
@@ -768,12 +711,3 @@ def motif_analysis(res_test, CNNWeights, argSpace, params, for_background=False)
               data='DNA', tomtom=tomtomPath, tomtompval=argSpace.tomtomPval, tomtomdist=argSpace.tomtomDist)
     return motif_dir, NumExamples
 
-
-if __name__ == "__main__":
-
-    data_prefix = "/s/chromatin/p/nobackup/Saira/original/satori/data/ToyData/NEWDATA/ctf_40pairs_eq"
-    outdir = "../results/pretrain/data-40/"
-    device = "cuda"
-    num_labels = 2
-    dataset = "simulated"
-    run_pretraining(device, data_prefix, outdir, dataset, num_labels)
