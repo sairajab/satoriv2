@@ -1,4 +1,4 @@
-# SATORI v.2
+# SATORIV2 : Comprehensive Evaluation of SATORI 
 **SATORI v2** is based on **S**elf-**AT**tenti**O**n based deep learning model that captures **R**egulatory element **I**nteractions in genomic sequences. It can be used to infer a global landscape of interactions in a given genomic dataset, with a minimal post-processing step. This repository contains code for extensive evaluation of self-attention layer in order to predict feature interactions.
 
 ## Original Manuscript
