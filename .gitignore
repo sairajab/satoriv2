@@ -58,3 +58,8 @@ target/
 
 runs/
 results/
+
+data/Simulated_Data/Data-40/ctf_test.fa
+data/Simulated_Data/Data-40/ctf_test.txt
+data/Simulated_Data/Data-40/ctf_test2.txt
+data/Simulated_Data/Data-40/ctf_test2.fa
