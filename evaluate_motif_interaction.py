@@ -195,12 +195,9 @@ def evaluate_interactions(interactions_file, thresholds, tfs_pairs, filters_to_m
                 if th == 0.05:
                     missing_f.writelines(tf[0] + "\t"+ tf[1] + "\n")
         fn = len(Missing)
-        print("Count " , tp, fn)
         unknown = []
         uno_dupes = [x for n, x in enumerate(usatori) if x not in usatori[:n] and [x[1], x[0]] not in usatori[:n]]
         for tf in uno_dupes:
-            print(tf , count)
-
             if tf not in tfs_pairs and [tf[1], tf[0]] not in tfs_pairs:
                 unknown.append(tf)
                 if th == 0.05:
@@ -234,7 +231,7 @@ def run_interaction_evaluation(exp_path, gt_tfs_path, method = "SATORI", motif_w
     '''
     Use following lines when you want to exclude sorting function and use first entry in tomtom.tsv
     '''
-    motif_to_tf, filter_to_motif = read_motif_meme(output_folder + "/Motif_Analysis", "../../motif_databases/Jaspar.meme")
+    motif_to_tf, filter_to_motif = read_motif_meme(output_folder + "/Motif_Analysis", "/s/chromatin/p/nobackup/Saira/motif_databases/Jaspar.meme")
 
     # uncomment if using table.txt for motif analysis
     # filters_tf = read_motifs_table(output_folder + "/Motif_Analysis/table.txt")
@@ -246,6 +243,8 @@ def run_interaction_evaluation(exp_path, gt_tfs_path, method = "SATORI", motif_w
     #filters_tf = read_motifs_table(output_folder + "/Motif_Analysis/CNN_filters/table_cnn.txt")
     if method == "SATORI":
         interaction_files = glob(output_folder + "/Interactions_SATORI/interactions_summary_attnLimit-*.txt")
+    elif method == "ATTNATTR":
+        interaction_files = glob(output_folder + "/Interactions_ATTNATTR/interactions_attnLimit-*.txt")
     else:
         interaction_files = glob(output_folder + "/Interactions_FIS/interactions_summary_attnLimit-*.txt")
 
@@ -256,8 +255,6 @@ def run_interaction_evaluation(exp_path, gt_tfs_path, method = "SATORI", motif_w
             ps, rs, f1s = evaluate_interactions(file, thresholds, tfs_pairs, filters_tf, output_folder)    
         else:
             print("Using tomtom.txt......")
-            print(filter_to_motif)
-            print("TF pairs length " , len(tfs_pairs))
             ps, rs, f1s = evaluate_interactions(file, thresholds, tfs_pairs, filter_to_motif, output_folder , motif_to_tf)
 
     return ps, rs, f1s , thresholds   

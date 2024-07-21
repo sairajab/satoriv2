@@ -18,241 +18,13 @@ from satori.models import AttentionNet
 from utils import get_shuffled_background, get_shuffled_background_presaved
 from cnn_weights import *
 # from cnn_motif_extraction import *
-import torch
 from torch.utils.tensorboard import SummaryWriter
-
+from satori.train_model import *
+from satori.evaluate_model import *
 ###########################################################################################################################
 # --------------------------------------------Train and Evaluate Functions-------------------------------------------------#
 ###########################################################################################################################
-
-
-def trainRegularMC(model, device, iterator, optimizer, criterion, ent_loss=False, entropy_reg_weight=0.005):
-    model.train()
-    running_loss = 0.0
-    train_auc = []
-    all_labels = []
-    all_preds = []
-    count = 0
-    for batch_idx, (headers, seqs, data, target) in enumerate(iterator):
-        data, target = data.to(device, dtype=torch.float), target.to(
-            device, dtype=torch.float)
-        optimizer.zero_grad()
-        outputs, PAttn = model(data)
-        if ent_loss:
-            epsilon = 1e-10
-            PAttn = PAttn + epsilon
-            attention_entropy = -torch.sum(PAttn * torch.log(PAttn), dim=-1)
-            entropy_loss = attention_entropy.mean()
-            loss = criterion(outputs, target) + \
-                (entropy_reg_weight * entropy_loss)
-        else:
-            loss = criterion(outputs, target)
-        labels = target.cpu().numpy()
-        sigmoid = torch.nn.Sigmoid()
-        pred = sigmoid(outputs).cpu().detach().numpy()
-        all_labels += labels.tolist()
-        all_preds += pred.tolist()
-        loss.backward()
-        optimizer.step()
-        running_loss += loss.item()
-    for j in range(0, len(all_labels[0])):
-        cls_labels = np.asarray(all_labels)[:, j]
-        pred_probs = np.asarray(all_preds)[:, j]
-        auc_score = metrics.roc_auc_score(cls_labels.astype(int), pred_probs)
-        train_auc.append(auc_score)
-    return running_loss/len(iterator), train_auc
-
-
-def trainRegular(model, device, iterator, optimizer, criterion, ent_loss=False, entropy_reg_weight=0.005):
-    model.train()
-    running_loss = 0.0
-
-    train_auc = []
-    for batch_idx, (headers, seqs, data, target) in enumerate(iterator):
-        data, target = data.to(device, dtype=torch.float), target.to(
-            device, dtype=torch.long)
-        optimizer.zero_grad()
-        outputs,PAttn = model(data)
-        # calculate entropy of attn
-        if ent_loss:
-            epsilon = 1e-10
-            PAttn = PAttn + epsilon
-            attention_entropy = -torch.sum(PAttn * torch.log(PAttn), dim=-1)
-            entropy_loss = attention_entropy.mean()
-            
-            loss = criterion(outputs, target) + \
-                (entropy_reg_weight * entropy_loss)
-        else:
-            loss = criterion(outputs, target)
-        labels = target.cpu().numpy()
-        softmax = torch.nn.Softmax(dim=1)
-        pred = softmax(outputs).cpu().detach().numpy()
-        try:
-            train_auc.append(metrics.roc_auc_score(labels, pred[:, 1]))
-        except:
-            train_auc.append(0.0)
-        loss.backward()
-
-        optimizer.step()
-        running_loss += loss.item()
-    return running_loss/len(iterator), train_auc
-
-
-def evaluateRegularMC(net, device, iterator, criterion, out_dirc,  ent_loss=False, entropy_reg_weight=0.005, getPAttn=False, storePAttn=False, getCNN=False, storeCNNout=False, getSeqs=False):
-    running_loss = 0.0
-    valid_auc = []
-    net.eval()
-    roc = np.asarray([[], []]).T
-    PAttn_all = {}
-    all_labels = []
-    all_preds = []
-    running_loss = 0.0
-    valid_auc = []
-    net.eval()
-    CNNlayer = net.layer1[0:3]  # first conv layer without the maxpooling part
-    CNNlayer.eval()
-    roc = np.asarray([[], []]).T
-    PAttn_all = {}
-    per_batch_labelPreds = {}
-    per_batch_CNNoutput = {}
-    per_batch_testSeqs = {}
-    per_batch_info = {}
-    with torch.no_grad():
-        for batch_idx, (headers, seqs, data, target) in enumerate(iterator):
-            data, target = data.to(device, dtype=torch.float), target.to(
-                device, dtype=torch.float)
-            outputs, PAttn = net(data)
-            if ent_loss:
-                epsilon = 1e-10
-                PAttn = PAttn + epsilon
-                attention_entropy = - \
-                    torch.sum(PAttn * torch.log(PAttn), dim=-1)
-                entropy_loss = attention_entropy.mean()
-                loss = criterion(outputs, target) + \
-                    (entropy_reg_weight * entropy_loss)
-            else:
-                loss = criterion(outputs, target)
-            loss = criterion(outputs, target)
-            labels = target.cpu().numpy()
-            sigmoid = torch.nn.Sigmoid()
-            pred = sigmoid(outputs).cpu().detach().numpy()
-            all_labels += labels.tolist()
-            all_preds += pred.tolist()
-            label_pred = {'labels': labels, 'preds': pred}
-            per_batch_labelPreds[batch_idx] = label_pred
-            if getPAttn == True:
-                if storePAttn == True:
-                    output_dir = out_dirc
-                    if not os.path.exists(output_dir):
-                        os.makedirs(output_dir)
-                    with open(output_dir+'/PAttn_batch-'+str(batch_idx)+'.pckl', 'wb') as f:
-                        pickle.dump(PAttn.cpu().detach().numpy(), f)
-                    PAttn_all[batch_idx] = output_dir+'/PAttn_batch-' + \
-                        str(batch_idx)+'.pckl'  # paths to the pickle PAttention
-                else:
-                    PAttn_all[batch_idx] = PAttn.cpu().detach().numpy()
-            if getCNN == True:
-                outputCNN = CNNlayer(data)
-                if storeCNNout == True:
-                    output_dir = out_dirc
-                    if not os.path.exists(output_dir):
-                        os.makedirs(output_dir)
-                    with open(output_dir+'/CNNout_batch-'+str(batch_idx)+'.pckl', 'wb') as f:
-                        pickle.dump(outputCNN.cpu().detach().numpy(), f)
-                    per_batch_CNNoutput[batch_idx] = output_dir + \
-                        '/CNNout_batch-'+str(batch_idx)+'.pckl'
-                else:
-                    per_batch_CNNoutput[batch_idx] = outputCNN.cpu(
-                    ).detach().numpy()
-            if getSeqs == True:
-                per_batch_testSeqs[batch_idx] = np.column_stack(
-                    (headers, seqs))
-            running_loss += loss.item()
-    for j in range(0, len(all_labels[0])):
-        cls_labels = np.asarray(all_labels)[:, j]
-        pred_probs = np.asarray(all_preds)[:, j]
-        auc_score = metrics.roc_auc_score(cls_labels.astype(int), pred_probs)
-        valid_auc.append(auc_score)
-    return running_loss/len(iterator), valid_auc, roc, PAttn_all, per_batch_labelPreds, per_batch_CNNoutput, per_batch_testSeqs
-
-
-def evaluateRegular(net, device, iterator, criterion, out_dirc, ent_loss=False, entropy_reg_weight=0.005, getPAttn=False, storePAttn=False, getCNN=False, storeCNNout=False, getSeqs=False):
-    running_loss = 0.0
-    valid_auc = []
-    net.eval()
-    CNNlayer = net.layer1[0:3]  # first conv layer without the maxpooling part
-    CNNlayer.eval()
-    roc = np.asarray([[], []]).T
-    PAttn_all = {}
-    per_batch_labelPreds = {}
-    per_batch_CNNoutput = {}
-    per_batch_testSeqs = {}
-    per_batch_info = {}
-
-    with torch.no_grad():
-        for batch_idx, (headers, seqs, data, target) in enumerate(iterator):
-            data, target = data.to(device, dtype=torch.float), target.to(
-                device, dtype=torch.long)
-            outputs, PAttn = net(data)  # dist
-            if ent_loss:
-                epsilon = 1e-10
-                PAttn = PAttn + epsilon
-                attention_entropy = - \
-                    torch.sum(PAttn * torch.log(PAttn), dim=-1)
-                entropy_loss = attention_entropy.mean()
-
-                loss = criterion(outputs, target) + \
-                    (entropy_reg_weight * entropy_loss)
-            else:
-                loss = criterion(outputs, target)
-
-            softmax = torch.nn.Softmax(dim=1)
-            labels = target.cpu().numpy()
-            pred = softmax(outputs)
-            if getPAttn == True:
-                if storePAttn == True:
-                    output_dir = out_dirc
-                    if not os.path.exists(output_dir):
-                        os.makedirs(output_dir)
-                    with open(output_dir+'/PAttn_batch-'+str(batch_idx)+'.pckl', 'wb') as f:
-                        pickle.dump(PAttn.cpu().detach().numpy(), f)
-
-                    PAttn_all[batch_idx] = output_dir+'/PAttn_batch-' + \
-                        str(batch_idx)+'.pckl'  # paths to the pickle PAttention
-                else:
-                    PAttn_all[batch_idx] = PAttn.cpu().detach().numpy()
-            pred = pred.cpu().detach().numpy()
-            label_pred = np.column_stack((labels, pred[:, 1]))
-            per_batch_labelPreds[batch_idx] = label_pred
-            roc = np.row_stack((roc, label_pred))
-            try:
-                valid_auc.append(metrics.roc_auc_score(labels, pred[:, 1]))
-            except:
-                valid_auc.append(0.0)
-            running_loss += loss.item()
-            outputCNN = CNNlayer(data).cpu().detach().numpy()
-            if getCNN == True:
-                outputCNN = CNNlayer(data)
-                if storeCNNout == True:
-                    output_dir = out_dirc
-                    if not os.path.exists(output_dir):
-                        os.makedirs(output_dir)
-                    with open(output_dir+'/CNNout_batch-'+str(batch_idx)+'.pckl', 'wb') as f:
-                        pickle.dump(outputCNN.cpu().detach().numpy(), f)
-                    per_batch_CNNoutput[batch_idx] = output_dir + \
-                        '/CNNout_batch-'+str(batch_idx)+'.pckl'
-                else:
-                    per_batch_CNNoutput[batch_idx] = outputCNN.cpu(
-                    ).detach().numpy()
-            if getSeqs == True:
-                per_batch_testSeqs[batch_idx] = np.column_stack(
-                    (headers, seqs))
-    labels = roc[:, 0]
-    preds = roc[:, 1]
-    valid_auc = metrics.roc_auc_score(labels, preds)
-    return running_loss/len(iterator), valid_auc, roc, PAttn_all, per_batch_labelPreds, per_batch_CNNoutput, per_batch_testSeqs
-
-
+## Moved to seperate files
 ###########################################################################################################################
 # ---------------------------------------------------------End-------------------------------------------------------------#
 ###########################################################################################################################
@@ -370,9 +142,10 @@ def run_experiment(device, arg_space, params):
     if load_cnn_ws:
         params['CNN_filtersize'] = [21]
 
-    # print("dataaa", iter(train_loader).next())
+    getAttnAttr = False
     net = AttentionNet(arg_space, params, device=device,
-                       seq_len=seq_len).to(device)
+                       seq_len=seq_len, getAttngrad=getAttnAttr).to(device)
+        
     if load_cnn_ws:
         net.layer1[0].weight.data.uniform_(-1.0, 0.0)
         weights_tensor = load_cnn_weights(
@@ -389,7 +162,6 @@ def run_experiment(device, arg_space, params):
 
     else:
         criterion = nn.BCEWithLogitsLoss()
-
         optimizer = optim.Adam(net.parameters(), lr=0.001, weight_decay=0.001)
         
     scheduler = ReduceLROnPlateau(optimizer, 'min', patience=5, factor=0.5)
@@ -403,11 +175,6 @@ def run_experiment(device, arg_space, params):
             epoch = checkpoint['epoch']
             loss = checkpoint['loss']
             print("Loaded model for finetunig...")
-            #optimizer.param_groups[0]['lr'] = 0.0005
-
-            # optimizer = optim.SGD(net.parameters(), lr=0.0025)
-            #optimizer = optim.Adam(net.parameters(), lr=0.001)
-
             scheduler = ReduceLROnPlateau(
                 optimizer, 'min', patience=5, factor=0.5)
 
@@ -425,6 +192,8 @@ def run_experiment(device, arg_space, params):
     if arg_space.mode == 'train':
         best_valid_loss = np.inf
         best_valid_auc = np.inf
+        with open(output_dir+'/entropy_argument.txt', 'w') as f:
+            f.writelines(f"Ent_Regularization Value : {ent_loss} , {ent_reg}" )
         for epoch in progress_bar(range(1, max_epochs + 1)):
             if num_labels == 2:
                 res_train = trainRegular(
@@ -529,11 +298,12 @@ def run_experiment(device, arg_space, params):
     if num_labels == 2:
         prefix = 'modelRes'
         arg_space.storeInterCNN = False
-        ent_loss = True
+        ent_loss = params["entropy_loss"]
+
         
         res_test = evaluateRegular(net, device, test_loader, criterion, output_dir+"/Stored_Values", ent_loss, ent_reg, getPAttn=genPAttn,
                                    storePAttn=arg_space.storeInterCNN, getCNN=getCNNout,
-                                   storeCNNout=arg_space.storeInterCNN, getSeqs=getSequences)
+                                   storeCNNout=arg_space.storeInterCNN, getSeqs=getSequences, getAttnAttr=getAttnAttr)
         # uncomment for CNN based motif annotations
         # annotation_file = arg_space.inputprefix + "_info.txt"
 
@@ -543,9 +313,10 @@ def run_experiment(device, arg_space, params):
         # _ = evaluate_cnn_motif(net, device, valid_loader, output_dir+"/Motif_Analysis/", ids_to_motifs, valid_indices)
 
         test_loss = res_test[0]
+        auc_test = res_test[1]
         labels = res_test[2][:, 0]
         preds = res_test[2][:, 1]
-        auc_test = metrics.roc_auc_score(labels, preds)
+        # auc_test = metrics.roc_auc_score(labels, preds)
         if arg_space.verbose:
             print("Test Loss: %.3f and AUC: %.2f" %
                   (test_loss, auc_test), "\n")
@@ -583,6 +354,7 @@ def run_experiment(device, arg_space, params):
 
     CNNWeights = net.layer1[0].weight.cpu().detach().numpy()
     res_blob = {'res_test': res_test,
+                'seq_len' : seq_len,
                 'train_loader': train_loader,
                 'train_indices': train_indices,
                 'test_loader': test_loader,
@@ -621,7 +393,6 @@ def get_results_for_shuffled(argSpace, params, net, criterion, test_loader, devi
         res_test_bg = evaluateRegularMC(net, device, test_loader_bg, criterion, out_dirc=output_dir+"/Temp_Data/Stored_Values", getPAttn=genPAttn,
                                         storePAttn=argSpace.storeInterCNN, getCNN=getCNNout,
                                         storeCNNout=argSpace.storeInterCNN, getSeqs=getSequences)
-    print(bg_prefix, res_test_bg[1])
     return res_test_bg, test_loader_bg
 
 
@@ -643,18 +414,15 @@ def motif_analysis(res_test, CNNWeights, argSpace, params, for_background=False)
     pos_score_cutoff = argSpace.scoreCutoff
     k = 0  # batch number
     per_batch_labelPreds = res_test[4][k]
-    # per_batch_Embdoutput = res_test[5][k]
     CNNoutput = res_test[5][k]
     if argSpace.storeInterCNN:
         with open(CNNoutput, 'rb') as f:
             CNNoutput = pickle.load(f)
     Seqs = np.asarray(res_test[6][k])
-    print(pos_score_cutoff)
     if num_labels == 2:
         if for_background and argSpace.intBackground == 'negative':
             tp_indices = [i for i in range(0, per_batch_labelPreds.shape[0]) if (
                 per_batch_labelPreds[i][0] == 0 and per_batch_labelPreds[i][1] < (1-pos_score_cutoff))]
-            print(tp_indices)
         elif for_background and argSpace.intBackground == 'shuffle':
             tp_indices = [i for i in range(0, per_batch_labelPreds.shape[0])]
         else:
@@ -668,10 +436,7 @@ def motif_analysis(res_test, CNNWeights, argSpace, params, for_background=False)
 
     Seqs = Seqs[tp_indices]
     for k in range(1, len(res_test[3])):
-        # if argSpace.verbose:
-        # print("batch number: ",k)
         per_batch_labelPreds = res_test[4][k]
-        # per_batch_Embdoutput = res_test[5][k]
         per_batch_CNNoutput = res_test[5][k]
         if argSpace.storeInterCNN:
             with open(per_batch_CNNoutput, 'rb') as f:
@@ -706,7 +471,6 @@ def motif_analysis(res_test, CNNWeights, argSpace, params, for_background=False)
         motif_dir = output_dir + '/Motif_Analysis_Negative'
     else:
         motif_dir = output_dir + '/Motif_Analysis'
-    # print(CNNoutput)
     get_motif(CNNWeights, CNNoutput, Seqs, dbpath, dir1=motif_dir, embd=False,
               data='DNA', tomtom=tomtomPath, tomtompval=argSpace.tomtomPval, tomtomdist=argSpace.tomtomDist)
     return motif_dir, NumExamples

@@ -133,7 +133,7 @@ class AttentionPool(nn.Module):
 
 # for the model that uses CNN, RNN (optionally), and MH attention
 class AttentionNet(nn.Module):
-    def __init__(self, numLabels, params, device=None, seq_len=300, genPAttn=True, reuseWeightsQK=False):
+    def __init__(self, numLabels, params, device=None, seq_len=300, genPAttn=True, reuseWeightsQK=False, getAttngrad=False):
         super(AttentionNet, self).__init__()
         self.numofAttnLayers = params['num_attnlayers']
         self.numMultiHeads = params['num_multiheads']
@@ -159,6 +159,7 @@ class AttentionNet(nn.Module):
         # number of channels, one hot encoding
         self.numInputChannels = params['input_channels']
         self.genPAttn = genPAttn
+        self.getAttngrad = getAttngrad
         self.relativeAttn = params['relativeAttn']
         self.learnable_relativeAttn = params['Learnable_relativeAttn']
         self.mixed_attn = params['mixed_attn']
@@ -172,7 +173,6 @@ class AttentionNet(nn.Module):
         self.multiple_linear = params['multiple_linear']
         self.linear_size = params['linear_layer_size']
         self.cnnlayer = []
-        print(params)
         self.cnn_attention_block = params["cnn_attention_block"]
         self.use_sei = params["sei"]
         self.exp_name = params["exp_name"]
@@ -228,18 +228,13 @@ class AttentionNet(nn.Module):
         def outputsize(n_in, p, k, s): return int(((n_in + (2*p) - k) / s) + 1)
         
         n_out = outputsize(seq_len, self.CNNpadding, self.filterSize[0], 1)
-        print("Here", n_out)
         if self.useCNNpool:
             # by default stride is same as kernalsize
             n_out = outputsize(n_out, 0, self.CNNpoolSize, self.CNNpoolSize)
-            print("Here cnn pool", n_out, self.CNNpoolSize)
 
         for i in range(len(self.cnnlayer)):
             same_pad = int(self.filterSize[i+1]/2)
             n_out = outputsize(n_out, same_pad, self.filterSize[i+1], 1)
-            print("Here cnn", n_out)
-
-        print(seq_len, n_out)
         
         if self.relativeAttn:
             desired_output_size = (n_out, n_out)
@@ -259,10 +254,6 @@ class AttentionNet(nn.Module):
             # Calculate the required padding to achieve the desired output size
             padding = ((desired_output_size[0] - 1) * stride + kernel_size[0] - input_size[0],
                        (desired_output_size[1] - 1) * stride + kernel_size[1] - input_size[1])
-
-            print("Stride:", stride)
-            print("Kernel Size:", kernel_size)
-            print("Padding:", padding)
 
             self.rd1 = nn.MaxPool2d(
                 kernel_size, stride=stride, padding=padding)
@@ -394,13 +385,15 @@ class AttentionNet(nn.Module):
                 if m.bias is not None:
                     init.constant_(m.bias, 0)
 
-    def attention(self, query, key, value, mask=None, dropout=0.0):
+    def attention(self, query, key, value, mask=None, dropout=0.0, attn_prob=None):
         # based on: https://nlp.seas.harvard.edu/2018/04/03/attention.html
         d_k = query.size(-1)
-        # print(query.shape, d_k)
         scores = torch.matmul(query, key.transpose(-2, -1)) / math.sqrt(d_k)
         p_attn = F.softmax(scores, dim=-1)
         p_attn = F.dropout(p_attn, p=dropout, training=self.training)
+        if attn_prob is not None:
+            #print("Assigning new valueeeee")
+            p_attn = attn_prob
         return torch.matmul(p_attn, value), p_attn
 
     def relative_attention(self, query, key, value, RPE, sqrt, mask=None, dropout=0.0):
@@ -418,7 +411,7 @@ class AttentionNet(nn.Module):
         p_attn = F.dropout(p_attn, p=dropout, training=self.training)
         return torch.matmul(p_attn, value), p_attn
 
-    def forward(self, inputs):
+    def forward(self, inputs, attn_prob=None):
         output = inputs
 
         if self.useCNN:
@@ -435,9 +428,7 @@ class AttentionNet(nn.Module):
             output = self.maxpool1(output)
 
         output = output.permute(0, 2, 1)
-        
-        #print(output.shape)
-        
+                
         
         if self.useRNN:
             output, _ = self.RNN(output)
@@ -448,16 +439,16 @@ class AttentionNet(nn.Module):
 
         pAttn_concat = torch.Tensor([]).to(self.device)
         no_relativeAttn = 0
+        pAttn_list = []
+        
         for j in range(0, self.numofAttnLayers):
 
             attn_concat = torch.Tensor([]).to(self.device)
-            #pAttn_concat_h = torch.Tensor([]).to(self.device)
 
             for i in range(0, self.numMultiHeads):
 
                 query, key, value = self.Q[j][i](
                     output), self.K[j][i](output), self.V[j][i](output)
-                #temp_value = value
                 if self.relativeAttn:
                     if self.mixed_attn:
                         if self.numMultiHeads == 2:
@@ -474,33 +465,34 @@ class AttentionNet(nn.Module):
                         RPE1_output = self.rd1(self.relative_dist)
                     attnOut, p_attn = self.relative_attention(
                         query, key, value, RPE1_output, self.sqrt_dist, dropout=0.2)
+                    
+                if attn_prob is not None:
+                        attnOut, p_attn = self.attention(
+                        query, key, value, dropout=0.2, attn_prob=attn_prob[i])
                 else:
-                    attnOut, p_attn = self.attention(
+                        attnOut, p_attn = self.attention(
                         query, key, value, dropout=0.2)
 
                 attnOut = self.RELU[i](attnOut)
                 if self.usepooling:
                     attnOut = self.MAXPOOL[i](
                         attnOut.permute(0, 2, 1)).permute(0, 2, 1)
-                # if self.attn_skip: #????? use concatenation
-                #     attnOut = attnOut + value
-
+                    
                 attn_concat = torch.cat((attn_concat, attnOut), dim=2)
 
                 if self.genPAttn and j == 0:
-                    pAttn_concat = torch.cat((pAttn_concat, p_attn), dim=2)
-                    #pAttn_concat_h = torch.cat((pAttn_concat_h, p_attn.unsqueeze(dim = 1)), dim=1)
+                    pAttn_concat = torch.cat((pAttn_concat, p_attn), dim=1)
+                if self.getAttngrad:
+                    pAttn_list.append(p_attn)
 
             if self.attn_skip:
                     attn_concat = attn_concat + output
             if self.multiple_linear:
-                # output = self.MultiHeadLinearDropout[j](attn_concat)
                 output = self.MultiHeadLinear_2[j](self.MultiHeadLinearDropout[j](self.MHGeLU[j](self.MultiHeadLinear_1[j]
                                                                                                  (self.MultiHeadLayerNorm[j](attn_concat)))))
                 output = self.MHReLU[j](output)
                 output = self.MultiHeadLinearDropout2[j](output)
             else:
-                #print("attn ", attn_concat.shape)
                 output = self.MultiHeadLinearDropout[j](attn_concat)
                 output = self.MultiHeadLinear[j](attn_concat)
                 output = self.MHReLU[j](output)
@@ -509,29 +501,26 @@ class AttentionNet(nn.Module):
             if self.cnn_attention_block:
                 output = self.cnn_attention_sub_model(output)
 
-        #output = output.permute(0, 2, 1)
         if self.use_sei:
-            output = self.sei_light(output)
-        #print("sei output ", output.shape)
+            output = self.sei_light(output) #already has bspline
 
         if self.readout_strategy == 'normalize':
             output = output.sum(axis=1)
             output = (output-output.mean())/output.std()
         elif self.readout_strategy == 'bspline':
             spline_out = self.spline_tr(output)
-            #print(spline_out.shape)
             output = spline_out.view(
                 spline_out.size(0), 480 * self._spline_df)
         elif self.readout_strategy == 'attention_pool':
             output = self.attention_pool(output)
         else:
             pass
-            #
 
         output = self.fc3(output)
-        #output = torch.nan_to_num(output)
         assert not torch.isnan(output).any()
-        if self.genPAttn:
+        if self.genPAttn and not self.getAttngrad:
             return output, pAttn_concat  # , RPE1_output
+        if self.getAttngrad:
+            return output, pAttn_concat, pAttn_list
         else:
             return output

@@ -14,6 +14,7 @@ from satori.experiment import run_experiment, motif_analysis, get_results_for_sh
 from satori.process_attention_mh import infer_intr_attention as mh_infer_intr_attention
 from satori.process_attention import infer_intr_attention
 from satori.process_fis import infer_intr_FIS
+from satori.process_attnattr import infer_intr_ATTNATTR
 from satori.utils import get_params_dict, annotate_motifs
 from evaluate_motif_interaction import *
 ####################################################################################################################
@@ -156,7 +157,6 @@ def main():
     CNNWeights = experiment_blob['CNN_weights']
 
     if arg_space.motifAnalysis:
-        #print(test_resBlob)
         motif_dir_pos, _ = motif_analysis(test_resBlob, CNNWeights, arg_space, params_dict)
         if arg_space.intBackground == 'negative':
             motif_dir_neg, _ = motif_analysis(test_resBlob, CNNWeights,  arg_space, params_dict, for_background=True)
@@ -185,37 +185,39 @@ def main():
             test_resBlob_bg = get_results_for_shuffled(arg_space, params_dict, experiment_blob['net'], experiment_blob['criterion'], experiment_blob['test_loader'], device)
             experiment_blob['res_test_bg'] = test_resBlob_bg[0]
             experiment_blob['test_loader_bg'] = test_resBlob_bg[1]
-        if arg_space.methodType in ['SATORI','BOTH']:
+        if arg_space.methodType in ['SATORI','ALL']:
             if head == "multi":
                 mh_infer_intr_attention(experiment_blob, params_dict, arg_space)
             else:
                 infer_intr_attention(experiment_blob, params_dict, arg_space)
         
-        if arg_space.methodType in ['FIS','BOTH']:
+        if arg_space.methodType in ['FIS','ALL']:
             infer_intr_FIS(experiment_blob, params_dict, arg_space, device)
+        
+        if arg_space.methodType in ['ATTNATTR', 'ALL']:
+            experiment_blob['res_test_bg'] = []
+            experiment_blob['train_loader'] = []
+            experiment_blob['CNN_weights'] = []
+            experiment_blob['net'] = []
+            infer_intr_ATTNATTR(experiment_blob, params_dict, arg_space, device = device)
+
             
     if arg_space.interactionsAnalysis:
         
-        print(arg_space.load_motif_weights)
         motif_weights = arg_space.load_motif_weights
         pairs_file = arg_space.pairs_file
                    
-        if arg_space.methodType in ['SATORI','BOTH']:            
+        if arg_space.methodType in ['SATORI','ALL']:            
             _,_,_,_ = run_interaction_evaluation(output_dir+"/",pairs_file, motif_weights=motif_weights)
                 
-        if arg_space.methodType in ['FIS','BOTH']:
+        if arg_space.methodType in ['FIS','ALL']:
             _,_,_,_ = run_interaction_evaluation(output_dir + "/",pairs_file, method="FIS", motif_weights=motif_weights)
-
+            
+        if arg_space.methodType in ['ATTNATTR', 'ALL']:
+            _,_,_,_ = run_interaction_evaluation(output_dir + "/",pairs_file, method="ATTNATTR", motif_weights=motif_weights)
+        
+        
         print("DONE!!!")
-
-#def hyperparameter_selection():
-#
-#    arg_space = parseArgs()
-#    
-#
-#    best_Res = Calibration(arg_space)
-#
-#    print(best_Res)
 
 
 if __name__ == "__main__":                 

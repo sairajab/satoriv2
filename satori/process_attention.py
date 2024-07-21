@@ -72,11 +72,11 @@ def score_individual_head(data):
 	#filter_intr_dict = {}
 	
 	attn_mat = PAttn[ex,:,:]
-	
-	attn_mat = np.asarray([attn_mat[:,feat_size*i:feat_size*(i+1)] for i in range(0,params['num_multiheads'])]) 
+	attn_mat = np.asarray([attn_mat[feat_size*i:feat_size*(i+1), :] for i in range(0,params['num_multiheads'])]) 
+
+	#attn_mat = np.asarray([attn_mat[:,feat_size*i:feat_size*(i+1)] for i in range(0,params['num_multiheads'])]) 
 	attn_mat = np.max(attn_mat, axis=0) #out of the 8 attn matrices, get the max value at the corresponding positions
-	print("Attention Mat")
-	print(attn_mat.shape)
+
 	#print(seq_inf_dict)
  
 	for i in range(0, attn_mat.shape[0]):
@@ -141,8 +141,7 @@ def score_individual_head_bg(data):
 			PAttn = pickle.load(f)
 	
 	attn_mat = PAttn[ex,:,:]
-	
-	attn_mat = np.asarray([attn_mat[:,feat_size*i:feat_size*(i+1)] for i in range(0,params['num_multiheads'])]) 
+	attn_mat = np.asarray([attn_mat[feat_size*i:feat_size*(i+1),:] for i in range(0,params['num_multiheads'])]) 
 	attn_mat = np.max(attn_mat, axis=0) #out of the 8 attn matrices, get the max value at the corresponding positions
 	
 	for i in range(0, attn_mat.shape[0]):
@@ -183,7 +182,7 @@ def score_individual_head_bg(data):
 	return y_ind,filter_Intr_Attn,filter_Intr_Pos
 
 
-def estimate_interactions(num_filters, params, tomtom_data, motif_dir, verbose = False, CNNfirstpool = 6, sequence_len = 200, pos_score_cutoff = 0.65, seq_limit = -1, attn_cutoff = 0.25, for_background = False, numWorkers=1, storeInterCNN = True, considerTopHit = True, useAll=False, precisionLimit=0.5):
+def estimate_interactions(num_filters, params, tomtom_data, motif_dir, verbose = False, CNNfirstpool = 6, sequence_len = 200, pos_score_cutoff = 0.65, seq_limit = -1, attn_cutoff = 0.25, for_background = False, numWorkers=1, storeInterCNN = True, considerTopHit = True, useAll=False, precisionLimit=0.5, attnAttr=False, classLabel = 0):
 	global Prob_Attention_All# = res_test[3]
 	global Seqs# = res_test[6]
 	global LabelPreds# = res_test[4]
@@ -207,7 +206,7 @@ def estimate_interactions(num_filters, params, tomtom_data, motif_dir, verbose =
 			with open(PAttn,'rb') as f:
 				PAttn = pickle.load(f)
 
-		feat_size = PAttn.shape[1]
+		feat_size = PAttn.shape[-1]
 		per_batch_labelPreds = LabelPreds[k]
 		
 		if num_labels == 2:
@@ -218,6 +217,15 @@ def estimate_interactions(num_filters, params, tomtom_data, motif_dir, verbose =
 		else:
 			if useAll == True:
 				tp_indices = [i for i in range(0,per_batch_labelPreds['labels'].shape[0])]
+    
+			elif attnAttr == True:
+				tp_indices=[] 
+				TPs = {}                                                                                                                                                                                   
+				batch_labels = per_batch_labelPreds['labels']                                                                                                                                                                         
+				batch_preds = per_batch_labelPreds['preds']   
+				headers = np.asarray(Seqs[k][:,0])                                                                                                                                                                        
+				#for e in range(0,batch_labels.shape[0]):  
+
 			else:
 				tp_indices=[] 
 				TPs = {}                                                                                                                                                                                   
@@ -280,7 +288,6 @@ def estimate_interactions_bg(num_filters, params, tomtom_data, motif_dir, verbos
 	seq_info_dict_list = []
 	final_all = [['Batch','ExNo','SeqHeader','SingleHeadNo','PositionA','PositionB','AveragePosDiff','AttnScore','PositionAInfo','PositionBInfo']]
 	count = 0	
-	print(len(Seqs_neg) * len(Seqs_neg[0]),len(Prob_Attention_All_neg), tp_pos_dict )
 
 	for k in range(0,len(Prob_Attention_All_neg)): #going through all batches
 		start_time = time.time()
@@ -292,7 +299,7 @@ def estimate_interactions_bg(num_filters, params, tomtom_data, motif_dir, verbos
 			with open(PAttn,'rb') as f:
 				PAttn = pickle.load(f)
 
-		feat_size = PAttn.shape[1]
+		feat_size = PAttn.shape[-1]
 		per_batch_labelPreds = LabelPreds_neg[k]
 		
 		if num_labels == 2:
@@ -310,7 +317,6 @@ def estimate_interactions_bg(num_filters, params, tomtom_data, motif_dir, verbos
 				for h_i in range(0,len(headers)):
 					header = headers[h_i]
 					if header in tp_pos_dict:
-						print("header in tp", header)         
 						tp_indices.append(h_i)
 						TPs[h_i] = tp_pos_dict[header]
 		Seqs_tp = Seqs_neg[k][tp_indices]
@@ -395,7 +401,6 @@ def analyze_interactions(argSpace, Interact_dir, tomtom_data, plot_dist=True):
 	#attnLimits = [0.01, 0.02, 0.03] + [argSpace.attnCutoff * i for i in range(1,11)] #save results for 10 different attention cutoff values (maximum per interaction) eg. [0.05, 0.10, 0.15, 0.20, 0.25, ...]
 	attnLimits = [argSpace.attnCutoff] if argSpace.attnCutoff==0.12 else [0.12, argSpace.attnCutoff]
 	attnCutoff = np.mean(Filter_Intr_Attn[Filter_Intr_Attn!=-1])
-	print(attnCutoff)
  
 	if argSpace.attnCutoff == 0.04:
  
@@ -486,7 +491,7 @@ num_labels = None
 
 
 # entry point to this module: will do all the processing (will be called from satori.py)
-def infer_intr_attention(experiment_blob, params, argSpace):
+def infer_intr_attention(experiment_blob, params, argSpace, interaction="SATORI"):
 	global Prob_Attention_All
 	global Prob_Attention_All_neg
 	global Seqs
@@ -507,12 +512,12 @@ def infer_intr_attention(experiment_blob, params, argSpace):
 	output_dir = experiment_blob['output_dir']
 	motif_dir_pos = experiment_blob['motif_dir_pos']
 	motif_dir_neg = experiment_blob['motif_dir_neg']
-
+ 
 	Interact_dir = output_dir + '/Interactions_SATORI'
+
 	if not os.path.exists(Interact_dir):
 	    os.makedirs(Interact_dir)
 	tomtom_data = np.loadtxt(motif_dir_pos+'/tomtom/tomtom.tsv',dtype=str,delimiter='\t')
-	#tomtom_data = np.loadtxt(motif_dir_pos+'/CNN_filters/cnnfilters.tsv',dtype=str,delimiter='\t')
  
 	if argSpace.intBackground != None:
 		tomtom_data_neg = np.loadtxt(motif_dir_neg+'/tomtom/tomtom.tsv',dtype=str,delimiter='\t')
