@@ -1,4 +1,4 @@
-from satori.models import AttentionNet
+from satori.modelsold import AttentionNet
 import torch.nn.functional as F
 import csv
 import math
@@ -14,12 +14,122 @@ import os
 import argparse
 import warnings
 from satori.experiment import load_datasets
+from argparse import ArgumentParser
 
 
 warnings.filterwarnings("ignore")
 # Device configuration
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 print(device)
+
+
+def parseArgs():
+    """Parse command line arguments
+    
+    Returns
+    -------
+    a : argparse.ArgumentParser
+    
+    """
+    parser = ArgumentParser(description='Model Search script.')
+    parser.add_argument('-v', '--verbose', dest='verbose', action='store_true', 
+                        default=False, help="verbose output [default is quiet running]")
+    parser.add_argument('-o','--outDir', dest='directory', type=str,
+                        action='store', help="output directory", default='')
+    parser.add_argument('-m','--mode', dest='mode', type=str,
+                        action='store', help="Mode of operation: train or test.", default='train')     
+    parser.add_argument('--deskload', dest='deskLoad',
+                        action='store_true', default=False,
+                        help="Load dataset from desk. If false, the data is converted into tensors and kept in main memory (not recommended for large datasets).")  
+    parser.add_argument('-w','--numworkers', dest='numWorkers', type=int,
+                        action='store', help="Number of workers used in data loader. For loading from the desk, use more than 1 for faster fetching.", default=1)        
+    parser.add_argument('--splitperc', dest='splitperc', type=float, action='store',
+                        help="Pecentages of test, and validation data splits, eg. 10 for 10 percent data used for testing and validation.", default=10)
+    parser.add_argument('--motifanalysis', dest='motifAnalysis',
+                        action='store_true', default=False,
+                        help="Analyze CNN filters for motifs and search them against known TF database.")
+    parser.add_argument('--filtersanalysis', dest='filterAnalysis',
+                        action='store_true', default=False,
+                        help="Analyze CNN filters for motifs based on annotation file.")
+    parser.add_argument('--scorecutoff', dest='scoreCutoff', type=float,
+                        action='store', default=0.65,
+                        help="In case of binary labels, the positive probability cutoff to use.")
+    parser.add_argument('--tomtompath', dest='tomtomPath',
+                        type=str, action='store', default=None,
+                        help="Provide path to where TomTom (from MEME suite) is located.") 
+    parser.add_argument('--database', dest='tfDatabase', type=str, action='store',
+                        help="Search CNN motifs against known TF database. Default is Human CISBP TFs.", default=None)
+    parser.add_argument('--annotate',dest='annotateTomTom',type=str,action='store',
+                        default=None, help="Annotate tomtom motifs. The value of this variable should be path to the database file used for annotation. Default is None.")                   
+    parser.add_argument('-i','--interactions', dest='featInteractions',
+                        action='store_true', default=False,
+                        help="Self attention based feature(TF) interactions analysis.")
+    parser.add_argument('--interactionanalysis', dest='interactionsAnalysis',
+                        action='store_true', default=False,
+                        help="interactions analysis with ground truth values")
+    
+    parser.add_argument('-b','--background', dest='intBackground', type=str,
+                        action='store', default=None,
+                        help="Background used in interaction analysis: shuffle (for di-nucleotide shuffled sequences with embedded motifs.), negative (for negative test set). Default is not to use background (and significance test).")
+    parser.add_argument('--attncutoff', dest='attnCutoff', type=float,
+                        action='store', default=0.04,
+                        help="Attention cutoff value. For a given interaction, it should have an attention value at least as high as this value across all examples.") #In human promoter DHSs data analysis, lowering the cutoff leads to more TF interactions. 
+    parser.add_argument('--fiscutoff', dest='fisCutoff', type=float,
+                        action='store', default=0,
+                        help="FIS score cutoff value. For a given interaction, it should have an FIS score at least as high as this value across all examples.") 
+    parser.add_argument('--intseqlimit', dest='intSeqLimit', type=int,
+                        action='store', default = -1,
+                        help="A limit on number of input sequences to test. Default is -1 (use all input sequences that qualify).")
+    parser.add_argument('-s','--store', dest='storeInterCNN',
+                        action='store_true', default=False,
+                        help="Store per batch attention and CNN outpout matrices. If false, the are kept in the main memory.")
+    parser.add_argument('--numlabels', dest='numLabels', type=int,
+                        action='store', default = 2,
+                        help="Number of labels. 2 for binary (default). For multi-class, multi label problem, can be more than 2. ")
+    parser.add_argument('--tomtomdist', dest='tomtomDist', type=str,
+                        action='store', default = 'ed',
+                        help="TomTom distance parameter (pearson, kullback, ed etc). Default is euclidean (ed). See TomTom help from MEME suite.")
+    parser.add_argument('--tomtompval', dest='tomtomPval', type=float,
+                        action='store', default = 0.05,
+                        help="Adjusted p-value cutoff from TomTom. Default is 0.05.")
+    parser.add_argument('--testall', dest='testAll',
+                        action='store_true', default=False,
+                        help="Test on the entire dataset (default False). Useful for interaction/motif analysis.")
+    parser.add_argument('--useall', dest='useAll',
+                        action='store_true', default=False,
+                        help="Use all examples in multi-label problem instead of using precision based example selection.  Default is False.")
+    parser.add_argument('--precisionlimit', dest='precisionLimit', type=float,
+                        action='store', default = 0.50,
+                        help="Precision limit to use for selecting examples in case of multi-label problem.")
+    parser.add_argument('--attrbatchsize', dest='attrBatchSize', type=int,
+                        action='store', default = 12,
+                        help="Batch size used while calculating attributes for FIS scoring. Default is 12.")
+    parser.add_argument('--method', dest='methodType', type=str,
+                        action='store', default='SATORI',
+                        help="Interaction scoring method to use; options are: SATORI, FIS, or BOTH. Default is SATORI.")
+    parser.add_argument('inputprefix', type=str,
+                        help="Input file prefix for the bed/text file and the corresponding fasta file (sequences).")
+
+    parser.add_argument('--gt_pairs', dest='pairs_file',
+                        action='store', default='',
+                        help="Path to groud truth pairs file")
+    parser.add_argument('--finetune_model', dest='finetune_model_path',
+                        action='store', default=None,
+                        help="Path to the pre-trained model ")
+    parser.add_argument('--set_seed', dest='set_seed',
+                        action='store_true', default=False,
+                        help="Set seed or not")  
+
+    parser.add_argument('--seed', dest='seed',
+                        action='store', type=int, default=0,
+                        help="Seed to intialize model")   
+    parser.add_argument('--motifweights', dest='load_motif_weights',
+                        action='store_true', default=False,
+                        help="Load weights of first CNN from motifs PWM and freeze them, by default false hence weights are randomly intialized and trained.).")  
+
+    args = parser.parse_args()
+
+    return args
 
 
 def dinucshuffle(sequence):
@@ -53,6 +163,7 @@ def setup_seed(seed):
 def Calibration(arg_space):
     print("Start")
     best_AUC = 0
+    dataset_name = "Simulated"
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
     print(device)
     model_dir = arg_space.directory
@@ -73,7 +184,7 @@ def Calibration(arg_space):
     params["use_CNN"] =True #use CNN layer
     params["use_posEnc"] = False#use positional encoding
     params["use_CNNpool"] = True#use CNN pooling
-    params["CNN_poolsize"] = 4#CNN maxpool size
+    
     params["CNN_padding"] = 0#CNN padding, need to be determined based on input length and filter size
     params["get_CNNout"] = True#get first CNN layer output (useful for motif analysis)
     params["get_seqs"] = True#get sequences for the test set examples (useful for motif analysis)
@@ -83,12 +194,16 @@ def Calibration(arg_space):
     params['num_attnlayers'] =1 #number of attention layers
     params['mixed_attn'] = False
     params['mixed_attn_config'] = 0.25
+    params['multiple_linear'] = False
+    params['sei'] = False
+    params['cnn_attention_block'] = False
+    params['exp_name'] = dataset_name
 
     # entropy_reg_value|0.01#entropy regularization value
     epochs = [30, 40, 50, 60]
-    attn_type = [True, False] #true for relative attn
+    attn_type = [False] #add true for relative attn
     learnable_dist = [False] 
-    entropy_loss = [True, False]
+    entropy_loss = [False] #True 
     
     for attn in attn_type:
         
@@ -97,7 +212,7 @@ def Calibration(arg_space):
             
         for dist in learnable_dist:
             for entr in entropy_loss:
-                for number in range(50):
+                for number in range(30):
                     # hyper-parameters
                     print(number)
                     
@@ -108,7 +223,7 @@ def Calibration(arg_space):
                     params['num_multiheads'] = random.choice(num_of_multiheads_list)
                     params['singlehead_size'] = random.choice(single_headsize_list)#SingleHeadSize
                     params['multihead_size'] = random.choice(multihead_size_list) #MultiHeadSize
-                    params['CNN1_useexponential'] = random.choice([True, False])
+                    params['CNN1_useexponential'] = random.choice([False, False])#no Exponential
                     CNN_filters_list = [[200] , [300], [400]]
                     CNN_filtersize_list = [13, 15, 17, 19]
 
@@ -121,14 +236,14 @@ def Calibration(arg_space):
                     params['relativeAttn'] = attn
                     params['Learnable_relativeAttn'] = dist
 
-                    params['batch_size']  = random.choice([32, 64, 128, 256])
+                    params['batch_size']  = random.choice([32, 64, 128])
                     params["entropy_loss"] = entr
                     params["entropy_reg_value"] = random.uniform(0.005, 0.05) #entropy regularization value
 
-                    train_loader, train_indices, test_loader, test_indices, valid_loader, valid_indices, output_dir = load_datasets(arg_space, params['batch_size'])
+                    optim_list=['SGD','Adagrad','Adam']
 
                     optim=random.choice(optim_list)
-                    learning_rate=logsampler(0.005,0.5) 
+                    learning_rate=logsampler(0.005,0.05) 
                     momentum_rate=sqrtsampler(0.95,0.99)  
                     # sigmaConv=logsampler(10**-6,10**-2)   
                     # sigmaNeu=logsampler(10**-3,10**-1) 
@@ -139,15 +254,20 @@ def Calibration(arg_space):
                     params["optim"] = optim
                     params["momentum_rate"] = momentum_rate
                     params["weight_decay"] = weightDecay
-
+                    list_ln = [512, 1024, 2048]
+                    params['linear_layer_size'] = random.choice(list_ln)
+                    params["CNN_poolsize"] = random.choice([4, 6, 8])#CNN maxpool size
                     # nummotif_list=[16]
                     # nummotif1=random.choice(nummotif_list)    
                     model_auc=[[],[],[]]
                     print(params) 
                     print("Epochssss ", num_epoch)
+                    train_loader, train_indices, test_loader, test_indices, valid_loader, valid_indices, output_dir, seq_len = load_datasets(arg_space, params['batch_size'], dataset_name)#
+
                     for kk in range(3):
-                        setup_seed(kk)
-                        model = AttentionNet(arg_space, params, device=device).to(device)
+                        #setup_seed(kk)
+                        model = AttentionNet(arg_space, params, device=device,seq_len=seq_len).to(device)
+                        print(model)
 
                         #model = Network(nummotif1,motiflen,RNN_hidden_size,hidden_size,hidden,dropprob,sigmaConv,sigmaNeu,sigmaRNN,xavier).to(device)
                         if optim=='SGD':
@@ -212,7 +332,7 @@ def Calibration(arg_space):
                                             try:
                                                     auc.append(metrics.roc_auc_score(labels, pred[:,1]))
                                             except ValueError:
-                                                    print('NaN found', params)
+                                                    #print('NaN found', params)
                                                     auc.append(0.0)
                                         print(ep, np.mean(auc))
                                         model_auc[kk].append(np.mean(auc))
@@ -282,3 +402,16 @@ def Calibration(arg_space):
                              'best_CNN_filtersize':best_CNN_filtersize,'best_CNN_poolsize':best_CNN_poolsize, 'best_CNN_padding' : best_CNN_padding, 'best_batch_size': best_batch_size }
     torch.save(best_hyperparameters, model_dir+'best_hyperpamarameters.pth')
     return best_hyperparameters
+
+
+def hyperparameter_selection():
+    
+    arg_space = parseArgs()
+    
+
+    best_Res = Calibration(arg_space)
+
+    print(best_Res)
+    
+if __name__ == "__main__":
+    hyperparameter_selection()

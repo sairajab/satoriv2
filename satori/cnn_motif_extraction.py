@@ -14,11 +14,11 @@ from torch.utils.data.sampler import SubsetRandomSampler
 # local imports
 from datasets import DatasetLoadAll, DatasetLazyLoad
 from extract_motifs import get_motif
-from satori.models import AttentionNet
+from satori.modelsold import AttentionNet
 from utils import get_shuffled_background
 from cnn_weights import *
 import re
-from experiment import load_datasets
+from satori.experiment_2 import load_datasets
 
 
 def read_gt_motifs_location(annotation_file, valid_data):

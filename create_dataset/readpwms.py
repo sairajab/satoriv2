@@ -30,7 +30,7 @@ def flatten(input):
 # print(len(uniq_tfs))
 
 #***********uncomment for actual motifs**********
-from gettfsfromfile import *
+from create_dataset.gettfsfromfile import *
 
 def load_data(pairs_file, tfs_count = -1, tf_database = '../../../motif_databases/Jaspar.meme'):
       
@@ -81,7 +81,7 @@ def get_motif_score(motif, tf):
         print(tf)
     
         freq = {"A" :  0.225, "C" : 0.278 , "G" : 0.271, "T" : 0.226}
-        m = motifs.read(open("pfm/"+tf+".pfm"),"pfm")
+        m = motifs.read(open("/s/chromatin/p/nobackup/Saira/original/satori/create_dataset/pfm/"+tf+".pfm"),"pfm")
         pwm = m.counts.normalize(pseudocounts=0.5)
         pssm = pwm.log_odds(background=freq)
         print("Max value" , pssm.max)

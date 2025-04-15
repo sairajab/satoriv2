@@ -91,14 +91,13 @@ def create_subset_meme(meme_file_path, desired_motif_names):
         subset_meme_db = motifs.MotifDB(selected_motifs)
 
         # Save the subset MEME database to a new file (optional)
-        subset_meme_file_path = "subset8.meme"
+        subset_meme_file_path = "clustered_subset80.meme"
         with open(subset_meme_file_path, "w") as handle:
             subset_meme_db.write(handle)
 
 if __name__ == "__main__":
-    pairs_file = "/s/jawar/i/nobackup/Saira/latest/satori_v2/data/ToyData/Ctfs/tf_pairs_data_1.txt"
 
-    tfdatabase = '../../../motif_databases/Jaspar.meme'
-    tfs_pairs, tfs = get_tf_pairs("tf_pairs_80.txt")
+    tfdatabase = '/s/chromatin/p/nobackup/Saira/motif_databases/Jaspar.meme' #JASPAR2024_CORE_non-redundant_pfms
+    tfs_pairs, tfs = get_tf_pairs("/s/chromatin/p/nobackup/Saira/original/satori/create_dataset/tf_pairs_80.txt")
     print(tfs, len(tfs))
     get_motif_proteins(tfdatabase, tfs)

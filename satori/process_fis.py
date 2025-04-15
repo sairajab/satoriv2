@@ -13,8 +13,8 @@ from statsmodels.stats.multitest import multipletests
 from torch.backends import cudnn
 
 #local imports
-from models import AttentionNet
-from utils import get_popsize_for_interactions, get_intr_filter_keys
+from satori.modelsold import AttentionNet
+from satori.utils import get_popsize_for_interactions, get_intr_filter_keys
 
 
 def evaluateRegularBatch(net, batch, criterion, device=None):

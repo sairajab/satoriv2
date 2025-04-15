@@ -221,7 +221,7 @@ class Sei_light(nn.Module):
 
 
 class Sei(nn.Module):
-    def __init__(self, sequence_length=600, n_genomic_features=164):
+    def __init__(self, sequence_length=600, n_genomic_features=2): #164
         """
         Parameters
         ----------
@@ -293,9 +293,9 @@ class Sei(nn.Module):
             BSplineTransformation(self._spline_df, scaled=False))
 
         self.classifier = nn.Sequential(
-            nn.Linear(640 * self._spline_df, n_genomic_features),
+            nn.Linear(640 * self._spline_df, 1024), #n_genomic_features
             nn.ReLU(inplace=True),
-            nn.Linear(n_genomic_features, n_genomic_features))
+            nn.Linear(1024, n_genomic_features))
 
     def forward(self, x):
         """Forward propagation of a batch.
@@ -324,7 +324,7 @@ class Sei(nn.Module):
         reshape_out = spline_out.view(
             spline_out.size(0), 640 * self._spline_df)
         predict = self.classifier(reshape_out)
-        return predict
+        return predict, torch.zeros(32,32)
 
 
 def criterion():

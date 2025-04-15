@@ -116,9 +116,9 @@ def read_filters_to_motif(filter_to_motif_file , by_default_index = 0):
     filters_tf = {}
 
     for x in f:
-        data = x.split('\t')
+        data = x.split(',')
         data = [j for j in data if j]
-        filters_tf[data[0]] = data[1].strip()
+        filters_tf[data[0][6:]] = data[1].strip()
 
     #print(filters_tf)
     return filters_tf
@@ -164,6 +164,8 @@ def evaluate_interactions(interactions_file, thresholds, tfs_pairs, filters_to_m
                 tf1 = motif_to_tf[filters_to_motif[interacting_tf[0]]]
                 tf2 = motif_to_tf[filters_to_motif[interacting_tf[1]]]
             else:
+                if interacting_tf[0] not in filters_to_motif or interacting_tf[1] not in filters_to_motif:
+                    continue
                 tf1 = filters_to_motif[interacting_tf[0]]
                 tf2 = filters_to_motif[interacting_tf[1]]
                 
@@ -225,13 +227,13 @@ def evaluate_interactions(interactions_file, thresholds, tfs_pairs, filters_to_m
 
 
 
-def run_interaction_evaluation(exp_path, gt_tfs_path, method = "SATORI", motif_weights=False):
+def run_interaction_evaluation(exp_path, gt_tfs_path,tfdatabase,  method = "SATORI",  motif_weights=False):
 
     output_folder =  exp_path
     '''
     Use following lines when you want to exclude sorting function and use first entry in tomtom.tsv
     '''
-    motif_to_tf, filter_to_motif = read_motif_meme(output_folder + "/Motif_Analysis", "/s/chromatin/p/nobackup/Saira/motif_databases/Jaspar.meme")
+    motif_to_tf, filter_to_motif = read_motif_meme(output_folder + "/Motif_Analysis", tfdatabase)#JASPAR2024_CORE_non-redundant_pfms.meme")
 
     # uncomment if using table.txt for motif analysis
     # filters_tf = read_motifs_table(output_folder + "/Motif_Analysis/table.txt")
@@ -251,7 +253,9 @@ def run_interaction_evaluation(exp_path, gt_tfs_path, method = "SATORI", motif_w
     for file in interaction_files:
         if motif_weights:
             print("Using filters_to_motif.txt......")
-            filters_tf = read_filters_to_motif(output_folder + "filters_to_motif.txt")
+            annotated_filters = "/s/chromatin/p/nobackup/Saira/original/satori/create_dataset/filter_to_motifs.csv"
+            filters_tf = read_filters_to_motif(annotated_filters)
+            print(filters_tf)
             ps, rs, f1s = evaluate_interactions(file, thresholds, tfs_pairs, filters_tf, output_folder)    
         else:
             print("Using tomtom.txt......")

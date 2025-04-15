@@ -4,9 +4,87 @@ import random
 import torch
 
 from Bio.motifs import minimal
-from deeplift_dinuc_shuffle import dinuc_shuffle
 from fastprogress import progress_bar
 from sklearn import metrics
+from collections import defaultdict
+from random import shuffle
+import json
+##############################################
+#Taken from: https://github.com/kundajelab/deeplift/blob/master/deeplift/dinuc_shuffle.py
+#############################################
+
+
+def setup_seed(seed=42):
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
+
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
+    torch.use_deterministic_algorithms(True)  
+    
+#random.seed = 100
+def load_config(config_path):
+    """Load parameters from a JSON configuration file."""
+    with open(config_path, 'r') as json_file:
+        config = json.load(json_file)
+    return config
+
+#compile the dinucleotide edges
+def prepare_edges(s):
+    edges = defaultdict(list)
+    for i in range(len(s)-1):
+        edges[tuple(s[i])].append(s[i+1])
+    return edges
+
+
+def shuffle_edges(edges, rng=None):
+    #for each character, remove the last edge, shuffle, add edge back
+    for char in edges:
+        last_edge = edges[char][-1]
+        edges[char] = edges[char][:-1]
+        the_list = edges[char]
+        if (rng is None):
+            shuffle(the_list)
+        else:
+            rng.shuffle(the_list)
+        edges[char].append(last_edge)
+    return edges
+
+
+def traverse_edges(s, edges):
+    generated = [s[0]]
+    edges_queue_pointers = defaultdict(lambda: 0)
+    for i in range(len(s)-1):
+        last_char = generated[-1]
+        generated.append(edges[tuple(last_char)][edges_queue_pointers[tuple(last_char)]])
+        edges_queue_pointers[tuple(last_char)] += 1
+    if isinstance(generated[0],str):
+        return "".join(generated)
+    else:
+        import numpy as np
+        return np.asarray(generated)
+
+
+def dinuc_shuffle(s, rng=None):
+    if isinstance(s, str):
+        s=s.upper()
+    return traverse_edges(s, shuffle_edges(prepare_edges(s), rng))
+
+
+
+class Config:
+    def __init__(self, config_dict):
+        for key, value in config_dict.items():
+            setattr(self, key, value)
+
+    @classmethod
+    def from_json(cls, file_path):
+        with open(file_path, "r") as f:
+            config_dict = json.load(f)
+        return cls(config_dict)
 
 
 def get_params_dict(params_path):
@@ -62,6 +140,87 @@ def annotate_motifs(annotate_arg, motif_dir, store=True):
                    final, delimiter='\t', fmt='%s')
     else:
         return final
+
+def get_indices(dataset_size, test_split, output_dir, data, shuffle_data=True, seed_val=100, mode='train', rev_complement=False, final_dataset=None):
+    indices = list(range(dataset_size))
+    split_val = int(np.floor(test_split*dataset_size))
+    if shuffle_data:
+        rng = np.random.RandomState(seed_val)
+        rng.shuffle(indices)
+    # --save indices for later use, when testing for example---#
+    if mode == 'train':
+
+        if data == "human_promoters":
+            if rev_complement:
+                valid_indices = np.loadtxt(
+                    '/s/chromatin/p/nobackup/Saira/original/satori/data/Human_Promoters/valid_indices_rev.txt', dtype=int)
+                test_indices = np.loadtxt(
+                    '/s/chromatin/p/nobackup/Saira/original/satori/data/Human_Promoters/test_indices_rev.txt', dtype=int)
+                train_indices = np.loadtxt(
+                    '/s/chromatin/p/nobackup/Saira/original/satori/data/Human_Promoters/train_indices_rev.txt', dtype=int)
+            
+            else:
+                valid_indices = np.loadtxt(
+                    '/s/chromatin/p/nobackup/Saira/original/satori/data/Human_Promoters/valid_indices.txt', dtype=int)
+                test_indices = np.loadtxt(
+                    '/s/chromatin/p/nobackup/Saira/original/satori/data/Human_Promoters/test_indices.txt', dtype=int)
+                train_indices = np.loadtxt(
+                    '/s/chromatin/p/nobackup/Saira/original/satori/data/Human_Promoters/train_indices.txt', dtype=int)
+
+        elif data == "arabidopsis":
+
+            valid_indices = np.loadtxt(
+                '/s/chromatin/p/nobackup/Saira/original/satori/data/Arabidopsis_ChromAccessibility/valid_indices.txt', dtype=int)
+            test_indices = np.loadtxt(
+                '/s/chromatin/p/nobackup/Saira/original/satori/data/Arabidopsis_ChromAccessibility/test_indices.txt', dtype=int)
+            train_indices = np.loadtxt(
+                '/s/chromatin/p/nobackup/Saira/original/satori/data/Arabidopsis_ChromAccessibility/train_indices.txt', dtype=int)
+
+        else:
+          try:
+              valid_indices = np.loadtxt(
+                  output_dir+'/valid_indices.txt', dtype=int)
+              test_indices = np.loadtxt(
+                  output_dir+'/test_indices.txt', dtype=int)
+              train_indices = np.loadtxt(
+                  output_dir+'/train_indices.txt', dtype=int)
+          except:
+                train_indices, test_indices, valid_indices = np.array(
+                    indices[2*split_val:]), np.array(indices[:split_val]), np.array(indices[split_val:2*split_val])
+    
+                np.savetxt(output_dir+'/valid_indices.txt', valid_indices, fmt='%s')
+                np.savetxt(output_dir+'/test_indices.txt', test_indices, fmt='%s')
+                np.savetxt(output_dir+'/train_indices.txt', train_indices, fmt='%s')
+
+    else:
+        try:
+            if data == "human_promoters":
+                valid_indices = np.loadtxt(
+                    '/s/chromatin/p/nobackup/Saira/original/satori/data/Human_Promoters/valid_indices.txt', dtype=int)
+                test_indices = np.loadtxt(
+                    '/s/chromatin/p/nobackup/Saira/original/satori/data/Human_Promoters/test_indices.txt', dtype=int)
+                train_indices = np.loadtxt(
+                    '/s/chromatin/p/nobackup/Saira/original/satori/data/Human_Promoters/train_indices.txt', dtype=int)
+
+            elif data == "arabidopsis":
+
+                valid_indices = np.loadtxt(
+                    '/s/chromatin/p/nobackup/Saira/original/satori/data/Arabidopsis_ChromAccessibility/valid_indices.txt', dtype=int)
+                test_indices = np.loadtxt(
+                    '/s/chromatin/p/nobackup/Saira/original/satori/data/Arabidopsis_ChromAccessibility/test_indices.txt', dtype=int)
+                train_indices = np.loadtxt(
+                    '/s/chromatin/p/nobackup/Saira/original/satori/data/Arabidopsis_ChromAccessibility/train_indices.txt', dtype=int)
+            else:
+                valid_indices = np.loadtxt(
+                    output_dir+'/valid_indices.txt', dtype=int)
+                test_indices = np.loadtxt(
+                    output_dir+'/test_indices.txt', dtype=int)
+                train_indices = np.loadtxt(
+                    output_dir+'/train_indices.txt', dtype=int)
+        except:
+            raise Exception(
+                "Error! looks like you haven't trained the model yet. Rerun with --mode train.")
+    return train_indices, test_indices, valid_indices
 
 
 def get_popsize_for_interactions(argSpace, per_batch_labelPreds, batchSize):
@@ -163,7 +322,7 @@ def get_shuffled_background(tst_loader, argSpace, pre_saved=False):
     else:
         out_directory = argSpace.directory+'/Temp_Data'
         if argSpace.mode == 'test':
-            if os.path.exists(out_directory+'/'+'shuffled_background.txt') and os.path.exists(out_directory+'/'+'shuffled_background.fa'):
+            if pre_saved and os.path.exists(out_directory+'/'+'shuffled_background.txt') and os.path.exists(out_directory+'/'+'shuffled_background.fa'):
                 return out_directory+'/'+'shuffled_background'  # name of the prefix to use
             else:
                 print("Shuffled data missing! Regenerating...")

@@ -3,12 +3,14 @@ import pickle
 import numpy as np
 import torch
 from sklearn import metrics
+from sklearn.metrics import confusion_matrix
 from torch.utils.data import DataLoader
 from typing import Dict, Tuple, Any
 import torch.nn.functional as F
 import time
+import torch.nn as nn
 
-def evaluateRegularMC(net, device, iterator, criterion, out_dirc,  ent_loss=False, entropy_reg_weight=0.005, getPAttn=False, storePAttn=False, getCNN=False, storeCNNout=False, getSeqs=False, getAttnAttr = False, classlabel=1):
+def evaluateRegularMC(net, device, iterator, criterion, out_dirc,  ent_loss=False, entropy_reg_weight=0.005, getPAttn=False, storePAttn=False, getCNN=False, storeCNNout=False, getSeqs=False, motifweights = False,getAttnAttr = False, classlabel=1):
     running_loss = 0.0
     valid_auc = []
     net.eval()
@@ -19,8 +21,12 @@ def evaluateRegularMC(net, device, iterator, criterion, out_dirc,  ent_loss=Fals
     running_loss = 0.0
     valid_auc = []
     net.eval()
-    CNNlayer = net.layer1[0:3]  # first conv layer without the maxpooling part
-    CNNlayer.eval()
+    if getCNN:
+        if motifweights:
+                CNNlayer = net.layer1[0:1]
+        else:
+            CNNlayer = net.layer1[0:3]   # first conv layer without the maxpooling part
+        CNNlayer.eval()
     roc = np.asarray([[], []]).T
     PAttn_all = {}
     per_batch_labelPreds = {}
@@ -91,18 +97,21 @@ def evaluateRegularMC(net, device, iterator, criterion, out_dirc,  ent_loss=Fals
     return running_loss/len(iterator), valid_auc, roc, PAttn_all, per_batch_labelPreds, per_batch_CNNoutput, per_batch_testSeqs
 
 
-def evaluateRegular(net, device, iterator, criterion, out_dirc, ent_loss=False, entropy_reg_weight=0.005, getPAttn=False, storePAttn=False, getCNN=False, storeCNNout=False, getSeqs=False, getAttnAttr = None):
+def evaluateRegular(net, device, iterator, criterion, out_dirc, ent_loss=False, entropy_reg_weight=0.005, getPAttn=False, storePAttn=False, getCNN=False, storeCNNout=False, getSeqs=False, motifweights = False, getAttnAttr = None):
     running_loss = 0.0
-    valid_auc = []
     net.eval()
-    CNNlayer = net.layer1[0:3]  # first conv layer without the maxpooling part
-    CNNlayer.eval()
+    if getCNN:
+        if motifweights:
+            CNNlayer = net.layer1[0:1]
+        else:
+            CNNlayer = net.layer1[0:3]   # first conv layer without the maxpooling part
+        CNNlayer.eval()
     roc = np.asarray([[], []]).T
     PAttn_all = {}
     per_batch_labelPreds = {}
     per_batch_CNNoutput = {}
     per_batch_testSeqs = {}
-   
+    i = 0
     with torch.no_grad():
 
         for batch_idx, (headers, seqs, data, target) in enumerate(iterator):
@@ -128,6 +137,7 @@ def evaluateRegular(net, device, iterator, criterion, out_dirc, ent_loss=False, 
             softmax = torch.nn.Softmax(dim=1)
             labels = target.cpu().numpy()
             pred = softmax(outputs)
+
             if getPAttn == True:
                 if storePAttn == True:
                     output_dir = out_dirc
@@ -140,18 +150,33 @@ def evaluateRegular(net, device, iterator, criterion, out_dirc, ent_loss=False, 
                             str(batch_idx)+'.pckl'  # paths to the pickle PAttention
                 else:
                     PAttn_all[batch_idx] = PAttn.cpu().detach().numpy()
+                    ''' for the visualization of the attention weights'''
+                    if i == 0 :
+                        output_dir = out_dirc
+                        if not os.path.exists(output_dir):
+                            os.makedirs(output_dir)
+                        with open(output_dir+'/PAttn-'+str(batch_idx)+'.pckl', 'wb') as f:
+                                pickle.dump(PAttn_all[batch_idx], f)
+                                
+                        with open(output_dir+'/predictions-'+str(batch_idx)+'.pckl', 'wb') as f:
+                                pickle.dump(pred.cpu().detach().numpy(), f)
+                        with open(output_dir+'/labels-'+str(batch_idx)+'.pckl', 'wb') as f:
+                                pickle.dump(labels, f)
+                        with open(output_dir+'/headers-'+str(batch_idx)+'.pckl', 'wb') as f:
+                                pickle.dump(headers, f)
+                    i = i + 1
+                    ''' for the visualization of the attention weights'''
+                    
             pred = pred.cpu().detach().numpy()
-            label_pred = np.column_stack((labels, pred[:, 1]))
+            label_pred = np.column_stack((labels, pred[:,1]))#[:, 1]
             per_batch_labelPreds[batch_idx] = label_pred
+            
             roc = np.row_stack((roc, label_pred))
-            try:
-                valid_auc.append(metrics.roc_auc_score(labels, pred[:, 1]))
-            except:
-                valid_auc.append(0.0)
             running_loss += loss.item()
-            outputCNN = CNNlayer(data).cpu().detach().numpy()
             if getCNN == True:
                 outputCNN = CNNlayer(data)
+                #print(outputCNN[0,0,:], outputCNN.shape)
+                #print(pred[0,:], labels[0])
                 if storeCNNout == True:
                     output_dir = out_dirc
                     if not os.path.exists(output_dir):
@@ -166,8 +191,9 @@ def evaluateRegular(net, device, iterator, criterion, out_dirc, ent_loss=False, 
             if getSeqs == True:
                 per_batch_testSeqs[batch_idx] = np.column_stack(
                         (headers, seqs))
-                
+    
     labels = roc[:, 0]
     preds = roc[:, 1]
+    preds = np.nan_to_num(preds, nan=0.5)
     valid_auc = metrics.roc_auc_score(labels, preds)
     return running_loss/len(iterator), valid_auc, roc, PAttn_all, per_batch_labelPreds, per_batch_CNNoutput, per_batch_testSeqs

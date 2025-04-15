@@ -11,12 +11,11 @@ from sklearn import metrics
 from statsmodels.stats.multitest import multipletests
 from torch.backends import cudnn
 #local imports
-from models import AttentionNet
-from utils import get_popsize_for_interactions, get_intr_filter_keys
-from process_attention import analyze_interactions
+from satori.models import AttentionNet
+from satori.utils import get_popsize_for_interactions, get_intr_filter_keys
+from satori.process_attention import analyze_interactions
 import torch.nn.functional as F
 import torch.nn as nn
-
 ### Global variables ###
 Filter_Intr_Keys = None
 #tp_pos_dict = None
@@ -73,6 +72,47 @@ def get_filters_in_seq_dict(all_seqs,motif_dir,num_filters,CNNfirstpool,numWorke
 		for subdict in result:
 			seq_info_dict.update(subdict)
 	return seq_info_dict
+
+def tiana_compute_integrated_gradients(net, data, PAttn, m=20, numlabels=2, target=None):
+    # Shape of PAttn is now (128, 4, 145, 145)
+    batch_size, num_heads, height, width = PAttn.shape
+    batch_att = PAttn
+
+    # Initialize grad_tensor (list of tensors for each head)
+    grad_tensor = [torch.zeros_like(batch_att[:, h], requires_grad=False) for h in range(num_heads)]
+
+    # Initialize baseline
+    baseline = [torch.zeros_like(batch_att[:, h]) for h in range(num_heads)]
+
+    # Loop over the range of m
+    for k in range(m):
+        # Compute the scaled input for each head
+        input_att = [baseline[h] + ((k / m) * (batch_att[:, h] - baseline[h])) for h in range(num_heads)]
+        
+        # Ensure input_att is watched for gradients
+        for h in range(num_heads):
+            input_att[h].requires_grad_(True)  # Watch the gradient for each head's attention tensor
+
+        if numlabels == 2:
+            outputs, _, PAttn = net(data, input_att)
+            pred = torch.unbind(outputs[torch.arange(target.size(0)), target])
+        else:
+            outputs, PAttn = net(data, input_att, target)
+            pred = torch.unbind(outputs)
+
+        # Accumulate the gradients for each head
+        for h in range(num_heads):
+            gradient = torch.autograd.grad(pred, PAttn[:, h], retain_graph=True)[0]
+            grad_tensor[h] = grad_tensor[h] + gradient
+
+    # Compute the attribution tensor for each head
+    attr = [(grad_tensor[h] * ((batch_att[:, h] - baseline[h]) / m)) for h in range(num_heads)]
+
+    # Concatenate the attention results across heads
+    PAttn_all = torch.cat(attr, dim=1).cpu().detach().numpy()
+
+    return PAttn_all
+
 
 def compute_integrated_gradients(net, data, PAttn, m=20,numlabels=2, target=None):
     number_of_heads = len(PAttn)
@@ -133,7 +173,9 @@ def evaluateRegularBatchAttnAttr(net, device, iterator, criterion, out_dirc, get
             labels=target.cpu().numpy()
             pred_out = softmax(outputs)
             start_time = time.time() 
-
+			#For tiana
+			#PAttn_all[batch_idx] = tiana_compute_integrated_gradients(net, data, PAttn, target=target)
+   
             PAttn_all[batch_idx] = compute_integrated_gradients(net, data, PAttn, target=target)
             end_time = time.time() 
 
@@ -207,7 +249,10 @@ def evaluateRegularBatchMCAttnAttr(net,  net_wrapper,device, iterator, criterion
             sigmoid = torch.nn.Sigmoid()
             pred_out = sigmoid(outputs)
             start_time = time.time()
-            PAttn_all[batch_idx] = compute_integrated_gradients(net_wrapper, data, PAttn, numlabels=100, target=target)
+            #For tiana
+            PAttn_all[batch_idx] = tiana_compute_integrated_gradients(net, data, PAttn, target=target)
+   
+            #PAttn_all[batch_idx] = compute_integrated_gradients(net_wrapper, data, PAttn, numlabels=100, target=target)
             end_time = time.time() 
             print("Time Taken: %d seconds"%round(end_time-start_time))
             if i == 0 :
@@ -312,8 +357,26 @@ def process_attnattr(experiment_blob, intr_dir, params, argSpace, Filter_Intr_Ke
 	pos_score_cutoff = argSpace.scoreCutoff
 	sequence_len = experiment_blob['seq_len']
  
-	net = AttentionNet(argSpace, params, device=device,seq_len=sequence_len, genPAttn=True, getAttngrad=True).to(device)
-	
+	net = AttentionNet(num_labels, params, device=device,seq_len=sequence_len, genPAttn=True, getAttngrad=True).to(device)
+	# ## For tiana only
+	# pssm = 'motif_pssm.npy'
+	# # load pssm
+	# with open(pssm, 'rb') as f:
+	# 	motif_array = np.load(f)
+		
+	# #number of total tf (half of pssm)
+	# ntf = motif_array.shape[-1]//2
+		
+	# # motif_size
+	# motif_size = motif_array.shape[0]
+		
+	# # padding size
+	# if ntf % 4 == 0:
+	# 	npad = 0
+	# elif ntf % 4 != 0:
+	# 	npad = 4 - ntf % 4
+	# # Example usage
+	# net = TianaModel(num_tf=ntf, pad_size=npad, max_len=motif_size, pssm_path='motif_pssm.npy', seq_size=sequence_len).to(device)
 	try:    
 		checkpoint = torch.load(saved_model_dir+'/model')
 		net.load_state_dict(checkpoint['model_state_dict'])

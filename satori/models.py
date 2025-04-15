@@ -83,7 +83,8 @@ class PositionalEncoding(nn.Module):
         self.register_buffer('pe', pe)
 
     def forward(self, x):
-        x = x + Variable(self.pe[:, :x.size(1)],
+        #print(x.shape, self.pe.shape)
+        x = x + Variable(self.pe[:, :x.size(1), :],
                          requires_grad=False)
         return self.dropout(x)
 
@@ -153,7 +154,7 @@ class AttentionNet(nn.Module):
         self.filterSize = params['CNN_filtersize']
         self.CNNpoolSize = params['CNN_poolsize']
         self.CNNpadding = params['CNN_padding']
-        self.numClasses = numLabels.numLabels  # change when not using model selection
+        self.numClasses = numLabels  # change when not using model selection
         self.device = device
         self.reuseWeightsQK = reuseWeightsQK
         # number of channels, one hot encoding
@@ -176,7 +177,10 @@ class AttentionNet(nn.Module):
         self.cnn_attention_block = params["cnn_attention_block"]
         self.use_sei = params["sei"]
         self.exp_name = params["exp_name"]
+        self.dropout_rate = float(params["dropout_rate"])
 
+        if self.usePE:
+                self.pe = PositionalEncoding(d_model = self.numCNNfilters[0], dropout= self.dropout_rate)
 
         if self.cnn_attention_block:
             num_blocks = 3
@@ -205,7 +209,7 @@ class AttentionNet(nn.Module):
                                         nn.BatchNorm1d(
                 num_features=self.numCNNfilters[0]),
                 nn.ReLU() if self.CNN1useExponential == False else Exponential())
-            self.dropout1 = nn.Dropout(p=0.2)
+            self.dropout1 = nn.Dropout(p= self.dropout_rate)
             self.maxpool1 = nn.MaxPool1d(kernel_size=self.CNNpoolSize)
 
             self.last_channels = self.numCNNfilters[0]
@@ -266,7 +270,7 @@ class AttentionNet(nn.Module):
         if self.useRNN:
             self.RNN = nn.LSTM(self.numInputChannels if self.useCNN == False else self.last_channels,
                                self.RNN_hiddenSize, num_layers=2, bidirectional=True)
-            self.dropoutRNN = nn.Dropout(p=0.4)
+            self.dropoutRNN = nn.Dropout(p= self.dropout_rate)
             self.Q = nn.ModuleList()
             self.Q.append(nn.ModuleList([nn.Linear(in_features=2*self.RNN_hiddenSize,
                                    out_features=self.SingleHeadSize) for i in range(0, self.numMultiHeads)]))
@@ -307,13 +311,15 @@ class AttentionNet(nn.Module):
 
         # reuse weights between Query (Q) and Key (K)
         if self.reuseWeightsQK:
+            # as number of attention layers is 1 so
             for i in range(0, self.numMultiHeads):
-                self.K[i].weight = Parameter(self.Q[i].weight.t())
+                self.K[0][i].weight = Parameter(self.Q[0][i].weight.t())
 
         self.RELU = nn.ModuleList([nn.ReLU()
                                   for i in range(0, self.numMultiHeads)])
+        print(self.dropout_rate)
         self.MultiHeadLinearDropout = nn.ModuleList(
-            [nn.Dropout(0.2) for j in range(0, self.numofAttnLayers)])
+            [nn.Dropout(self.dropout_rate) for j in range(0, self.numofAttnLayers)])
         if self.multiple_linear: #Asa said it does not make difference 
 
             self.MultiHeadLinear_1 = nn.ModuleList([nn.Linear(in_features=self.SingleHeadSize*self.numMultiHeads, out_features=self.linear_size)
@@ -323,7 +329,7 @@ class AttentionNet(nn.Module):
             self.fc3 = nn.Linear(
                 in_features=self.MultiHeadSize, out_features=self.numClasses)
             self.MultiHeadLinearDropout2 = nn.ModuleList(
-                [nn.Dropout(0.2) for j in range(0, self.numofAttnLayers)])
+                [nn.Dropout( self.dropout_rate) for j in range(0, self.numofAttnLayers)])
             self.MultiHeadLayerNorm = nn.ModuleList([nn.LayerNorm(self.SingleHeadSize * self.numMultiHeads) for i in range(0, self.numofAttnLayers)])
             self.MHGeLU = nn.ModuleList([nn.ReLU()
                                     for i in range(0, self.numofAttnLayers)])
@@ -331,23 +337,23 @@ class AttentionNet(nn.Module):
 
         else:
             self.MultiHeadLinear = nn.ModuleList([nn.Linear(
-                in_features=self.SingleHeadSize*self.numMultiHeads, out_features=self.MultiHeadSize) for j in range(0, self.numofAttnLayers)])
+                in_features=self.SingleHeadSize*self.numMultiHeads, out_features=self.linear_size) for j in range(0, self.numofAttnLayers)])
             
             if self.use_sei:
                 if self.exp_name == "simulated":
                     self.sei_light = Sei_light(n_out, big=False, bspline = False) # trying to see if without reshaping self.MultiHeadSize)
                     self.fc3 = nn.Linear(
-                    in_features=self.MultiHeadSize, out_features=self.numClasses) #self.sei_light.output_dim * 16,
+                    in_features=self.linear_size, out_features=self.numClasses) #self.sei_light.output_dim * 16,
             
                 else:
                     self.sei_light = Sei_light(n_out, big=False) # trying to see if without reshaping self.MultiHeadSize)
 
                     
                     self.fc3 = nn.Linear(
-                    in_features=self.MultiHeadSize, out_features=self.numClasses) #sei_light.output_dim * 16,self.MultiHeadSize
+                    in_features=self.linear_size, out_features=self.numClasses) #sei_light.output_dim * 16,self.MultiHeadSize
                 
             else:
-                self.fc3 = nn.Linear(in_features=self.MultiHeadSize, out_features=self.numClasses)
+                self.fc3 = nn.Linear(in_features=self.linear_size, out_features=self.numClasses)
             # 480 * 16 for Sei output, otherwise MultiheadSize
 
 
@@ -392,7 +398,6 @@ class AttentionNet(nn.Module):
         p_attn = F.softmax(scores, dim=-1)
         p_attn = F.dropout(p_attn, p=dropout, training=self.training)
         if attn_prob is not None:
-            #print("Assigning new valueeeee")
             p_attn = attn_prob
         return torch.matmul(p_attn, value), p_attn
 
@@ -413,6 +418,8 @@ class AttentionNet(nn.Module):
 
     def forward(self, inputs, attn_prob=None):
         output = inputs
+        
+
 
         if self.useCNN:
             cnn1_out = self.layer1(output)
@@ -428,6 +435,9 @@ class AttentionNet(nn.Module):
             output = self.maxpool1(output)
 
         output = output.permute(0, 2, 1)
+        
+        if self.usePE: #tiana's way of doing positional embeddings
+                output = self.pe(output)
                 
         
         if self.useRNN:
@@ -440,15 +450,17 @@ class AttentionNet(nn.Module):
         pAttn_concat = torch.Tensor([]).to(self.device)
         no_relativeAttn = 0
         pAttn_list = []
-        
+        #print("CNN out", output.shape)
         for j in range(0, self.numofAttnLayers):
 
             attn_concat = torch.Tensor([]).to(self.device)
 
             for i in range(0, self.numMultiHeads):
-
-                query, key, value = self.Q[j][i](
-                    output), self.K[j][i](output), self.V[j][i](output)
+                if self.reuseWeightsQK:
+                    query, key, value = self.Q[j][i](output), self.Q[j][i](output), self.V[j][i](output)
+                else:
+                    query, key, value = self.Q[j][i](
+                        output), self.K[j][i](output), self.V[j][i](output)
                 if self.relativeAttn:
                     if self.mixed_attn:
                         if self.numMultiHeads == 2:
@@ -464,14 +476,14 @@ class AttentionNet(nn.Module):
                     else:
                         RPE1_output = self.rd1(self.relative_dist)
                     attnOut, p_attn = self.relative_attention(
-                        query, key, value, RPE1_output, self.sqrt_dist, dropout=0.2)
+                        query, key, value, RPE1_output, self.sqrt_dist, dropout= self.dropout_rate)
                     
                 if attn_prob is not None:
                         attnOut, p_attn = self.attention(
-                        query, key, value, dropout=0.2, attn_prob=attn_prob[i])
+                        query, key, value, dropout= self.dropout_rate, attn_prob=attn_prob[i])
                 else:
                         attnOut, p_attn = self.attention(
-                        query, key, value, dropout=0.2)
+                        query, key, value, dropout= self.dropout_rate)
 
                 attnOut = self.RELU[i](attnOut)
                 if self.usepooling:
@@ -484,7 +496,7 @@ class AttentionNet(nn.Module):
                     pAttn_concat = torch.cat((pAttn_concat, p_attn), dim=1)
                 if self.getAttngrad:
                     pAttn_list.append(p_attn)
-
+            #print(attn_concat.shape)
             if self.attn_skip:
                     attn_concat = attn_concat + output
             if self.multiple_linear:
@@ -516,8 +528,9 @@ class AttentionNet(nn.Module):
         else:
             pass
 
+
         output = self.fc3(output)
-        assert not torch.isnan(output).any()
+        #assert not torch.isnan(output).any()
         if self.genPAttn and not self.getAttngrad:
             return output, pAttn_concat  # , RPE1_output
         if self.getAttngrad:

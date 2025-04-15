@@ -22,8 +22,8 @@ CNN_padding|0|#CNN padding, need to be determined based on input length and filt
 get_CNNout|True|#get first CNN layer output (useful for motif analysis)
 get_seqs|True|#get sequences for the test set examples (useful for motif analysis)
 get_pattn|True|#get Attention value
-batch_size|256|#batch size
-num_epochs|2|#number of epochs
+batch_size|128|#batch size
+num_epochs|40|#number of epochs
 relativeAttn|False|#Use relativeAttn or not
 Learnable_relativeAttn|False|#Learn relativeAttn or not
 mixed_attn|False|#Mix attention or nor
@@ -31,7 +31,7 @@ mixed_attn_config|0.25|#How much use Relative Attention
 sqrt_dist|False|##Sqrt of Relative Attention
 num_attnlayers|1|#number of attention layers
 entropy_loss|True|#include entropy loss
-entropy_reg_value|0.01|#entropy regularization value
+entropy_reg_value|0.005|#entropy regularization value
 residual_connection|False|##
 exp_name|simulated|#name of experiment
 multiple_linear|True| #number of linear layers after attention layer

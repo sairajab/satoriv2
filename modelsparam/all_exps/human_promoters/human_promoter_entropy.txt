@@ -3,7 +3,7 @@ use_embeddings|False|#Use embeddings if True otherwise use one-hot encoded input
 embd_window|5|#embedding window size
 embd_size|50|#embedding size word2vec model
 embd_kmersize|3|#size of kmer in word2vec model
-num_multiheads|8|#numMultiHeads #8,4
+num_multiheads|4|#numMultiHeads #8,4 for TIANA
 singlehead_size|32|#SingleHeadSize #32
 multihead_size|1024|#MultiHeadSize
 use_pooling|False|#Use pooling at single head level

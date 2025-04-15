@@ -10,7 +10,7 @@ from sklearn import metrics
 from statsmodels.stats.multitest import multipletests
 
 #local imports
-from utils import get_popsize_for_interactions, get_intr_filter_keys
+from satori.utils import get_popsize_for_interactions, get_intr_filter_keys
 
 
 def get_filters_in_individual_seq(sdata):
@@ -563,12 +563,6 @@ def infer_intr_attention(experiment_blob, params, argSpace, interaction="SATORI"
 		seq_info_dict_list_neg = estimate_interactions_bg(num_filters, params, tomtom_data_neg, motif_dir_neg, verbose = argSpace.verbose, CNNfirstpool = CNNfirstpool, 
 											   sequence_len = sequence_len, pos_score_cutoff = argSpace.scoreCutoff, seq_limit = argSpace.intSeqLimit, attn_cutoff = argSpace.attnCutoff,
 											   for_background = True, numWorkers = argSpace.numWorkers, storeInterCNN = argSpace.storeInterCNN, considerTopHit = True) 
-	# with open(Interact_dir+'/interaction_keys_dict.pckl','wb') as f:
-	# 	pickle.dump(Filter_Intr_Keys,f)
-	# with open(Interact_dir+'/background_results_raw.pckl','wb') as f:
-	# 	pickle.dump([Filter_Intr_Attn_neg,Filter_Intr_Pos_neg, seq_info_dict_list_neg],f)	
-	# with open(Interact_dir+'/main_results_raw.pckl','wb') as f:
-	# 	pickle.dump([Filter_Intr_Attn,Filter_Intr_Pos, seq_info_dict_list],f)
-	
+
 	analyze_interactions(argSpace, Interact_dir, tomtom_data)
 	

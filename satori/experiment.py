@@ -12,15 +12,18 @@ from sklearn import metrics
 from torch.utils.data import DataLoader
 from torch.utils.data.sampler import SubsetRandomSampler
 # local imports
-from datasets import DatasetLoadAll, DatasetLazyLoad
-from extract_motifs import get_motif
+from satori.datasets import DatasetLoadAll, DatasetLazyLoad, DatasetLazyLoadRC
+from satori.extract_motifs import get_motif
 from satori.models import AttentionNet
-from utils import get_shuffled_background, get_shuffled_background_presaved
-from cnn_weights import *
+from satori.utils import get_shuffled_background, get_shuffled_background_presaved, get_indices
+from satori.cnn_weights import *
 # from cnn_motif_extraction import *
 from torch.utils.tensorboard import SummaryWriter
 from satori.train_model import *
 from satori.evaluate_model import *
+from satori.sei_model import *
+from satori.tiana import TianaModel
+import json
 ###########################################################################################################################
 # --------------------------------------------Train and Evaluate Functions-------------------------------------------------#
 ###########################################################################################################################
@@ -28,93 +31,46 @@ from satori.evaluate_model import *
 ###########################################################################################################################
 # ---------------------------------------------------------End-------------------------------------------------------------#
 ###########################################################################################################################
-def get_indices(dataset_size, test_split, output_dir, data, shuffle_data=True, seed_val=100, mode='train'):
-    indices = list(range(dataset_size))
-    split_val = int(np.floor(test_split*dataset_size))
-    if shuffle_data:
-        np.random.seed(seed_val)
-        np.random.shuffle(indices)
-    # --save indices for later use, when testing for example---#
-    if mode == 'train':
-
-        if data == "human_promoters":
-
-            valid_indices = np.loadtxt(
-                '/s/chromatin/p/nobackup/Saira/original/satori/data/Human_Promoters/valid_indices.txt', dtype=int)
-            test_indices = np.loadtxt(
-                '/s/chromatin/p/nobackup/Saira/original/satori/data/Human_Promoters/test_indices.txt', dtype=int)
-            train_indices = np.loadtxt(
-                '/s/chromatin/p/nobackup/Saira/original/satori/data/Human_Promoters/train_indices.txt', dtype=int)
-
-        elif data == "arabidopsis":
-
-            valid_indices = np.loadtxt(
-                '/s/chromatin/p/nobackup/Saira/original/satori/data/Arabidopsis_ChromAccessibility/valid_indices.txt', dtype=int)
-            test_indices = np.loadtxt(
-                '/s/chromatin/p/nobackup/Saira/original/satori/data/Arabidopsis_ChromAccessibility/test_indices.txt', dtype=int)
-            train_indices = np.loadtxt(
-                '/s/chromatin/p/nobackup/Saira/original/satori/data/Arabidopsis_ChromAccessibility/train_indices.txt', dtype=int)
-
-        else:
-            train_indices, test_indices, valid_indices = np.array(
-                indices[2*split_val:]), np.array(indices[:split_val]), np.array(indices[split_val:2*split_val])
-
-        np.savetxt(output_dir+'/valid_indices.txt', valid_indices, fmt='%s')
-        np.savetxt(output_dir+'/test_indices.txt', test_indices, fmt='%s')
-        np.savetxt(output_dir+'/train_indices.txt', train_indices, fmt='%s')
-
-    else:
-        try:
-            valid_indices = np.loadtxt(
-                output_dir+'/valid_indices.txt', dtype=int)
-            test_indices = np.loadtxt(
-                output_dir+'/test_indices.txt', dtype=int)
-            train_indices = np.loadtxt(
-                output_dir+'/train_indices.txt', dtype=int)
-        except:
-            raise Exception(
-                "Error! looks like you haven't trained the model yet. Rerun with --mode train.")
-    return train_indices, test_indices, valid_indices
 
 
-def load_datasets(arg_space, batchSize, dataset):
+def load_datasets(inputprefix, output_dir, batchSize, dataset_name, numLabels, deskLoad, mode, splitperc, rev_complement = False):
     """
     Loads and processes the data.
     """
-    input_prefix = arg_space.inputprefix
-    output_dir = arg_space.directory
+    input_prefix = inputprefix
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
-    # save arguments to keep record
-    with open(output_dir+'/arguments.txt', 'w') as f:
-        f.writelines(str(arg_space))
-    test_split = arg_space.splitperc/100
 
-    if arg_space.verbose:
-        print("test/validation split val: %.2f" % test_split)
+    test_split = splitperc/100
+    print("test/validation split val: %.2f" % test_split)
 
-    if arg_space.deskLoad:
-        final_dataset = DatasetLazyLoad(
-            input_prefix, num_labels=arg_space.numLabels)
+    if deskLoad:
+        if rev_complement:
+            final_dataset = DatasetLazyLoadRC(input_prefix,num_labels=numLabels, rev_complement=rev_complement)
+
+        else:
+            final_dataset = DatasetLazyLoad(
+                input_prefix, num_labels=numLabels)
     else:
         final_dataset = DatasetLoadAll(
-            input_prefix, num_labels=arg_space.numLabels)
+            input_prefix, num_labels=numLabels)
+
     seq_len = final_dataset.get_seq_len()
     train_indices, test_indices, valid_indices = get_indices(
-        len(final_dataset), test_split, output_dir, dataset, mode=arg_space.mode)
+        len(final_dataset), test_split, output_dir, dataset_name, mode=mode)
     train_sampler = SubsetRandomSampler(train_indices)
     test_sampler = SubsetRandomSampler(test_indices)
     valid_sampler = SubsetRandomSampler(valid_indices)
     train_loader = DataLoader(final_dataset, batch_size=batchSize,
-                              sampler=train_sampler, num_workers=arg_space.numWorkers)
+                              sampler=train_sampler, num_workers=4)
     test_loader = DataLoader(final_dataset, batch_size=batchSize,
-                             sampler=test_sampler, num_workers=arg_space.numWorkers)
+                             sampler=test_sampler, num_workers=4)
     valid_loader = DataLoader(final_dataset, batch_size=batchSize,
-                              sampler=valid_sampler, num_workers=arg_space.numWorkers)
+                              sampler=valid_sampler, num_workers=4)
     return train_loader, train_indices, test_loader, test_indices, valid_loader, valid_indices, output_dir, seq_len
 
 
-def run_experiment(device, arg_space, params):
+def run_experiment(device, arg_space, params, verbose = False):
     """
     Run the main experiment, that is, load the data and train-test the model and generate/store results.
     Args:
@@ -123,8 +79,7 @@ def run_experiment(device, arg_space, params):
         params: (dict) Dictionary of hyperparameters. 
     """
     num_labels = arg_space.numLabels
-    load_cnn_ws = arg_space.load_motif_weights
-
+    load_cnn_ws = params['load_motif_weights']
     genPAttn = params['get_pattn']
     getCNNout = params['get_CNNout']
     getSequences = params['get_seqs']
@@ -132,39 +87,84 @@ def run_experiment(device, arg_space, params):
     max_epochs = params['num_epochs']
     ent_loss = params['entropy_loss']
     ent_reg = float(params['entropy_reg_value'])
-    writer = SummaryWriter()
+    if verbose:
+        writer = SummaryWriter()
 
     # Using generic, not sure if we need it as an argument or part of the params dict
     prefix = 'modelRes_Val'
-    train_loader, train_indices, test_loader, test_indices, valid_loader, valid_indices, output_dir, seq_len = load_datasets(
-        arg_space, batch_size, params['exp_name'])
-
-    if load_cnn_ws:
-        params['CNN_filtersize'] = [21]
+    
+    train_loader, train_indices, test_loader, test_indices, valid_loader, valid_indices, output_dir, seq_len = load_datasets(arg_space.inputprefix, arg_space.directory,
+                                                                                                                          batch_size, arg_space.dataset, num_labels, arg_space.deskLoad, arg_space.mode, arg_space.splitperc)
+    
+        # save arguments to keep record
+    with open(output_dir + '/arguments.json', 'w') as f:
+        json.dump({"arg_space": vars(arg_space), "params": params}, f, indent=4)
+        
 
     getAttnAttr = False
-    net = AttentionNet(arg_space, params, device=device,
+    net = AttentionNet(arg_space.numLabels, params, device=device,
                        seq_len=seq_len, getAttngrad=getAttnAttr).to(device)
+    total_params = sum(p.numel() for p in net.parameters())
+    print(f"Number of parameters: {total_params}")
+    
+    if params['exp_name'] == 'arabidopsis':
+        # load pssm
+        pssm = '../TIANA_demo_upload/mycluster/arab/motif_pssm_arab.npy'
+    
+    elif params['exp_name'] == 'human_promoters':
+        
+        pssm = "../TIANA_demo_upload/mycluster/hp/motifs_pssm_hp.npy"
+
+    else:
+        pssm = '../TIANA_demo_upload/mycluster/padded_motifs_pssm_new.npy'
+        # load pssm
+    with open(pssm, 'rb') as f:
+            motif_array = np.load(f)
+            motif_array = motif_array[:, :, ::2]    
+    
+    # reg = False
+    # tiana = False
+    # if tiana:
+    #     pssm = '../TIANA_demo_upload/mycluster/padded_motifs_pssm_new.npy' #motif_pssm.npy' #
+    #     # load pssm
+    #     with open(pssm, 'rb') as f:
+    #         motif_array = np.load(f)
+    #         # motif_array = motif_array[:,:, :360]
+            
+    #     #number of total tf (half of pssm)
+    #     ntf = motif_array.shape[-1]//2
+            
+    #     # motif_size
+    #     motif_size = motif_array.shape[0]
+            
+    #     # padding size
+    #     if ntf%4 ==0:
+    #         npad = 0
+    #     elif ntf%4 !=0:
+    #         npad = 4 - ntf%4
+    #     # Example usage
+    #     net = TianaModel(num_tf=ntf, pad_size=npad, max_len=motif_size, pssm_path=pssm, seq_size=seq_len, numClasses=num_labels).to(device)
+    #     reg = False 
         
     if load_cnn_ws:
-        net.layer1[0].weight.data.uniform_(-1.0, 0.0)
-        weights_tensor = load_cnn_weights(
-            output_dir, tfs_pairs_path=arg_space.pairs_file).to(device)
-        kernels_to_freeze = 100  # Freeze half of the kernels
-
-        net.layer1[0].weight = nn.parameter.Parameter(
-            weights_tensor, requires_grad=True)
+            print("Loading CNN weights from PSSM")
+            net.layer1[0].weight.data = torch.from_numpy(np.transpose(motif_array, (2, 1, 0))).float().to(device)
+            net.layer1[0].weight.requires_grad = False 
 
     if num_labels == 2:
 
         criterion = nn.CrossEntropyLoss(reduction='mean')
-        optimizer = optim.SGD(net.parameters(), lr=0.01)
+        if params["optimizer"] == "adam":
+            optimizer = optim.Adam(net.parameters(), lr=float(params["lr"]), weight_decay=float(params["weight_decay"]))
+        else:
+            optimizer = optim.SGD(net.parameters(), lr=float(params["lr"]), momentum=float(params["momentum"]), weight_decay=float(params["weight_decay"]))
 
     else:
         criterion = nn.BCEWithLogitsLoss()
         optimizer = optim.Adam(net.parameters(), lr=0.001, weight_decay=0.001)
-        
-    scheduler = ReduceLROnPlateau(optimizer, 'min', patience=5, factor=0.5)
+    
+    if params['schedular']:
+        scheduler = ReduceLROnPlateau(optimizer, 'min', patience=5, factor=0.5)
 
 
     if arg_space.finetune_model_path != None:
@@ -187,7 +187,7 @@ def run_experiment(device, arg_space, params):
     if not os.path.exists(saved_model_dir):
         os.makedirs(saved_model_dir)
     print(net)
-
+    best_auprc_valid = 0
     ## -------Main train/test loop----------##
     if arg_space.mode == 'train':
         best_valid_loss = np.inf
@@ -209,18 +209,23 @@ def run_experiment(device, arg_space, params):
             if num_labels == 2:
                 res_valid = evaluateRegular(net, device, valid_loader, criterion, output_dir+"/Stored_Values", ent_loss, ent_reg, getPAttn=False,
                                             storePAttn=False, getCNN=False,
-                                            storeCNNout=False, getSeqs=False)  # evaluateRegular(net,valid_loader,criterion)
+                                            storeCNNout=False, getSeqs=False,motifweights=load_cnn_ws)  # evaluateRegular(net,valid_loader,criterion)
                 res_valid_loss = res_valid[0]
                 res_valid_auc = res_valid[1]
             else:
                 res_valid = evaluateRegularMC(net, device, valid_loader, criterion, output_dir+"/Stored_Values", getPAttn=False,
                                               storePAttn=False, getCNN=False,
-                                              storeCNNout=False, getSeqs=False)  # evaluateRegular(net,valid_loader,criterion)
+                                              storeCNNout=False, getSeqs=False,motifweights=load_cnn_ws)  # evaluateRegular(net,valid_loader,criterion)
                 res_valid_loss = res_valid[0]
                 res_valid_auc = np.mean(res_valid[1])
+                
             if res_valid_loss < best_valid_loss:
                 best_valid_loss = res_valid_loss
                 best_valid_auc = res_valid_auc
+                labels = res_valid[2][:, 0]
+                preds = res_valid[2][:, 1]
+                #best_auprc_valid = metrics.average_precision_score(labels, preds)
+
                 if arg_space.verbose:
                     print("Best Validation Loss: %.3f and AUC: %.2f" %
                           (best_valid_loss, best_valid_auc), "\n")
@@ -234,54 +239,54 @@ def run_experiment(device, arg_space, params):
             else:
 
                 counter = counter + 1
-
-            scheduler.step(res_valid_loss)
-            writer.add_scalar("Loss/train", res_train_loss, epoch)
-            writer.add_scalar("Loss/val", res_valid_loss, epoch)
+            if params['schedular']:
+                scheduler.step(res_valid_loss)
+            if verbose:
+                writer.add_scalar("Loss/train", res_train_loss, epoch)
+                writer.add_scalar("Loss/val", res_valid_loss, epoch)
 
             # scheduler2.step(res_valid_loss)
 
-            print('Epoch-{0} lr: {1} valid_loss: {2}' .format(epoch,
-                  optimizer.param_groups[0]['lr'], res_valid_loss))
+            print('Epoch-{0} lr: {1} valid_loss: {2} valid_auc : {3}'.format(epoch,
+                  optimizer.param_groups[0]['lr'], res_valid_loss, res_valid_auc))
             logs.writelines('Epoch-{0} lr: {1} valid_loss: {2} \n' .format(
                 epoch, optimizer.param_groups[0]['lr'], res_valid_loss))
 
-            if counter >= 40:
+            if counter >= 15:
                 print("Early stopping at ",epoch )
                 break
         if num_labels == 2:
             res_valid = evaluateRegular(net, device, valid_loader, criterion, output_dir+"/Stored_Values", ent_loss, ent_reg, getPAttn=False,
                                         storePAttn=False, getCNN=False,
-                                        storeCNNout=False, getSeqs=False)
+                                        storeCNNout=False, getSeqs=False, motifweights=load_cnn_ws)
         else:
             res_valid = evaluateRegularMC(net, device, valid_loader, criterion, output_dir+"/Stored_Values", ent_loss, ent_reg, getPAttn=False,
                                           storePAttn=False, getCNN=False,
-                                          storeCNNout=False, getSeqs=False)
+                                          storeCNNout=False, getSeqs=False,motifweights=load_cnn_ws)
 
         if num_labels == 2:
             # Save valid files
-            valid_loss = res_valid[0]
-            labels = res_valid[2][:, 0]
-            preds = res_valid[2][:, 1]
-            auc_valid = metrics.roc_auc_score(labels, preds)
+            valid_loss = best_valid_loss
+            auprc_valid = best_auprc_valid
+            auc_valid = best_valid_auc
             if arg_space.verbose:
                 print("Valid Loss: %.3f and AUC: %.2f" %
                       (valid_loss, auc_valid), "\n")
-            auprc_valid = metrics.average_precision_score(labels, preds)
+
             some_res = [['Valid_Loss', 'Valid_AUC', 'Valid_AUPRC']]
             some_res.append([valid_loss, auc_valid, auprc_valid])
-            # ---Calculate roc and prc values---#
-            fpr, tpr, thresholds = metrics.roc_curve(labels, preds)
-            precision, recall, thresholdsPR = metrics.precision_recall_curve(
-                labels, preds)
-            roc_dict = {'fpr': fpr, 'tpr': tpr, 'thresholds': thresholds}
-            prc_dict = {'precision': precision,
-                        'recall': recall, 'thresholds': thresholdsPR}
-            # ---Store results----#
-            with open(output_dir+'/'+prefix+'_roc.pckl', 'wb') as f:
-                pickle.dump(roc_dict, f)
-            with open(output_dir+'/'+prefix+'_prc.pckl', 'wb') as f:
-                pickle.dump(prc_dict, f)
+            # # ---Calculate roc and prc values---#
+            # fpr, tpr, thresholds = metrics.roc_curve(labels, preds)
+            # precision, recall, thresholdsPR = metrics.precision_recall_curve(
+            #     labels, preds)
+            # roc_dict = {'fpr': fpr, 'tpr': tpr, 'thresholds': thresholds}
+            # prc_dict = {'precision': precision,
+            #             'recall': recall, 'thresholds': thresholdsPR}
+            # # ---Store results----#
+            # with open(output_dir+'/'+prefix+'_roc.pckl', 'wb') as f:
+            #     pickle.dump(roc_dict, f)
+            # with open(output_dir+'/'+prefix+'_prc.pckl', 'wb') as f:
+            #     pickle.dump(prc_dict, f)
             np.savetxt(output_dir+'/'+prefix+'_results.txt',
                        some_res, fmt='%s', delimiter='\t')
 
@@ -291,6 +296,7 @@ def run_experiment(device, arg_space, params):
         optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
         epoch = checkpoint['epoch']
         loss = checkpoint['loss']
+        print("Model Loaded Successfully ...", loss)
     except:
         raise Exception(
             f"No pre-trained model found at {saved_model_dir}! Please run with --mode set to train.")
@@ -303,7 +309,7 @@ def run_experiment(device, arg_space, params):
         
         res_test = evaluateRegular(net, device, test_loader, criterion, output_dir+"/Stored_Values", ent_loss, ent_reg, getPAttn=genPAttn,
                                    storePAttn=arg_space.storeInterCNN, getCNN=getCNNout,
-                                   storeCNNout=arg_space.storeInterCNN, getSeqs=getSequences, getAttnAttr=getAttnAttr)
+                                   storeCNNout=arg_space.storeInterCNN, getSeqs=getSequences,motifweights=load_cnn_ws, getAttnAttr=getAttnAttr)
         # uncomment for CNN based motif annotations
         # annotation_file = arg_space.inputprefix + "_info.txt"
 
@@ -342,7 +348,7 @@ def run_experiment(device, arg_space, params):
         res_test = evaluateRegularMC(net, device, test_loader, criterion, output_dir+"/Stored_Values",
                                      ent_loss, ent_reg, getPAttn=genPAttn,
                                      storePAttn=arg_space.storeInterCNN, getCNN=getCNNout,
-                                     storeCNNout=arg_space.storeInterCNN, getSeqs=getSequences)
+                                     storeCNNout=arg_space.storeInterCNN, getSeqs=getSequences, motifweights=load_cnn_ws)
         test_loss = res_test[0]
         test_auc = res_test[1]
         if arg_space.verbose:
@@ -351,8 +357,12 @@ def run_experiment(device, arg_space, params):
                    test_auc, delimiter='\t', fmt='%s')
         np.savetxt(output_dir+'/median_mean_AUC.txt',
                    np.array([np.median(test_auc) , np.mean(test_auc)]), delimiter='\t', fmt='%s')
-
+    # if tiana:
+    #     CNNWeights = net.conv1.weight.cpu().detach().numpy()
+    # else:
     CNNWeights = net.layer1[0].weight.cpu().detach().numpy()
+    print(CNNWeights[0,:].max(), CNNWeights.shape)
+    
     res_blob = {'res_test': res_test,
                 'seq_len' : seq_len,
                 'train_loader': train_loader,
@@ -366,7 +376,8 @@ def run_experiment(device, arg_space, params):
                 'optimizer': optimizer,
                 'saved_model_dir': saved_model_dir
                 }
-    writer.flush()
+    if verbose:
+        writer.flush()
 
     return res_blob
 
@@ -376,9 +387,10 @@ def get_results_for_shuffled(argSpace, params, net, criterion, test_loader, devi
     getCNNout = params['get_CNNout']
     getSequences = params['get_seqs']
     batchSize = params['batch_size']
+    motifweights = params['load_motif_weights']
     num_labels = argSpace.numLabels
     output_dir = argSpace.directory
-    bg_prefix = get_shuffled_background(test_loader, argSpace, pre_saved=True)
+    bg_prefix = get_shuffled_background(test_loader, argSpace, pre_saved=False)
     if argSpace.deskLoad == True:
         data_bg = DatasetLazyLoad(bg_prefix, num_labels)
     else:
@@ -388,11 +400,12 @@ def get_results_for_shuffled(argSpace, params, net, criterion, test_loader, devi
     if num_labels == 2:
         res_test_bg = evaluateRegular(net, device, test_loader_bg, criterion, out_dirc=output_dir+"/Temp_Data/Stored_Values", getPAttn=genPAttn,
                                       storePAttn=argSpace.storeInterCNN, getCNN=getCNNout,
-                                      storeCNNout=argSpace.storeInterCNN, getSeqs=getSequences)
+                                      storeCNNout=argSpace.storeInterCNN, getSeqs=getSequences,motifweights=motifweights)
     else:
+        print("MOTIF WEIGHTS ", motifweights)
         res_test_bg = evaluateRegularMC(net, device, test_loader_bg, criterion, out_dirc=output_dir+"/Temp_Data/Stored_Values", getPAttn=genPAttn,
                                         storePAttn=argSpace.storeInterCNN, getCNN=getCNNout,
-                                        storeCNNout=argSpace.storeInterCNN, getSeqs=getSequences)
+                                        storeCNNout=argSpace.storeInterCNN, getSeqs=getSequences, motifweights=motifweights)
     return res_test_bg, test_loader_bg
 
 
@@ -421,8 +434,10 @@ def motif_analysis(res_test, CNNWeights, argSpace, params, for_background=False)
     Seqs = np.asarray(res_test[6][k])
     if num_labels == 2:
         if for_background and argSpace.intBackground == 'negative':
+            neg_score_cutoff = 1 - pos_score_cutoff #0.4
             tp_indices = [i for i in range(0, per_batch_labelPreds.shape[0]) if (
-                per_batch_labelPreds[i][0] == 0 and per_batch_labelPreds[i][1] < (1-pos_score_cutoff))]
+                per_batch_labelPreds[i][0] == 0 and per_batch_labelPreds[i][1] < (neg_score_cutoff))]
+            print("Negative Background", tp_indices, 1 - pos_score_cutoff)
         elif for_background and argSpace.intBackground == 'shuffle':
             tp_indices = [i for i in range(0, per_batch_labelPreds.shape[0])]
         else:
@@ -472,6 +487,6 @@ def motif_analysis(res_test, CNNWeights, argSpace, params, for_background=False)
     else:
         motif_dir = output_dir + '/Motif_Analysis'
     get_motif(CNNWeights, CNNoutput, Seqs, dbpath, dir1=motif_dir, embd=False,
-              data='DNA', tomtom=tomtomPath, tomtompval=argSpace.tomtomPval, tomtomdist=argSpace.tomtomDist)
+              data='DNA', tomtom=tomtomPath, tomtompval=argSpace.tomtomPval, tomtomdist=argSpace.tomtomDist, motifweights = params['load_motif_weights'], dataset=params['exp_name'])
     return motif_dir, NumExamples
 

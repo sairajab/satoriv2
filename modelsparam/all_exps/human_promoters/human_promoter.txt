@@ -3,7 +3,7 @@ use_embeddings|False|#Use embeddings if True otherwise use one-hot encoded input
 embd_window|5|#embedding window size
 embd_size|50|#embedding size word2vec model
 embd_kmersize|3|#size of kmer in word2vec model
-num_multiheads|8|#numMultiHeads #8,4
+num_multiheads|4|#numMultiHeads #8,4 (for sake of tiana)
 singlehead_size|32|#SingleHeadSize #32
 multihead_size|1024|#MultiHeadSize
 use_pooling|False|#Use pooling at single head level
@@ -39,3 +39,5 @@ cnn_attention_block|False|
 linear_layer_size|512|
 sei|False|#use sei after attention
 sei_bn|False|Use BN in sei
+load_motif_weights|False|#load motif weights
+dropout_rate|0.2|#dropout rate in the model

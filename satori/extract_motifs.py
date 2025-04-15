@@ -224,6 +224,7 @@ def name_filters(num_filters, tomtom_file, meme_db_file, out_dir):
     if tomtom_file is not None and meme_db_file is not None:
         print(tomtom_file, meme_db_file)
         motif_protein = get_motif_proteins(meme_db_file)
+        print(motif_protein)
 
         # hash motifs and q-value's by filter
         filter_motifs = {}
@@ -241,7 +242,7 @@ def name_filters(num_filters, tomtom_file, meme_db_file, out_dir):
             filter_motifs.setdefault(fi,[]).append((qval,motif_id))
 
         tt_in.close()
-
+        print(filter_motifs)
         # assign filter's best match
         for fi in filter_motifs:
             motifs_sorted = sorted(filter_motifs[fi])
@@ -275,7 +276,7 @@ def name_filters(num_filters, tomtom_file, meme_db_file, out_dir):
 
 
         table_out.close()
-        
+    print(filter_names)
     return np.array(filter_names)
 
 
@@ -566,28 +567,32 @@ def plot_filter_heat(param_matrix, out_pdf):
         
 
 ##Changes made by Fahad Ullah
-def plot_filter_logo(filter_outs, filter_size, seqs, out_prefix, raw_t=0, maxpct_t=None):    
+def plot_filter_logo(filter_outs, filter_size, seqs, out_prefix, raw_t=0, maxpct_t=None): 
     if maxpct_t:
+        # Remove all-zero columns
+        #filtered_outs = filter_outs[:, nonzero_cols]    
         all_outs = np.ravel(filter_outs)
         all_outs_mean = all_outs.mean()
         all_outs_norm = all_outs - all_outs_mean
-        if embedding:
-            raw_t = 0.60 * all_outs_norm.max() + all_outs_mean
-        else:
-            raw_t = 0.65 * all_outs_norm.max() + all_outs_mean
-        #raw_t = 0.65 * all_outs_norm.max() + all_outs_mean
-        #raw_t = maxpct_t * all_outs_norm.max() + all_outs_mean
-        
-    # SAME padding
-    #pad_side = (filter_size - 1) // 2
+        if raw_t == 0:
+            if embedding:
+                raw_t = 0.60 * all_outs_norm.max() + all_outs_mean
+            else:
+                raw_t = 0.65 * all_outs_norm.max()# + all_outs_mean
 
     # print fasta file of positive outputs
     filter_fasta_out = open('%s.fa' % out_prefix, 'w')
     filter_count = 0
+    filter_outs = np.round(filter_outs,3)
+    if raw_t < 0.001:
+        raw_t = 0.2 ## set threshold value for zero filters 
+    print("Filter threshold ", raw_t , filter_outs.max(), filter_outs.mean())
     for i in range(filter_outs.shape[0]):
         for j in range(filter_outs.shape[1]):
-        #for j in range(pad_side, filter_outs.shape[1]-pad_side):
-            if filter_outs[i,j] > raw_t:
+            #print(filter_outs[i,j], filter_outs.shape)
+        #for j in range(pad_side, filter_outs.shape[1]-pad_side):(
+        
+            if filter_outs[i, j] > -0.001 + raw_t:
                 #js = j - pad_side
                 kmer = seqs[i][1][j:j+filter_size]
                 #print(kmer)
@@ -619,20 +624,20 @@ def plot_filter_logo(filter_outs, filter_size, seqs, out_prefix, raw_t=0, maxpct
 #  out_pdf:
 ################################################################################
 def plot_score_density(f_scores, out_pdf):
-    sns.set(font_scale=1.3)
+    sns.set_theme(font_scale=1.3)
     plt.figure()
-    sns.distplot(f_scores, kde=False)
+    sns.histplot(f_scores, kde=False)  # Replaces distplot
     plt.xlabel('ReLU output')
     plt.savefig(out_pdf)
     plt.close()
 
     return f_scores.mean(), f_scores.std()
 
-def get_motif_fig(filter_weights, filter_outs, out_dir, seqs, sample_i = 0):
+def get_motif_fig(filter_weights, filter_outs, out_dir, seqs, sample_i = 0, motifweights = False, dataset = 'human_promoters'):
     global fw
     print ('plot motif fig', out_dir)
     #seqs, seq_targets = get_seq_targets(protein)
-    num_filters = filter_weights.shape[0]
+    num_filters = filter_weights.shape[0] #//2
     filter_size = filter_weights.shape[2]
     if embedding:
         filter_size = (filter_weights.shape[2]-1)*stride+kmer_len
@@ -646,19 +651,34 @@ def get_motif_fig(filter_weights, filter_outs, out_dir, seqs, sample_i = 0):
     # also save information contents
     filters_ic = []
     meme_out = meme_intro('%s/filters_meme.txt'%out_dir, seqs)
+    if motifweights:
+        if dataset == 'arabidopsis':
+            cpath = "../TIANA_demo_upload/mycluster/arab/motif_threshold_arab.npy"
+
+        elif dataset == 'human_promoters':
+            cpath = "../TIANA_demo_upload/mycluster/hp/motif_threshold_hp.npy"
+
+        else:
+            cpath = "../TIANA_demo_upload/mycluster/motif_threshold_new.npy"
+
+            
+        with open(cpath,'rb') as f:
+                motif_cutoffe4 = np.load(f)
+        motif_cutoffe4 = np.round(motif_cutoffe4,3)
     fw = open('indices.txt', 'w')
-    for f in range(num_filters):
+    for f in range(num_filters): #//2 for TAINA 
         print ('Filter %d' % f)
         # plot filter parameters as a heatmap
         plot_filter_heat(filter_weights[f,:,:filter_size], '%s/filter%d_heat.pdf' % (out_dir,f))
 
         # write possum motif file
         #filter_possum(filter_weights[f,:, :filter_size], 'filter%d'%f, '%s/filter%d_possum.txt'%(out_dir,f), False)
-
+        #print("saved cut off ", motif_cutoffe4[f])
+        raw_t_val = motif_cutoffe4[f]/2 + 1 if motifweights else 0
         # plot weblogo of high scoring outputs
-        plot_filter_logo(filter_outs[:,f,:], filter_size, seqs, '%s/filter%d_logo'%(out_dir,f), maxpct_t=0.5)
+        plot_filter_logo(filter_outs[:,f,:], filter_size, seqs, '%s/filter%d_logo'%(out_dir,f), raw_t = raw_t_val, maxpct_t=0.5) #motif_cutoffe4[f] tiana
 
-        # make a PWM for the filter
+        # make a PWM for the filter , 
         filter_pwm, nsites = make_filter_pwm('%s/filter%d_logo.fa'%(out_dir,f))
 
         if nsites < 10:
@@ -681,7 +701,7 @@ def get_motif_fig(filter_weights, filter_outs, out_dir, seqs, sample_i = 0):
     if data_type=='RNA':
         subprocess.call(tomtom_dir+' -dist '+tomtom_dist+' -thresh '+str(tomtom_pval)+' -oc %s/tomtom %s/filters_meme.txt %s' % (out_dir, out_dir, 'motifs_database/Ray2013_rbp_RNA.meme'), shell=True) #was pearson before
     else:
-        subprocess.call(tomtom_dir+' -dist '+tomtom_dist+' -thresh '+str(tomtom_pval)+' -oc %s/tomtom %s/filters_meme.txt %s' % (out_dir, out_dir, dbpath), shell=True) #was pearson before #--norc (check for +ve strand only)
+        subprocess.call(tomtom_dir+' -dist '+tomtom_dist+' -norc -incomplete-scores -thresh '+str(tomtom_pval)+' -oc %s/tomtom %s/filters_meme.txt %s' % (out_dir, out_dir, dbpath), shell=True) #was pearson before #--norc (check for +ve strand only)
     subprocess.call('cp %s/tomtom/tomtom.tsv %s/tomtom/tomtom.txt' %(out_dir, out_dir), shell=True)
     
     # read in annotations
@@ -707,6 +727,7 @@ def get_motif_fig(filter_weights, filter_outs, out_dir, seqs, sample_i = 0):
             # grab annotation
             annotation = '.'
             name_pieces = filter_names[f].split('_')
+            print("name_pieces", name_pieces)
             if len(name_pieces) > 1:
                 annotation = name_pieces[1]
 
@@ -732,14 +753,7 @@ def get_motif_fig(filter_weights, filter_outs, out_dir, seqs, sample_i = 0):
         # plot filter-sequence heatmap
         plot_filter_seq_heat(np.transpose(filter_outs,(0,2,1)), '%s/filter_seqs.pdf'%out_dir)
 
-def get_feature(model, X_batch, index):
-    inputs = [K.learning_phase()] + [model.inputs[index]]
-    _convout1_f = K.function(inputs, model.layers[0].layers[index].layers[1].output)
-    activations =  _convout1_f([0] + [X_batch[index]])
-    
-    return activations
-
-def get_motif(filter_weights_old, filter_outs, testing, dpath, y = [], index = 0, dir1 = 'motifs/',embd=False,data='DNA',kmer=3,s=1,tomtom='meme-5.0.3/src/tomtom',tomtompval=0.05,tomtomdist = 'pearson'):
+def get_motif(filter_weights_old, filter_outs, testing, dpath, y = [], index = 0, dir1 = 'motifs/',embd=False,data='DNA',kmer=3,s=1,tomtom='meme-5.0.3/src/tomtom',tomtompval=0.05,tomtomdist = 'pearson', motifweights = False, dataset = 'human_promoters'):
     #sfilter = model.layers[0].layers[index].layers[0].get_weights()
     #filter_weights_old = np.transpose(sfilter[0][:,0,:,:], (2, 1, 0)) #sfilter[0][:,0,:,:]
     global embedding
@@ -776,6 +790,7 @@ def get_motif(filter_weights_old, filter_outs, testing, dpath, y = [], index = 0
     out_dir = dir1
     if not os.path.isdir(out_dir):
         os.mkdir(out_dir)
+    print("Motif Weights ", motifweights)
     if index == 0:    
-        get_motif_fig(filter_weights, filter_outs, out_dir, testing, sample_i)
+        get_motif_fig(filter_weights, filter_outs, out_dir, testing, sample_i, motifweights= motifweights, dataset=dataset)
 

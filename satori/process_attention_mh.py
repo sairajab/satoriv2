@@ -11,7 +11,7 @@ from statsmodels.stats.multitest import multipletests
 
 
 #local imports
-from utils import get_popsize_for_interactions, get_intr_filter_keys
+from satori.utils import get_popsize_for_interactions, get_intr_filter_keys
 
 
 

@@ -1,5 +1,5 @@
 import numpy
-from readpwms import get_motif_score
+from create_dataset.readpwms import get_motif_score
 nucleotide_alphabet = "ACGT" # The alphabet of the nucleotide sites
 state_alphabet = "SHL" # The alphabet of the states (start, CG High, CG Low)
 
