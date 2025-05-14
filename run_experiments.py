@@ -78,6 +78,8 @@ def run():
     
     device = "cuda:0" if torch.cuda.is_available() else "cpu"
     for d in d_files:
+        if not os.path.exists("results"):
+            os.mkdir("results")
         outdir = f"results/Data-{data_id}/"  + d + "/"  
         if not os.path.exists(outdir):
             os.mkdir(outdir)
