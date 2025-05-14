@@ -80,6 +80,9 @@ def run():
     for d in d_files:
         if not os.path.exists("results"):
             os.mkdir("results")
+        if not os.path.exists("results/Data-" + data_id):
+            os.mkdir("results/Data-" + data_id)
+            
         outdir = f"results/Data-{data_id}/"  + d + "/"  
         if not os.path.exists(outdir):
             os.mkdir(outdir)
