@@ -50,7 +50,7 @@ export PYTHONPATH=path-to-satori/satori:$PYTHONPATH
 usage: satori.py --config [config file path]
 
 
-Config files for simulated dataset and real datasets is available in modelsparam
+Config files for simulated dataset and real datasets are available in modelsparam
 
 ```
 
