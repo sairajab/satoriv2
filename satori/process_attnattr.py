@@ -250,9 +250,9 @@ def evaluateRegularBatchMCAttnAttr(net,  net_wrapper,device, iterator, criterion
             pred_out = sigmoid(outputs)
             start_time = time.time()
             #For tiana
-            PAttn_all[batch_idx] = tiana_compute_integrated_gradients(net, data, PAttn, target=target)
+            #PAttn_all[batch_idx] = tiana_compute_integrated_gradients(net, data, PAttn, target=target)
    
-            #PAttn_all[batch_idx] = compute_integrated_gradients(net_wrapper, data, PAttn, numlabels=100, target=target)
+            PAttn_all[batch_idx] = compute_integrated_gradients(net_wrapper, data, PAttn, numlabels=100, target=target)
             end_time = time.time() 
             print("Time Taken: %d seconds"%round(end_time-start_time))
             if i == 0 :

@@ -404,7 +404,7 @@ def analyze_interactions(argSpace, Interact_dir, tomtom_data, plot_dist=True):
  
 	if argSpace.attnCutoff == 0.04:
  
-		attnLimits = [attnCutoff]
+		attnLimits = [attnCutoff, 0.04, 0.12]
 	else: 
 		attnLimits = [argSpace.attnCutoff]
 
@@ -543,6 +543,11 @@ def infer_intr_attention(experiment_blob, params, argSpace, interaction="SATORI"
 
 	Filter_Intr_Attn = np.ones((len(Filter_Intr_Keys),numPosExamples))*-1
 	Filter_Intr_Pos = np.ones((len(Filter_Intr_Keys),numPosExamples)).astype(int)*-1
+ 
+	Filter_Intr_Attn_neg = np.ones((len(Filter_Intr_Keys),numNegExamples))*-1
+	Filter_Intr_Pos_neg = np.ones((len(Filter_Intr_Keys),numNegExamples)).astype(int)*-1
+ 
+	print("Filter Neg erorrrrr ", Filter_Intr_Pos_neg.shape)
 	tp_pos_dict = {}
 	
 	seq_info_dict_list = estimate_interactions(num_filters, params, tomtom_data, motif_dir_pos, verbose = argSpace.verbose, CNNfirstpool = CNNfirstpool, 
@@ -564,5 +569,13 @@ def infer_intr_attention(experiment_blob, params, argSpace, interaction="SATORI"
 											   sequence_len = sequence_len, pos_score_cutoff = argSpace.scoreCutoff, seq_limit = argSpace.intSeqLimit, attn_cutoff = argSpace.attnCutoff,
 											   for_background = True, numWorkers = argSpace.numWorkers, storeInterCNN = argSpace.storeInterCNN, considerTopHit = True) 
 
+
+	with open(Interact_dir+'/interaction_keys_dict.pckl','wb') as f:
+		pickle.dump(Filter_Intr_Keys,f)
+	with open(Interact_dir+'/background_results_raw.pckl','wb') as f:
+		pickle.dump([Filter_Intr_Attn_neg,Filter_Intr_Pos_neg, seq_info_dict_list_neg],f)	
+	with open(Interact_dir+'/main_results_raw.pckl','wb') as f:
+		pickle.dump([Filter_Intr_Attn,Filter_Intr_Pos, seq_info_dict_list],f)
+  
 	analyze_interactions(argSpace, Interact_dir, tomtom_data)
 	

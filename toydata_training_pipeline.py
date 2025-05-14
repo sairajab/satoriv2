@@ -59,7 +59,7 @@ def run_training_pipeline():
     params_dict = get_params_dict(arg_space.hparamfile)
     #params_dict = load_config(config_path)
     print(params_dict)
-    runs = 1
+    runs = 3
     seeds = [42, 1337, 2024] 
     
     # for i in range( data_instances):
@@ -72,19 +72,26 @@ def run_training_pipeline():
     #         experiment_blob = run_experiment(device, arg_space, params_dict)
             
     ## Loop through three instances of baseline model training with Entropy Loss
-    for i in range(data_instances):
+    for i in range(1,data_instances):
         dataname = f"data_80_{i+1}"
         arg_space.inputprefix = os.path.join(data_dir,dataname)
-        
+        print(arg_space.inputprefix)
         for j in range(runs):
             print("Running Entropy Loss for seed", seeds[j])
             setup_seed(seeds[j])
+            
             arg_space.seed = seeds[j]
+            params_dict["sei"]= True
+            params_dict["multiple_linear"]= False
+            # params_dict["load_motif_weights"]= True
+            # params_dict["CNN_filtersize"] = [24]
             params_dict["entropy_loss"] = True
-            #params_dict["optimizer"]   = "sgd"
-            params_dict["entropy_reg_value"] = 0.001
-            arg_space.directory = result_dir + "/baseline_" + str(params_dict["entropy_reg_value"]) +  "/" + dataname + "/" + "run_" + str(j)
+            #params_dict["use_posEnc"]= True
+            params_dict["optimizer"]   = "sgd"
+            params_dict["entropy_reg_value"] = 0.005
+            arg_space.directory = result_dir + "/deep_sgd_" + str(params_dict["entropy_reg_value"]) +  "/" + dataname + "/" + "run_" + str(j)
             experiment_blob = run_experiment(device, arg_space, params_dict)
+        break
 
     
     ## Loop through three instances of baseline model training with PE
@@ -178,15 +185,16 @@ def run_training_pipeline():
         dataname = f"data_80_{i+1}"
         arg_space.inputprefix = os.path.join(data_dir,dataname)
         
-        # for j in range(runs):
-        #     setup_seed(seeds[j])
-        #     params_dict["sei"]= True
-        #     params_dict["multiple_linear"]= False
-        #     params_dict["entropy_loss"] = True
-        #     params_dict["optimizer"]   = "sgd"
-        #     params_dict["entropy_reg_value"] = 0.01
-        #     arg_space.directory = result_dir + "/deep_ent/" + dataname + "/" + "run_" + str(j)
-        #     experiment_blob = run_experiment(device, arg_space, params_dict)
+        for j in range(runs):
+            setup_seed(seeds[j])
+            # params_dict["multiple_linear"]= True
+            # params_dict["entropy_loss"] = True
+            # params_dict["load_motif_weights"]= True
+            # params_dict["CNN_filtersize"] = [24]
+            # params_dict["optimizer"]   = "sgd"
+            # params_dict["entropy_reg_value"] = 0.001
+            # arg_space.directory = result_dir + "/pssm_0.001/" + dataname + "/" + "run_" + str(j)
+            # experiment_blob = run_experiment(device, arg_space, params_dict)
             
     ## Run for deeper models with PE
     for i in range(data_instances):

@@ -13,6 +13,28 @@ import json
 #Taken from: https://github.com/kundajelab/deeplift/blob/master/deeplift/dinuc_shuffle.py
 #############################################
 
+def compute_roc_auc(y_true, y_pred):
+    """
+    Compute ROC AUC score.
+    :param y_true: True labels
+    :param y_pred: Predicted probabilities
+    :return: ROC AUC score
+    """
+    
+        # Mask to filter out NaNs
+    mask = ~np.isnan(y_pred) & ~np.isnan(y_true)
+
+    # Apply mask
+    filtered_labels = y_true[mask]
+    filtered_preds = y_pred[mask]
+
+    # Only compute if there's valid data left
+    if len(filtered_labels) > 0 and len(np.unique(filtered_labels)) > 1:
+        auc = metrics.roc_auc_score(filtered_labels, filtered_preds)
+    else:
+        auc = 0.5  
+    
+    return auc
 
 def setup_seed(seed=42):
     random.seed(seed)
@@ -314,7 +336,7 @@ def get_shuffled_background_presaved():
 
 
 # this function is similar to the first one (get_shuffled_background()) however, instead of using consensus, it generates a random sequences (of same size as the PWM) based on the probability distributions in the matrix
-def get_shuffled_background(tst_loader, argSpace, pre_saved=False):
+def get_shuffled_background(tst_loader, argSpace, pre_saved=False, rev_complement = False):
     if pre_saved:
         out_directory = "/".join(argSpace.inputprefix.split("/")[:-1])
         print("Shuffled data path ", out_directory)
@@ -339,12 +361,15 @@ def get_shuffled_background(tst_loader, argSpace, pre_saved=False):
                 chrom = hdr.split(':')[0]
                 start, end = hdr.split(':')[1].split('-')
                 final_fa.append([header, seq])
+
                 if type(targets) == torch.Tensor:
                     targets = targets.cpu().detach().numpy()
                 target = targets.astype(int)
                 labels = ','.join(
                     labels_array[np.where(target == 1)].astype(str))
                 final_bed.append([chrom, start, end, '.', labels])
+                #final_bed.append([chrom, start, end, '.', labels])
+                
         final_fa_to_write = []
         # --load motifs
         try:
@@ -374,6 +399,7 @@ def get_shuffled_background(tst_loader, argSpace, pre_saved=False):
                 seq = final_fa[seq_index][1]
                 seq = seq[:pos]+str(consensus)+seq[pos+len(consensus):]
                 final_fa[seq_index][1] = seq
+        
         if not os.path.exists(out_directory):
             os.makedirs(out_directory)
         np.savetxt(out_directory+'/'+'shuffled_background.fa',

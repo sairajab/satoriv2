@@ -4,6 +4,7 @@ import torch.nn.functional as F
 import torch.optim as optim
 import numpy as np
 from sklearn import metrics
+from satori.utils import compute_roc_auc
 
 def trainRegularMC(model, device, iterator, optimizer, criterion, ent_loss=False, entropy_reg_weight=0.005):
     model.train()
@@ -88,6 +89,8 @@ def trainRegular(model, device, iterator, optimizer, criterion, ent_loss=False, 
 
         running_loss += loss.item()
 
-    train_auc = metrics.roc_auc_score(np.asarray(labels_list), np.asarray(pred_list))
+    train_auc = compute_roc_auc(np.asarray(labels_list), np.asarray(pred_list))
     
     return running_loss/len(iterator), train_auc
+
+

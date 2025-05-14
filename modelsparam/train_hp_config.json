@@ -1,6 +1,6 @@
 {
     "verbose": true,
-    "directory": "results/HP/E2/",
+    "directory": "results/HP/baseline_human_promoters/pssm/run_4/",
     "mode": "train",
     "deskLoad": true,
     "numWorkers": 8,
@@ -27,10 +27,10 @@
     "inputprefix": "data/Human_Promoters/encode_roadmap_inPromoter",
     "hparamfile": "modelsparam/all_exps/human_promoters/human_promoter_tiana.txt",
     "finetune_model_path": null,
-    "set_seed": true,
-    "seed": 2,
+    "set_seed": false,
+    "seed": 2024,
     "load_motif_weights": true,
     "dataset": "human_promoters",
     "tfDatabase": "/s/chromatin/p/nobackup/Saira/motif_databases/Homo_sapiens.meme",
-    "methodType": "SATORI"
+    "methodType": "RAWnATTR"
 }

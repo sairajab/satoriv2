@@ -363,18 +363,22 @@ def run_experiment(device, arg_space, params, verbose = False):
     CNNWeights = net.layer1[0].weight.cpu().detach().numpy()
     print(CNNWeights[0,:].max(), CNNWeights.shape)
     
+    if arg_space.mode == 'test':
+        res_valid = None
+        
     res_blob = {'res_test': res_test,
-                'seq_len' : seq_len,
-                'train_loader': train_loader,
-                'train_indices': train_indices,
-                'test_loader': test_loader,
-                'test_indices': test_indices,
-                'CNN_weights': CNNWeights,
-                'criterion': criterion,
-                'output_dir': output_dir,
-                'net': net,
-                'optimizer': optimizer,
-                'saved_model_dir': saved_model_dir
+                    'seq_len' : seq_len,
+                    'train_loader': train_loader,
+                    'train_indices': train_indices,
+                    'test_loader': test_loader,
+                    'test_indices': test_indices,
+                    'CNN_weights': CNNWeights,
+                    'criterion': criterion,
+                    'output_dir': output_dir,
+                    'net': net,
+                    'optimizer': optimizer,
+                    'saved_model_dir': saved_model_dir,
+                    'res_valid' : res_valid
                 }
     if verbose:
         writer.flush()
@@ -388,13 +392,18 @@ def get_results_for_shuffled(argSpace, params, net, criterion, test_loader, devi
     getSequences = params['get_seqs']
     batchSize = params['batch_size']
     motifweights = params['load_motif_weights']
+    rev_complement = params['rev_complement']
     num_labels = argSpace.numLabels
     output_dir = argSpace.directory
-    bg_prefix = get_shuffled_background(test_loader, argSpace, pre_saved=False)
-    if argSpace.deskLoad == True:
-        data_bg = DatasetLazyLoad(bg_prefix, num_labels)
+    bg_prefix = get_shuffled_background(test_loader, argSpace, pre_saved=True)
+    if rev_complement:
+        print("Loading background data with reverse complement")
+        data_bg = DatasetLazyLoadRC(bg_prefix, num_labels=num_labels, rev_complement=rev_complement)
     else:
-        data_bg = DatasetLoadAll(bg_prefix, num_labels)
+        if argSpace.deskLoad == True:
+            data_bg = DatasetLazyLoad(bg_prefix, num_labels)
+        else:
+            data_bg = DatasetLoadAll(bg_prefix, num_labels)
     test_loader_bg = DataLoader(
         data_bg, batch_size=batchSize, num_workers=argSpace.numWorkers)
     if num_labels == 2:

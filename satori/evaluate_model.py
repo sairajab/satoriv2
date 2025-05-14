@@ -9,6 +9,7 @@ from typing import Dict, Tuple, Any
 import torch.nn.functional as F
 import time
 import torch.nn as nn
+from satori.utils import compute_roc_auc
 
 def evaluateRegularMC(net, device, iterator, criterion, out_dirc,  ent_loss=False, entropy_reg_weight=0.005, getPAttn=False, storePAttn=False, getCNN=False, storeCNNout=False, getSeqs=False, motifweights = False,getAttnAttr = False, classlabel=1):
     running_loss = 0.0
@@ -194,6 +195,6 @@ def evaluateRegular(net, device, iterator, criterion, out_dirc, ent_loss=False, 
     
     labels = roc[:, 0]
     preds = roc[:, 1]
-    preds = np.nan_to_num(preds, nan=0.5)
-    valid_auc = metrics.roc_auc_score(labels, preds)
+    #preds = np.nan_to_num(preds, nan=0.5)
+    valid_auc = compute_roc_auc( labels, preds)
     return running_loss/len(iterator), valid_auc, roc, PAttn_all, per_batch_labelPreds, per_batch_CNNoutput, per_batch_testSeqs

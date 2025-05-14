@@ -3,8 +3,202 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import pickle
+import itertools
+import math 
 
 #plt.style.use('seaborn-white')
+
+def get_hits_for_all_motfs(motif_names, tfs):
+    success_in_population = 0
+    for i in range(len(motif_names)):
+        for j in range(i + 1, len(motif_names)):
+            motif_a = motif_names[i]
+            motif_b = motif_names[j]
+            flag = False
+            if type(motif_a) == list and type(motif_b) == list:
+                for a in motif_a:
+                    for b in motif_b:
+                        if (a, b) in tfs or (b, a) in tfs:
+                            flag = True
+                            break
+                if flag:
+                    success_in_population += 1
+                            
+            elif type(motif_a) == list and type(motif_b) == str:
+                for a in motif_a:
+                    if (a, motif_b) in tfs or (motif_b, a) in tfs:
+                        flag = True
+                        break
+                if flag:
+                    success_in_population += 1
+            elif type(motif_a) == str and type(motif_b) == list:
+                for b in motif_b:
+                    if (motif_a, b) in tfs or (b, motif_a) in tfs:
+                        flag = True
+                        break
+                if flag:
+                    success_in_population += 1
+                    
+            elif type(motif_a) == str and type(motif_b) == str:
+                if motif_a != motif_b:
+                    if (motif_a, motif_b) in tfs or (motif_b, motif_a) in tfs:
+                        flag = True
+                        success_in_population += 1
+    print("Success in population: ", success_in_population)
+    return success_in_population
+
+def find_matches_in_db(result_df, tfs):
+    matches_in_db = []
+    for i, row in result_df.iterrows():
+        if type(row['motif_a_name']) == str and type(row['motif_b_name']) == str:
+            if (row['motif_a_name'].upper(), row['motif_b_name'].upper()) in tfs:
+                matches_in_db.append(row)
+        elif type(row['motif_b_name']) == str and type(row['motif_a_name']) == list:
+            for motif in row['motif_a_name']:
+                if (motif.upper(), row['motif_b_name'].upper()) in tfs:
+                    matches_in_db.append(row)
+        elif type(row['motif_a_name']) == str and type(row['motif_b_name']) == list:
+            for motif in row['motif_b_name']:
+                if (row['motif_a_name'].upper(), motif.upper()) in tfs:
+                    matches_in_db.append(row)
+        elif type(row['motif_a_name']) == list and type(row['motif_b_name']) == list:
+            for motif_a in row['motif_a_name']:
+                for motif_b in row['motif_b_name']:
+                    if (motif_a.upper(), motif_b.upper()) in tfs:
+                        matches_in_db.append(row)
+    return matches_in_db
+
+
+# Remove '>' and split motifs by '|', then map to cluster name
+def map_index_to_motifs(df):
+    index_to_cluster = {}
+    for idx, row in df.iterrows():
+        motifs_str = row['Contributing_Motifs'].lstrip('>')
+        if '|' in motifs_str:
+            motifs = motifs_str.split('|')
+            index_to_cluster[idx] =  [x.upper() if isinstance(x, str) else x for x in motifs]
+        else:
+            index_to_cluster[idx] = row['Clustered_Motif']
+    return index_to_cluster
+
+def get_interaction_df(df, index_to_cluster_map):
+    
+    import re
+    # Extract filter indices from 'filter_interaction'
+    def extract_filters(s):
+        return list(map(int, re.findall(r'filter(\d+)', s)))
+
+    # Build rows
+    rows = []
+    for _, row in df.iterrows():
+        filters = extract_filters(row['filter_interaction'])
+        if len(filters) == 2:
+            filter_a, filter_b = filters
+            motif_a = index_to_cluster_map.get(filter_a, f"filter{filter_a}")
+            motif_b = index_to_cluster_map.get(filter_b, f"filter{filter_b}")
+            
+            rows.append({
+                'filter_a': filter_a,
+                'filter_b': filter_b,
+                'motif_a_name': motif_a,
+                'motif_b_name': motif_b,
+                'adjusted_pval': row['adjusted_pval']  # assumes this column exists
+            })
+
+    # Create final DataFrame
+    result_df = pd.DataFrame(rows)
+    
+    return result_df
+
+
+def match_with_ppi(data_path, tfs, identfied_motifs, output_path=None):
+
+    df = pd.read_csv(data_path)
+    df.drop_duplicates(subset=["TF_Interaction"],inplace=True)
+    df.reset_index(drop=True,inplace=True)
+    total_interactions = set()
+    filtered_data = pd.DataFrame()
+
+    # Extract the relevant columns from the dataframe
+    for i,row in df.iterrows():
+        tfs1 = identfied_motifs[row["motif1"]].split(",")
+        tfs2 = identfied_motifs[row["motif2"]].split(",")
+        
+        for tf1 in tfs1:
+            for tf2 in tfs2:
+                total_interactions.add(frozenset((tf1,tf2)))
+                
+                if (tf1,tf2) in tfs:
+                    df.iloc[i, df.columns.get_loc("TF_Interaction")] = tf1 + "$\longleftrightarrow$" + tf2
+                    filtered_data = pd.concat([filtered_data, df.iloc[[i]]], ignore_index=True)
+    filtered_data.drop_duplicates(subset=["TF_Interaction"], inplace=True)
+    filtered_data.reset_index(drop=True, inplace=True)
+
+    return len(total_interactions), filtered_data
+
+
+def create_all_combinations(unique_tfs):
+    # Get all motif IDs
+    motif_ids = list(unique_tfs.keys())
+
+    # Generate all unique pairs of motifs
+    motif_pairs = list(itertools.combinations(motif_ids, 2))
+    # List to store all protein interactions
+    protein_interactions = []
+
+    # Iterate over each motif pair
+    for motif1, motif2 in motif_pairs:
+        # Get the proteins for each motif
+        if "," in unique_tfs[motif1]:
+            proteins1 = unique_tfs[motif1].split(",")
+        else:
+            proteins1 = [unique_tfs[motif1]]
+        if "," in unique_tfs[motif2]:
+            proteins2 = unique_tfs[motif2].split(",")
+        else:
+            proteins2 = [unique_tfs[motif2]]
+        if proteins1 == proteins2:
+            print(f"Warning: {motif1} and {motif2} have the same proteins: {proteins1}")
+            continue
+        # Generate all possible protein interactions between the two motifs
+        interactions = list(itertools.product(proteins1, proteins2))
+
+        # Add these interactions to the list
+        protein_interactions.extend(interactions)
+    unique_interactions = set()
+    
+    for interaction in protein_interactions:
+        # Use frozenset to ensure (a, b) and (b, a) are treated as the same
+        unique_interactions.add(frozenset(interaction))
+
+    # Convert frozensets back to tuples for readability
+    unique_interactions = {tuple(interaction) for interaction in unique_interactions}
+
+    return unique_interactions
+
+def read_motifs_by_model(exp_dir, data_name ,  df_annotate=None):
+    # Load tomtom 
+    tomt = pd.read_csv(exp_dir + "/Motif_Analysis/tomtom/tomtom.tsv", delimiter="\t")#deep_ent_tomtom.tsv
+    filters = {}
+    for i, row in tomt.iterrows():
+        filters.setdefault(row["Query_ID"],[]).append((row["q-value"],row["Target_ID"]))
+
+    annotations = set()
+    for key in filters.keys():
+        temp = filters[key]
+        annotations.add(temp[0][1])
+
+    cleaned_set = {x for x in annotations if not (isinstance(x, float) and math.isnan(x))}
+    unique_tfs = {}
+    if df_annotate is not None and data_name == "human_promoters":
+        for motif in cleaned_set:
+            unique_tfs[motif] = get_annotation(motif, annotation_data=df_annotate, single_TF=False)
+    else:
+        for motif in cleaned_set:
+            unique_tfs[motif] = motif.split('_')[1].strip('.tnt')
+        
+    return unique_tfs
+
 
 
 def filter_data_on_thresholds(dfx, intr_pval_cutoff=0.05, motifA_pval_cutoff=0.01, motifB_pval_cutoff=0.01):

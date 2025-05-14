@@ -1,7 +1,7 @@
 {
     "verbose": true,
-    "directory": "results/Arabidopsis/PSSM_PE_E1/",
-    "mode": "test",
+    "directory": "results/Arabidopsis/baseline_arabidopsis/pssm_ent/init_run_6/",
+    "mode": "train",
     "deskLoad": true,
     "numWorkers": 8,
     "splitperc": 10,
@@ -13,7 +13,7 @@
     "featInteractions": true,
     "interactionsAnalysis": false,
     "intBackground": "shuffle",
-    "attnCutoff": 0.04,
+    "attnCutoff": 0.5,
     "fisCutoff": 0,
     "intSeqLimit": 5000,
     "storeInterCNN": true,
@@ -27,10 +27,10 @@
     "inputprefix": "data/Arabidopsis_ChromAccessibility/atAll_m200_s600",
     "hparamfile": "modelsparam/all_exps/arabidopsis/arabidopsis_tiana.txt",
     "finetune_model_path": null,
-    "set_seed": false,
+    "set_seed": true,
     "seed": 2,
     "load_motif_weights": true,
     "dataset": "arabidopsis",
     "tfDatabase": "/s/chromatin/p/nobackup/Saira/motif_databases/ArabidopsisDAPv1.meme",
-    "methodType": "SATORI"
+    "methodType": "RAWnATTR"
 }

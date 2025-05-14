@@ -131,6 +131,11 @@ class AttentionPool(nn.Module):
         attn = logits.softmax(dim=-2)
         return (x * attn).sum(dim=-2).squeeze()
 
+def init_weights_he(m):
+        if isinstance(m, nn.Linear):
+            nn.init.kaiming_normal_(m.weight, nonlinearity='relu')
+            if m.bias is not None:
+                nn.init.zeros_(m.bias)
 
 # for the model that uses CNN, RNN (optionally), and MH attention
 class AttentionNet(nn.Module):
@@ -379,17 +384,28 @@ class AttentionNet(nn.Module):
         if len(self.cnnlayer) > 0:
             self.cnn_residual = True
             self.CNNlayers = nn.ModuleList(self.cnnlayer)
+            
+        
+        ## Try initialization of weights
+        # Initialize Q
+        for layer_group in self.Q:
+            print("Initializing Q")
+            for layer in layer_group:
+                init_weights_he(layer)
+
+        # Initialize K
+        for layer_group in self.K:
+            print("Initializing K")
+            for layer in layer_group:
+                init_weights_he(layer)
+
+        # Initialize V
+        for layer_group in self.V:
+            print("Initializing V")
+            for layer in layer_group:
+                init_weights_he(layer)
 
 
-        # self.initialize_weights() # did not work
-    def initialize_weights(self):
-        print("Initilizing weights with HE...")
-        for m in self.modules():
-            if isinstance(m, nn.Conv1d) or isinstance(m, nn.Linear):
-                init.kaiming_normal_(
-                    m.weight, mode='fan_in', nonlinearity='relu')
-                if m.bias is not None:
-                    init.constant_(m.bias, 0)
 
     def attention(self, query, key, value, mask=None, dropout=0.0, attn_prob=None):
         # based on: https://nlp.seas.harvard.edu/2018/04/03/attention.html

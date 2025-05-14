@@ -578,7 +578,7 @@ def plot_filter_logo(filter_outs, filter_size, seqs, out_prefix, raw_t=0, maxpct
             if embedding:
                 raw_t = 0.60 * all_outs_norm.max() + all_outs_mean
             else:
-                raw_t = 0.65 * all_outs_norm.max()# + all_outs_mean
+                raw_t = 0.65 * all_outs_norm.max() + all_outs_mean
 
     # print fasta file of positive outputs
     filter_fasta_out = open('%s.fa' % out_prefix, 'w')
