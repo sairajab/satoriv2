@@ -90,11 +90,9 @@ def run():
             modelparams = glob.glob(hyperparams_dir + "*")
 
             for param in modelparams:
+                print("Running with hyperparameters from: ", param)
                 arg_space.hparamfile = param
                 params_dict = get_params_dict(arg_space.hparamfile)
-                best_val_auc = -1
-                best_exp = ""
-                best_seed = -1
                 for seed in range(rep):
                     
                     arg_space.inputprefix = os.path.join(dataset_path, d)

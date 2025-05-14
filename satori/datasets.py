@@ -116,10 +116,6 @@ class DatasetLazyLoad(Dataset):
         self.df_seq_final = self.df_seq_final.reset_index()
         self.df.columns.values[-2] = "label"  # Rename column at index -2
 
-        print("Columns in df ", self.df.columns)
-        print("Columns in df_seq_all ", self.df_seq_final.columns)
-        # self.df['header'] = self.df.apply(lambda x: '>'+x[0]+':'+str(x[1])+'-'+str(x[2])+'('+x[5]+')', axis=1)
-
     def __len__(self):
         return self.df.shape[0]
 
@@ -166,8 +162,6 @@ class DatasetLazyLoad(Dataset):
                            [idx].split(',')).astype(int)
             y = self.one_hot_encode_labels(y)
         header = self.df['header'][idx]
-        #print(header, idx)
-        #print((self.df_seq_final['header'] == header).any()
         X = self.df_seq_final['sequence'][self.df_seq_final['header']
                                           == header].array[0].upper()
         seq = X
@@ -183,7 +177,6 @@ class DatasetLazyLoadRC(Dataset):
         
         # Load data
         #df_path = df_path.split('.')[0]
-        print(df_path)
         self.df_all = pd.read_csv(df_path + '.txt', delimiter='\t', header=None)
         self.df_seq = pd.read_csv(df_path + '.fa', header=None)
         
@@ -219,8 +212,6 @@ class DatasetLazyLoadRC(Dataset):
         self.df_all = self.df_all.reset_index(drop=True)
         self.df_seq_final = self.df_seq_all.reset_index(drop=True)
 
-        print("Columns in df:", self.df_all.columns)
-        print("Columns in df_seq_all:", self.df_seq_final.columns)
 
     def __len__(self):
         return len(self.df_all)
@@ -290,8 +281,7 @@ if __name__ == "__main__":
     
     data_path = "../data/Human_Promoters/encode_roadmap_inPromoter"
     dataFinal = DatasetLazyLoadRC(data_path,num_labels=164, rev_complement=True)
-    print(dataFinal.df_all["header"])
-    print(dataFinal.df_seq_all["header"])
+
     # Function to extract chromosome number
     def extract_chromosome(region):
         match = re.search(r'chr(\d+|X|Y)', region)
