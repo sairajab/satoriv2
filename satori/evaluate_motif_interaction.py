@@ -258,7 +258,7 @@ def run_interaction_evaluation(exp_path, gt_tfs_path,tfdatabase,  method = "SATO
     for file in interaction_files:
         if motif_weights:
             print("Using filters_to_motif.txt......")
-            annotated_filters = "/s/chromatin/p/nobackup/Saira/original/satori/create_dataset/filter_to_motifs.csv"
+            annotated_filters = "motif_pssm/filter_to_motifs.csv"
             filters_tf = read_filters_to_motif(annotated_filters)
             print(filters_tf)
             ps, rs, f1s = evaluate_interactions(file, thresholds, tfs_pairs, filters_tf, output_folder)    

@@ -109,14 +109,14 @@ def run_experiment(device, arg_space, params, verbose = False):
     
     if params['exp_name'] == 'arabidopsis':
         # load pssm
-        pssm = '../TIANA_demo_upload/mycluster/arab/motif_pssm_arab.npy'
+        pssm = 'motif_pssm/motif_pssm_arab.npy'
     
     elif params['exp_name'] == 'human_promoters':
         
-        pssm = "../TIANA_demo_upload/mycluster/hp/motifs_pssm_hp.npy"
+        pssm = "motif_pssm/motifs_pssm_hp.npy"
 
     else:
-        pssm = '../TIANA_demo_upload/mycluster/padded_motifs_pssm_new.npy'
+        pssm = 'motif_pssm/padded_motifs_pssm_new.npy'
         # load pssm
     with open(pssm, 'rb') as f:
             motif_array = np.load(f)

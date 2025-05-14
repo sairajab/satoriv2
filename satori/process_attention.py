@@ -518,7 +518,6 @@ def infer_intr_attention(experiment_blob, params, argSpace, interaction="SATORI"
 	if not os.path.exists(Interact_dir):
 	    os.makedirs(Interact_dir)
 	tomtom_data = np.loadtxt(motif_dir_pos+'/tomtom/tomtom.tsv',dtype=str,delimiter='\t')
- 
 	if argSpace.intBackground != None:
 		tomtom_data_neg = np.loadtxt(motif_dir_neg+'/tomtom/tomtom.tsv',dtype=str,delimiter='\t')
 		#tomtom_data_neg = np.loadtxt(motif_dir_pos+'/CNN_filters/cnnfilters.tsv',dtype=str,delimiter='\t')

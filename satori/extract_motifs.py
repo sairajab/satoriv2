@@ -653,13 +653,13 @@ def get_motif_fig(filter_weights, filter_outs, out_dir, seqs, sample_i = 0, moti
     meme_out = meme_intro('%s/filters_meme.txt'%out_dir, seqs)
     if motifweights:
         if dataset == 'arabidopsis':
-            cpath = "../TIANA_demo_upload/mycluster/arab/motif_threshold_arab.npy"
+            cpath = "motif_pssm/motif_threshold_arab.npy"
 
         elif dataset == 'human_promoters':
-            cpath = "../TIANA_demo_upload/mycluster/hp/motif_threshold_hp.npy"
+            cpath = "motif_pssm/motif_threshold_hp.npy"
 
         else:
-            cpath = "../TIANA_demo_upload/mycluster/motif_threshold_new.npy"
+            cpath = "motif_pssm/motif_threshold_new.npy"
 
             
         with open(cpath,'rb') as f:
