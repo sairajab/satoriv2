@@ -41,3 +41,9 @@ sei|False|#use sei after attention
 sei_bn|False|Use BN in sei
 load_motif_weights|False|#load motif weights
 dropout_rate|0.2|#dropout rate in the model
+optimizer|adam|
+momentum|0.9|
+lr|0.001|
+weight_decay|0.001|
+schedular|False|
+rev_complement|False|

@@ -39,3 +39,10 @@ linear_layer_size|512|
 cnn_attention_block|False|
 sei|False|#use sei after attention
 load_motif_weights|True|#load motif weights
+dropout_rate|0.2|#dropout rate in the model
+optimizer|sgd|
+momentum|0.9|
+lr|0.001|
+weight_decay|0.001|
+schedular|False|
+rev_complement|False|

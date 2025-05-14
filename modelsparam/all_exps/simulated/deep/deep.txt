@@ -38,3 +38,11 @@ multiple_linear|False| #number of linear layers after attention layer
 linear_layer_size|512|
 cnn_attention_block|False|
 sei|True|#use sei after attention
+dropout_rate|0.2|#dropout rate in the model
+load_motif_weights|False|#load motif weights
+optimizer|adam|
+momentum|0.9|
+lr|0.001|
+weight_decay|0.001|
+schedular|False|
+rev_complement|False|

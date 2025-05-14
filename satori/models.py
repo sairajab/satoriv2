@@ -384,26 +384,6 @@ class AttentionNet(nn.Module):
         if len(self.cnnlayer) > 0:
             self.cnn_residual = True
             self.CNNlayers = nn.ModuleList(self.cnnlayer)
-            
-        
-        ## Try initialization of weights
-        # Initialize Q
-        for layer_group in self.Q:
-            print("Initializing Q")
-            for layer in layer_group:
-                init_weights_he(layer)
-
-        # Initialize K
-        for layer_group in self.K:
-            print("Initializing K")
-            for layer in layer_group:
-                init_weights_he(layer)
-
-        # Initialize V
-        for layer_group in self.V:
-            print("Initializing V")
-            for layer in layer_group:
-                init_weights_he(layer)
 
 
 

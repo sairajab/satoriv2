@@ -38,4 +38,9 @@ exp_name|arabidopsis|#name of experiment
 cnn_attention_block|False|
 linear_layer_size|512|
 sei|True|#use sei after attention
-
+optimizer|adam|
+momentum|0.9|
+lr|0.001|
+weight_decay|0.001|
+schedular|False|
+rev_complement|False|
