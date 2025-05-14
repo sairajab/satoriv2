@@ -91,7 +91,7 @@ def Calibration(dataset_path, numLabels, seq_length, device, search_space_dict, 
                     best_valid_auc = res_valid_auc
                     best_valid_loss = res_valid_loss
 
-            print(f"   Best Validation AUC for Run {run_idx+1}: {best_valid_auc:.4f}\n")
+            print(f"Best Validation AUC for Run {run_idx+1}: {best_valid_auc:.4f}\n")
             # Store best AUC from this run
             auc_scores.append(best_valid_auc)
             

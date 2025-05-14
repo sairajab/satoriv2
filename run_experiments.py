@@ -51,10 +51,9 @@ def find_highest_auc_folder(root_folder):
     
     return best_folder, highest_auc
                 
-def run(mode):
+def run():
     
     rep = 3
-    print("Running SATORI with mode: ", mode)
     data_id = "40"
     dataset_path = f"data/Simulated_Data/Data-{data_id}/" 
     d_files =  [f"ctf_{data_id}pairs_eq0", f"ctf_{data_id}pairs_eq1", f"ctf_{data_id}pairs_eq2"]

@@ -18,8 +18,8 @@ def run_training_pipeline():
     if not os.path.exists(data_dir):
         os.makedirs(data_dir)
     data_name = os.path.join(data_dir,"data_80_0")
-    #embedder = SimulatedDataGenerator(seq_len=seq_len, path_to_meme=path_to_meme, pairs_file=pairs_file, num_of_seq=num_of_seq, output_name=data_name)
-    #embedder.generate_data()
+    embedder = SimulatedDataGenerator(seq_len=seq_len, path_to_meme=path_to_meme, pairs_file=pairs_file, num_of_seq=num_of_seq, output_name=data_name)
+    embedder.generate_data()
 
     ## Run Model Selection
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -39,19 +39,19 @@ def run_training_pipeline():
     out_dir = os.path.join(result_dir, "model_selection")
     if not os.path.exists(out_dir):
         os.makedirs(out_dir)
-    #config_path = Calibration(dataset_path=data_name, numLabels=2, seq_length=seq_len, device=device, search_space_dict=param_dist, out_dir=out_dir,  n_iter = 30)
+    config_path = Calibration(dataset_path=data_name, numLabels=2, seq_length=seq_len, device=device, search_space_dict=param_dist, out_dir=out_dir,  n_iter = 30)
     
-    #print("Model Selection Complete ", config_path)
+    print("Model Selection Complete ", config_path)
     
     ## Loop through three instance of data generation
     data_instances = 3
     for i in range(data_instances):
         ## Set Seed
-        #setup_seed(42 + i)
+        setup_seed(42 + i)
         ## Generate Data
         data_name = os.path.join(data_dir,f"data_80_{i+1}")
-        #embedder = SimulatedDataGenerator(seq_len=seq_len, path_to_meme=path_to_meme, pairs_file=pairs_file, num_of_seq=num_of_seq, output_name=data_name)
-        #embedder.generate_data()
+        embedder = SimulatedDataGenerator(seq_len=seq_len, path_to_meme=path_to_meme, pairs_file=pairs_file, num_of_seq=num_of_seq, output_name=data_name)
+        embedder.generate_data()
         
     print("Data Generation Complete")
     ## Loop through three instances of baseline model training using best model
@@ -62,14 +62,14 @@ def run_training_pipeline():
     runs = 3
     seeds = [42, 1337, 2024] 
     
-    # for i in range( data_instances):
-    #     dataname = f"data_80_{i+1}"
-    #     arg_space.inputprefix = os.path.join(data_dir,dataname)
+    for i in range( data_instances):
+        dataname = f"data_80_{i+1}"
+        arg_space.inputprefix = os.path.join(data_dir,dataname)
         
-    #     for j in range(runs):
-    #         setup_seed(seeds[j])
-    #         arg_space.directory = result_dir + "/baseline/" + dataname + "/" + "run_" + str(j)
-    #         experiment_blob = run_experiment(device, arg_space, params_dict)
+        for j in range(runs):
+            setup_seed(seeds[j])
+            arg_space.directory = result_dir + "/baseline/" + dataname + "/" + "run_" + str(j)
+            experiment_blob = run_experiment(device, arg_space, params_dict)
             
     ## Loop through three instances of baseline model training with Entropy Loss
     for i in range(1,data_instances):
