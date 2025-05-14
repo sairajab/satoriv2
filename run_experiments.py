@@ -93,7 +93,12 @@ def run():
                 for seed in range(rep):
                     
                     arg_space.inputprefix = os.path.join(dataset_path, d)
-                    arg_space.directory = os.path.join(outdir, d) + "/run_" + str(seed)
+                    exp_dir = os.path.join(outdir, d)
+                    if not os.path.exists(exp_dir):
+                        os.mkdir(exp_dir)
+                    arg_space.directory = exp_dir + "/run_" + str(seed)
+                    if not os.path.exists(arg_space.directory):
+                        os.mkdir(arg_space.directory)
                     arg_space.pairs_file = os.path.join(dataset_path, pairs_n_meme[d][0])
                     arg_space.tfDatabase = os.path.join(dataset_path, pairs_n_meme[d][1])
                     # Set the random seed for reproducibility
