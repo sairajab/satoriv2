@@ -31,5 +31,6 @@
     "finetune_model_path": null,
     "set_seed": true,
     "seed": 2,
-    "load_motif_weights": false
+    "load_motif_weights": false,
+    "dataset": "simulated"
 }
