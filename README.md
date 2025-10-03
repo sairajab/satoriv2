@@ -1,7 +1,7 @@
 # SATORIv2 : Comprehensive Evaluation of SATORI 
 **SATORI v2** is based on **S**elf-**AT**tenti**O**n based deep learning model that captures **R**egulatory element **I**nteractions in genomic sequences. It can be used to infer a global landscape of interactions in a given genomic dataset, with a minimal post-processing step. This repository contains code for extensive evaluation of self-attention layer in order to predict feature interactions. It provides a framework to infer interactions using both raw attention scores and attention attribution scores. 
 
-## Original Manuscript
+## Earlier Manuscript
 Fahad Ullah, Asa Ben-Hur, A self-attention model for inferring cooperativity between regulatory features, Nucleic Acids Research, 2021;, gkab349, [https://doi.org/10.1093/nar/gkab349](https://doi.org/10.1093/nar/gkab349)
 
 ## Dependency
