@@ -83,14 +83,12 @@ export PYTHONPATH=path-to-satori/satori:$PYTHONPATH
     "dataset": "simulated"
 }
 ```
-Description of fields
-
 | Field                  | Description                                                    |
 | ---------------------- | -------------------------------------------------------------- |
 | `verbose`              | Enable verbose output (`true`/`false`).                        |
 | `directory`            | Path to store results and outputs.                             |
 | `mode`                 | Operation mode: `"train"` or `"test"`.                         |
-| `deskLoad`             | Load dataset from disk if already processed (`true`/`false`).  |
+| `deskLoad`             | Process data on the go (`true`/`false`).  |
 | `numWorkers`           | Number of worker threads for data loading.                     |
 | `splitperc`            | Percentage of data reserved for validation/testing.            |
 | `motifAnalysis`        | Enable motif analysis (`true`/`false`).                        |
@@ -100,8 +98,8 @@ Description of fields
 | `tfDatabase`           | Path to transcription factor motif database.                   |
 | `annotateTomTom`       | Path for Tomtom annotation results or `null`.                  |
 | `featInteractions`     | Enable feature interaction analysis (`true`/`false`).          |
-| `interactionsAnalysis` | Enable interaction analysis (`true`/`false`).                  |
-| `intBackground`        | Background type for interaction analysis (e.g., `"negative"`). |
+| `interactionsAnalysis` | Enable interaction analysis for simulated data (`true`/`false`).                  |
+| `intBackground`        | Background type for interaction analysis (e.g., `"negative"/"shuffle"`). |
 | `attnCutoff`           | Attention weight threshold for interaction analysis.           |
 | `fisCutoff`            | FIS score threshold for filtering interactions.                |
 | `intSeqLimit`          | Limit on number of sequences for interaction analysis.         |
