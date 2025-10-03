@@ -325,7 +325,18 @@ class AttentionNet(nn.Module):
         print(self.dropout_rate)
         self.MultiHeadLinearDropout = nn.ModuleList(
             [nn.Dropout(self.dropout_rate) for j in range(0, self.numofAttnLayers)])
-        if self.multiple_linear: #Asa said it does not make difference 
+        
+        #### test code
+        # self.MultiHeadLayerNorm = nn.ModuleList([nn.LayerNorm(self.SingleHeadSize * self.numMultiHeads) for i in range(0, self.numofAttnLayers)])
+        # self.MultiHeadLayerNorm_2 = nn.ModuleList([nn.LayerNorm(self.SingleHeadSize * self.numMultiHeads) for i in range(0, self.numofAttnLayers)])
+        # self.MultiHeadLinear_1 = nn.ModuleList([nn.Linear(in_features=self.SingleHeadSize*self.numMultiHeads, out_features=self.linear_size)
+        #                                            for j in range(0, self.numofAttnLayers)])  # self.numMultiHeads*self.SingleHeadSize
+        # self.MultiHeadLinear_2 = nn.ModuleList([nn.Linear(
+        #         in_features=self.linear_size, out_features=256) for j in range(0, self.numofAttnLayers)])
+ 
+        ### test code end
+        
+        if self.multiple_linear: 
 
             self.MultiHeadLinear_1 = nn.ModuleList([nn.Linear(in_features=self.SingleHeadSize*self.numMultiHeads, out_features=self.linear_size)
                                                    for j in range(0, self.numofAttnLayers)])  # self.numMultiHeads*self.SingleHeadSize
@@ -351,14 +362,14 @@ class AttentionNet(nn.Module):
                     in_features=self.linear_size, out_features=self.numClasses) #self.sei_light.output_dim * 16,
             
                 else:
-                    self.sei_light = Sei_light(n_out, big=False) # trying to see if without reshaping self.MultiHeadSize)
+                    self.sei_light = Sei_light(n_out, big=True) # trying to see if without reshaping self.MultiHeadSize)
 
                     
                     self.fc3 = nn.Linear(
-                    in_features=self.linear_size, out_features=self.numClasses) #sei_light.output_dim * 16,self.MultiHeadSize
+                    in_features=64, out_features=self.numClasses) # self.linear_size sei_light.output_dim * 16,self.MultiHeadSize
                 
             else:
-                self.fc3 = nn.Linear(in_features=self.linear_size, out_features=self.numClasses)
+                self.fc3 = nn.Linear(in_features=self.linear_size, out_features=self.numClasses, bias = False)
             # 480 * 16 for Sei output, otherwise MultiheadSize
 
 
@@ -414,9 +425,7 @@ class AttentionNet(nn.Module):
 
     def forward(self, inputs, attn_prob=None):
         output = inputs
-        
-
-
+    
         if self.useCNN:
             cnn1_out = self.layer1(output)
             output = self.dropout1(cnn1_out)
@@ -495,7 +504,17 @@ class AttentionNet(nn.Module):
             #print(attn_concat.shape)
             if self.attn_skip:
                     attn_concat = attn_concat + output
-            if self.multiple_linear:
+                    attn_concat = self.MultiHeadLayerNorm[j](out)
+                    attn_concat = F.relu(self.MultiHeadLinear_1[j](attn_concat))
+                    attn_concat = F.relu(self.MultiHeadLinear_2[j](attn_concat))
+                    attn_concat = attn_concat + out
+                    attn_concat = self.MultiHeadLayerNorm_2[j](attn_concat)
+                    
+                    
+                    
+                    
+            if self.multiple_linear: ## to make it like an encoder block
+                
                 output = self.MultiHeadLinear_2[j](self.MultiHeadLinearDropout[j](self.MHGeLU[j](self.MultiHeadLinear_1[j]
                                                                                                  (self.MultiHeadLayerNorm[j](attn_concat)))))
                 output = self.MHReLU[j](output)

@@ -90,7 +90,7 @@ def trainRegular(model, device, iterator, optimizer, criterion, ent_loss=False, 
         running_loss += loss.item()
 
     train_auc = compute_roc_auc(np.asarray(labels_list), np.asarray(pred_list))
-    
+
     return running_loss/len(iterator), train_auc
 
 

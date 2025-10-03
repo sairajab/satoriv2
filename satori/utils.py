@@ -9,6 +9,8 @@ from sklearn import metrics
 from collections import defaultdict
 from random import shuffle
 import json
+from sklearn.model_selection import train_test_split
+
 ##############################################
 #Taken from: https://github.com/kundajelab/deeplift/blob/master/deeplift/dinuc_shuffle.py
 #############################################
@@ -46,6 +48,8 @@ def setup_seed(seed=42):
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
     torch.use_deterministic_algorithms(True)  
+    os.environ['CUBLAS_WORKSPACE_CONFIG'] = ':4096:8'
+
     
 #random.seed = 100
 def load_config(config_path):
@@ -198,6 +202,36 @@ def get_indices(dataset_size, test_split, output_dir, data, shuffle_data=True, s
             train_indices = np.loadtxt(
                 '/s/chromatin/p/nobackup/Saira/original/satori/data/Arabidopsis_ChromAccessibility/train_indices.txt', dtype=int)
 
+        elif data == "enhancers":
+            try: 
+                valid_indices = np.loadtxt(
+                    '/s/chromatin/a/nobackup/Saira/SATORI_ENHANCEMENTS/satoriv2/data/EnhancersData/valid_indices.txt', dtype=int)
+                test_indices = np.loadtxt(
+                    '/s/chromatin/a/nobackup/Saira/SATORI_ENHANCEMENTS/satoriv2/data/EnhancersData/test_indices.txt', dtype=int)
+                train_indices = np.loadtxt(
+                    '/s/chromatin/a/nobackup/Saira/SATORI_ENHANCEMENTS/satoriv2/data/EnhancersData/train_indices.txt', dtype=int)
+            except:
+                indices = np.arange(len(final_dataset))
+                all_labels = final_dataset.df[final_dataset.df.columns[-2]]
+
+                train_indices, temp_indices, y_train, y_temp = train_test_split(
+                    indices, all_labels, 
+                    test_size=(test_split*2), 
+                    stratify=all_labels, 
+                    random_state=seed_val
+                )
+
+                valid_size = test_split / (test_split + test_split)
+                valid_indices, test_indices, y_valid, y_test = train_test_split(
+                    temp_indices, y_temp, 
+                    test_size=(1 - valid_size), 
+                    stratify=y_temp, 
+                    random_state=seed_val
+                )    
+                np.savetxt(output_dir+'/valid_indices.txt', valid_indices, fmt='%s')
+                np.savetxt(output_dir+'/test_indices.txt', test_indices, fmt='%s')
+                np.savetxt(output_dir+'/train_indices.txt', train_indices, fmt='%s')
+                
         else:
           try:
               valid_indices = np.loadtxt(
@@ -213,6 +247,7 @@ def get_indices(dataset_size, test_split, output_dir, data, shuffle_data=True, s
                 np.savetxt(output_dir+'/valid_indices.txt', valid_indices, fmt='%s')
                 np.savetxt(output_dir+'/test_indices.txt', test_indices, fmt='%s')
                 np.savetxt(output_dir+'/train_indices.txt', train_indices, fmt='%s')
+
 
     else:
         try:

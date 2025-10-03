@@ -32,6 +32,18 @@ import json
 # ---------------------------------------------------------End-------------------------------------------------------------#
 ###########################################################################################################################
 
+def custom_collate(batch):
+    headers, seqs, Xs, ys = zip(*batch)
+    #print("Headers: ", headers, len(Xs))
+    for i in range(len(Xs)):
+        if len(Xs[i]) > 2500:
+            print(f"Input Sequence {i} (One-Hot Encoded) length greater than 2500, truncating to 2500.")
+        # else:
+        #     print(len(Xs[i]))
+    Xs = torch.stack(Xs)
+    ys = torch.stack(ys)
+    return list(headers), list(seqs), Xs, ys
+
 
 def load_datasets(inputprefix, output_dir, batchSize, dataset_name, numLabels, deskLoad, mode, splitperc, rev_complement = False):
     """
@@ -57,17 +69,18 @@ def load_datasets(inputprefix, output_dir, batchSize, dataset_name, numLabels, d
 
     seq_len = final_dataset.get_seq_len()
     train_indices, test_indices, valid_indices = get_indices(
-        len(final_dataset), test_split, output_dir, dataset_name, mode=mode)
+        len(final_dataset), test_split, output_dir, dataset_name, mode=mode, final_dataset=final_dataset)
     train_sampler = SubsetRandomSampler(train_indices)
     test_sampler = SubsetRandomSampler(test_indices)
     valid_sampler = SubsetRandomSampler(valid_indices)
     train_loader = DataLoader(final_dataset, batch_size=batchSize,
-                              sampler=train_sampler, num_workers=4)
+                              sampler=train_sampler, num_workers=4, collate_fn=custom_collate)
     test_loader = DataLoader(final_dataset, batch_size=batchSize,
-                             sampler=test_sampler, num_workers=4)
+                             sampler=test_sampler, num_workers=4, collate_fn=custom_collate)
     valid_loader = DataLoader(final_dataset, batch_size=batchSize,
-                              sampler=valid_sampler, num_workers=4)
-    return train_loader, train_indices, test_loader, test_indices, valid_loader, valid_indices, output_dir, seq_len
+                              sampler=valid_sampler, num_workers=4, collate_fn=custom_collate)
+    all_labels = final_dataset.df[final_dataset.df.columns[-2]]
+    return train_loader, train_indices, test_loader, test_indices, valid_loader, valid_indices, output_dir, seq_len, all_labels
 
 
 def run_experiment(device, arg_space, params, verbose = False):
@@ -93,7 +106,7 @@ def run_experiment(device, arg_space, params, verbose = False):
     # Using generic, not sure if we need it as an argument or part of the params dict
     prefix = 'modelRes_Val'
     
-    train_loader, train_indices, test_loader, test_indices, valid_loader, valid_indices, output_dir, seq_len = load_datasets(arg_space.inputprefix, arg_space.directory,
+    train_loader, train_indices, test_loader, test_indices, valid_loader, valid_indices, output_dir, seq_len , all_labels = load_datasets(arg_space.inputprefix, arg_space.directory,
                                                                                                                           batch_size, arg_space.dataset, num_labels, arg_space.deskLoad, arg_space.mode, arg_space.splitperc)
     
         # save arguments to keep record
@@ -107,7 +120,7 @@ def run_experiment(device, arg_space, params, verbose = False):
     total_params = sum(p.numel() for p in net.parameters())
     print(f"Number of parameters: {total_params}")
     
-    if params['exp_name'] == 'arabidopsis':
+    if params['exp_name'] == 'arabidopsis' or params['exp_name'] == 'enhancers':
         # load pssm
         pssm = 'motif_pssm/motif_pssm_arab.npy'
     
@@ -152,8 +165,20 @@ def run_experiment(device, arg_space, params, verbose = False):
             net.layer1[0].weight.requires_grad = False 
 
     if num_labels == 2:
+        imbalanced = True
+        weight = None
+        if imbalanced:
+            pos_count = np.sum(all_labels[train_indices])
+            neg_count = len(train_indices) - pos_count
 
-        criterion = nn.CrossEntropyLoss(reduction='mean')
+            total = pos_count + neg_count
+            w_pos = total / (2.0 * pos_count)
+            w_neg = total / (2.0 * neg_count)
+            
+            weight = torch.tensor([w_neg, w_pos], dtype=torch.float32).to(device)
+        print(pos_count, neg_count)
+        print(f"Using weights for imbalanced data: {weight}")
+        criterion = nn.CrossEntropyLoss(reduction='mean', weight=weight)
         if params["optimizer"] == "adam":
             optimizer = optim.Adam(net.parameters(), lr=float(params["lr"]), weight_decay=float(params["weight_decay"]))
         else:
@@ -212,33 +237,54 @@ def run_experiment(device, arg_space, params, verbose = False):
                                             storeCNNout=False, getSeqs=False,motifweights=load_cnn_ws)  # evaluateRegular(net,valid_loader,criterion)
                 res_valid_loss = res_valid[0]
                 res_valid_auc = res_valid[1]
+                res_valid_aupr = res_valid[-1]
             else:
                 res_valid = evaluateRegularMC(net, device, valid_loader, criterion, output_dir+"/Stored_Values", getPAttn=False,
                                               storePAttn=False, getCNN=False,
                                               storeCNNout=False, getSeqs=False,motifweights=load_cnn_ws)  # evaluateRegular(net,valid_loader,criterion)
                 res_valid_loss = res_valid[0]
                 res_valid_auc = np.mean(res_valid[1])
-                
-            if res_valid_loss < best_valid_loss:
-                best_valid_loss = res_valid_loss
-                best_valid_auc = res_valid_auc
-                labels = res_valid[2][:, 0]
-                preds = res_valid[2][:, 1]
-                #best_auprc_valid = metrics.average_precision_score(labels, preds)
-
-                if arg_space.verbose:
-                    print("Best Validation Loss: %.3f and AUC: %.2f" %
-                          (best_valid_loss, best_valid_auc), "\n")
-                torch.save({'epoch': epoch,
-                            'model_state_dict': net.state_dict(),
-                            'optimizer_state_dict': optimizer.state_dict(),
-                            'loss': res_valid_loss
-                            }, saved_model_dir+'/model')
-
-                counter = 0
+            
+            if imbalanced and num_labels == 2:
+                if res_valid_aupr > best_auprc_valid:
+                    best_auprc_valid = res_valid_aupr
+                    labels = res_valid[2][:, 0]
+                    preds = res_valid[2][:, 1]
+                    best_valid_loss = res_valid_loss
+                    best_valid_auc = res_valid_auc
+                    if arg_space.verbose:
+                        print("Best Validation Loss: %.3f and AUC: %.2f" %
+                            (best_valid_loss, best_valid_auc), "\n")
+                    torch.save({'epoch': epoch,
+                                'model_state_dict': net.state_dict(),
+                                'optimizer_state_dict': optimizer.state_dict(),
+                                'loss': res_valid_loss
+                                }, saved_model_dir+'/model')
+                    counter = 0
+                else:
+                    counter = counter + 1
             else:
+                     
+                if res_valid_loss < best_valid_loss:
+                    best_valid_loss = res_valid_loss
+                    best_valid_auc = res_valid_auc
+                    labels = res_valid[2][:, 0]
+                    preds = res_valid[2][:, 1]
+                    best_auprc_valid = metrics.average_precision_score(labels, preds)
 
-                counter = counter + 1
+                    if arg_space.verbose:
+                        print("Best Validation Loss: %.3f and AUC: %.2f" %
+                            (best_valid_loss, best_valid_auc), "\n")
+                    torch.save({'epoch': epoch,
+                                'model_state_dict': net.state_dict(),
+                                'optimizer_state_dict': optimizer.state_dict(),
+                                'loss': res_valid_loss
+                                }, saved_model_dir+'/model')
+                    counter = 0
+                else:
+                    counter = counter + 1
+
+
             if params['schedular']:
                 scheduler.step(res_valid_loss)
             if verbose:
@@ -247,8 +293,8 @@ def run_experiment(device, arg_space, params, verbose = False):
 
             # scheduler2.step(res_valid_loss)
 
-            print('Epoch-{0} lr: {1} valid_loss: {2} valid_auc : {3}'.format(epoch,
-                  optimizer.param_groups[0]['lr'], res_valid_loss, res_valid_auc))
+            print('Epoch-{0} lr: {1} valid_loss: {2} valid_auc : {3} valid_aupr : {4}'.format(epoch,
+                  optimizer.param_groups[0]['lr'], res_valid_loss, res_valid_auc, res_valid_aupr))
             logs.writelines('Epoch-{0} lr: {1} valid_loss: {2} \n' .format(
                 epoch, optimizer.param_groups[0]['lr'], res_valid_loss))
 
@@ -275,18 +321,6 @@ def run_experiment(device, arg_space, params, verbose = False):
 
             some_res = [['Valid_Loss', 'Valid_AUC', 'Valid_AUPRC']]
             some_res.append([valid_loss, auc_valid, auprc_valid])
-            # # ---Calculate roc and prc values---#
-            # fpr, tpr, thresholds = metrics.roc_curve(labels, preds)
-            # precision, recall, thresholdsPR = metrics.precision_recall_curve(
-            #     labels, preds)
-            # roc_dict = {'fpr': fpr, 'tpr': tpr, 'thresholds': thresholds}
-            # prc_dict = {'precision': precision,
-            #             'recall': recall, 'thresholds': thresholdsPR}
-            # # ---Store results----#
-            # with open(output_dir+'/'+prefix+'_roc.pckl', 'wb') as f:
-            #     pickle.dump(roc_dict, f)
-            # with open(output_dir+'/'+prefix+'_prc.pckl', 'wb') as f:
-            #     pickle.dump(prc_dict, f)
             np.savetxt(output_dir+'/'+prefix+'_results.txt',
                        some_res, fmt='%s', delimiter='\t')
 
@@ -395,7 +429,7 @@ def get_results_for_shuffled(argSpace, params, net, criterion, test_loader, devi
     rev_complement = params['rev_complement']
     num_labels = argSpace.numLabels
     output_dir = argSpace.directory
-    bg_prefix = get_shuffled_background(test_loader, argSpace, pre_saved=True)
+    bg_prefix = get_shuffled_background(test_loader, argSpace, pre_saved=False)
     if rev_complement:
         print("Loading background data with reverse complement")
         data_bg = DatasetLazyLoadRC(bg_prefix, num_labels=num_labels, rev_complement=rev_complement)

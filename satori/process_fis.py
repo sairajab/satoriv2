@@ -11,9 +11,9 @@ from scipy.stats import mannwhitneyu
 from sklearn import metrics
 from statsmodels.stats.multitest import multipletests
 from torch.backends import cudnn
-
+import random
 #local imports
-from satori.modelsold import AttentionNet
+from satori.models import AttentionNet
 from satori.utils import get_popsize_for_interactions, get_intr_filter_keys
 
 
@@ -75,10 +75,43 @@ def process_motif(seq,srcPos,fltrSize,seq_GC):
 	return ''.join(res),source_seq,source_seq_ind
 
 
+# def one_hot_encode(seq):
+# 	mapping = dict(zip("ACGT", range(4)))  
+# 	seq2 = [mapping[i] for i in seq]
+# 	return np.eye(4)[seq2].T.astype(np.longlong)	
+
 def one_hot_encode(seq):
-	mapping = dict(zip("ACGT", range(4)))    
-	seq2 = [mapping[i] for i in seq]
-	return np.eye(4)[seq2].T.astype(np.longlong)	
+    # Mapping from nucleotides to indices
+    mapping = dict(zip("ACGT", range(4)))
+    bases = list(mapping.keys())  # ['A','C','G','T']
+
+    # Define ambiguous nucleotide rules
+    ambiguity = {
+        'N': [0, 1, 2, 3],   # any base
+        'S': [1, 2],         # C or G
+        'W': [0, 3],         # A or T
+        'K': [2, 3],         # G or T
+        'Y': [1, 3],         # C or T
+        'R': [0, 2],         # A or G
+        'M': [0, 1]          # A or C
+    }
+
+    # Resolve sequence: replace ambiguous bases randomly
+    resolved_seq = []
+    for base in seq:
+        if base in mapping:   # A, C, G, T
+            resolved_seq.append(base)
+        elif base in ambiguity:  # ambiguous
+            choice_idx = random.choice(ambiguity[base])
+            resolved_seq.append(bases[choice_idx])
+        else:
+            raise ValueError(f"Unexpected base: {base}")
+
+    # Convert to indices
+    seq_indices = [mapping[b] for b in resolved_seq]
+
+    # One-hot encode (shape: 4 x len(seq))
+    return np.eye(4)[seq_indices].T.astype(np.int64)
 
 
 def generate_reference(seqLen, seq_GC=0.46):
@@ -156,7 +189,7 @@ def process_FIS(experiment_blob, intr_dir, params, argSpace, Filter_Intr_Keys=No
 
 	num_labels = argSpace.numLabels
 	pos_score_cutoff = argSpace.scoreCutoff
-	net = AttentionNet(argSpace, params, device=device,seq_len=600 ,genPAttn=False).to(device)
+	net = AttentionNet(num_labels, params, device=device,seq_len=600 ,genPAttn=False).to(device)
 	print(net, argSpace)
 	try:    
 	    checkpoint = torch.load(saved_model_dir+'/model')
@@ -170,6 +203,10 @@ def process_FIS(experiment_blob, intr_dir, params, argSpace, Filter_Intr_Keys=No
 	model = net.to(device)
 	model.eval()
 	torch.backends.cudnn.enabled=False
+	
+	# Optimize GPU memory usage
+	torch.cuda.empty_cache()
+	
 	#use the following
 	if num_labels == 2:
 		dl = IntegratedGradients(model)
@@ -332,10 +369,14 @@ def process_FIS(experiment_blob, intr_dir, params, argSpace, Filter_Intr_Keys=No
 			for bsize in range(0,len(srcPos_info),argSpace.attrBatchSize): #trying 96 at a time, otherwise it runs out of CUDA memory (too many tensors to test). 172 also fails. I guess 120 will work
 				start = bsize
 				end = min([bsize+argSpace.attrBatchSize,len(srcPos_info)])
+				print(start,end)
 				if num_labels == 2:
 					attributions_mut = dl.attribute(tpnt_tuple[start:end],bsln_tuple[start:end],target=trgt_tuple[start:end])
 				else:
 					attributions_mut = dl.attribute(tpnt_tuple[start:end],bsln_tuple[start:end],additional_forward_args=(model,trgt_tuple[start:end],TPs[i]))
+				
+				# Clear GPU cache after each attribution batch
+				torch.cuda.empty_cache()
 				count_sbsize = 0
 				for sbsize in range(start,end):
 					intr_tuple_sub = srcPos_info[sbsize][0]
@@ -356,13 +397,26 @@ def process_FIS(experiment_blob, intr_dir, params, argSpace, Filter_Intr_Keys=No
 						row_index = Filter_Intr_Keys[intr]
 						Filter_Intr_Attn[row_index][col_index] = abs(FIS) #ideally we shouldn't take absolute but to compare it to SATORI, we need the abs
 						Filter_Intr_Pos[row_index][col_index] = pos_tuple_sub[subsize]
+				
+				# Clear attribution tensors from GPU memory
+				del attributions_mut
+				torch.cuda.empty_cache()
 			col_index += 1
+			
+			# Clear tensors from this example to free GPU memory
+			del tpnt_tuple, bsln_tuple, trgt_tuple, res, test_points, baseline
+			torch.cuda.empty_cache()
    			
 			print('batch: ',batch_idx,'example: ',i)
 			if col_index >= numExamples:
 				break
 		end_time = time.time()
 		print('batch: ',batch_idx, "Time Taken: %d seconds"%round(end_time-start_time))
+		
+		# Clear batch data from GPU memory
+		if 'datapoints' in locals():
+			del datapoints, target
+		torch.cuda.empty_cache()
 
 
 	if not for_background:

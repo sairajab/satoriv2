@@ -176,8 +176,6 @@ def evaluateRegular(net, device, iterator, criterion, out_dirc, ent_loss=False, 
             running_loss += loss.item()
             if getCNN == True:
                 outputCNN = CNNlayer(data)
-                #print(outputCNN[0,0,:], outputCNN.shape)
-                #print(pred[0,:], labels[0])
                 if storeCNNout == True:
                     output_dir = out_dirc
                     if not os.path.exists(output_dir):
@@ -197,4 +195,6 @@ def evaluateRegular(net, device, iterator, criterion, out_dirc, ent_loss=False, 
     preds = roc[:, 1]
     #preds = np.nan_to_num(preds, nan=0.5)
     valid_auc = compute_roc_auc( labels, preds)
-    return running_loss/len(iterator), valid_auc, roc, PAttn_all, per_batch_labelPreds, per_batch_CNNoutput, per_batch_testSeqs
+    preds = np.nan_to_num(preds, nan=0.0, posinf=1.0, neginf=0.0)
+    best_auprc_valid = metrics.average_precision_score(labels, preds)
+    return running_loss/len(iterator), valid_auc, roc, PAttn_all, per_batch_labelPreds, per_batch_CNNoutput, per_batch_testSeqs, best_auprc_valid

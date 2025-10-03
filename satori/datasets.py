@@ -100,10 +100,25 @@ class DatasetLazyLoad(Dataset):
         # just in case the user provide extension
         df_path = df_path.split('.')[0]
         self.df_all = pd.read_csv(df_path+'.txt', delimiter='\t', header=None)
-        self.df_seq = pd.read_csv(df_path+'.fa', header=None)
-        strand = self.df_seq[0][0][-3:]  # can be (+) or (.)
+        #print(self.df_all.head(n=10))
+        nan_indices = self.df_all[self.df_all.isna().any(axis=1)].index
+        #print(nan_indices.tolist())
+        self.df_seq = pd.read_csv(df_path+'.fa', delimiter='\t', header=None)
+        # strand = self.df_seq[0][0][-3:]  # can be (+) or (.)
+        # self.df_all['header'] = self.df_all.apply(
+        #     lambda x: '>'+x[0]+':'+str(x[1])+'-'+str(int(x[2]))+strand, axis=1)
+        #print(self.df_seq)
+        nan_rows = self.df_seq[self.df_seq.isna().any(axis=1)]
+        #print(nan_rows)
+        self.temp = self.df_seq[self.df_seq[0].str.startswith('>')].reset_index(drop=True)
+
+        # Extract strand from each header
+        strands = self.temp[0].str[-3:]
         self.df_all['header'] = self.df_all.apply(
-            lambda x: '>'+x[0]+':'+str(x[1])+'-'+str(x[2])+strand, axis=1)
+            lambda x: '>'+x[0]+':'+str(x[1])+'-'+str(int(x[2])),
+            axis=1
+        )
+        self.df_all['header'] = self.df_all['header'] + strands.values
         self.chroms = self.df_all[0].unique()
         self.df_seq_all = pd.concat([self.df_seq[::2].reset_index(
             drop=True), self.df_seq[1::2].reset_index(drop=True)], axis=1, sort=False)
@@ -115,6 +130,8 @@ class DatasetLazyLoad(Dataset):
         self.df = self.df.reset_index()
         self.df_seq_final = self.df_seq_final.reset_index()
         self.df.columns.values[-2] = "label"  # Rename column at index -2
+        self.df_seq_final['seq_len'] = self.df_seq_final['sequence'].str.len()
+
 
     def __len__(self):
         return self.df.shape[0]
@@ -128,26 +145,59 @@ class DatasetLazyLoad(Dataset):
     def get_all_chroms(self):
         return self.chroms
 
-    def one_hot_encode(self, seq):
+    # def one_hot_encode(self, seq):
+    #     # Precompute the mapping of bases to indices
+    #     base_to_index = {'A': 0, 'C': 1, 'G': 2, 'T': 3, 'N': 4}
+        
+    #     # Create the mapping matrix
+    #     mapping = np.array([
+    #         [1, 0, 0, 0],  # A
+    #         [0, 1, 0, 0],  # C
+    #         [0, 0, 1, 0],  # G
+    #         [0, 0, 0, 1],  # T
+    #         [0.25, 0.25, 0.25, 0.25]  # N
+    #     ], dtype=np.float_)
+        
+    #     # Convert the sequence into a NumPy array of characters
+    #     seq_array = np.array(list(seq))
+    
+    #     # Create an index map using vectorized operations
+    #     index_map = np.vectorize(base_to_index.get)(seq_array, 4)        
+    #     # Use advanced indexing to get the one-hot encoded matrix
+    #     return mapping[index_map].T
+    
+    def one_hot_encode(self, seq, max_len=2500):
         # Precompute the mapping of bases to indices
         base_to_index = {'A': 0, 'C': 1, 'G': 2, 'T': 3, 'N': 4}
-        
+
         # Create the mapping matrix
         mapping = np.array([
-            [1, 0, 0, 0],  # A
-            [0, 1, 0, 0],  # C
-            [0, 0, 1, 0],  # G
-            [0, 0, 0, 1],  # T
+            [1, 0, 0, 0],    # A
+            [0, 1, 0, 0],    # C
+            [0, 0, 1, 0],    # G
+            [0, 0, 0, 1],    # T
             [0.25, 0.25, 0.25, 0.25]  # N
-        ], dtype=np.float_)
-        
-        # Convert the sequence into a NumPy array of characters
-        seq_array = np.array(list(seq))
-    
-        # Create an index map using vectorized operations
-        index_map = np.vectorize(base_to_index.get)(seq_array, 4)        
-        # Use advanced indexing to get the one-hot encoded matrix
-        return mapping[index_map].T
+        ], dtype=np.float32)
+
+        # Convert sequence into an array of characters
+        seq_array = np.array(list(seq.upper()))
+
+        # Map characters to indices (default to 4 for unknowns)
+        index_map = np.vectorize(lambda x: base_to_index.get(x, 4))(seq_array)
+
+        # One-hot encode and transpose to shape (4, seq_len)
+        one_hot = mapping[index_map].T  # shape (4, seq_len)
+
+        # Pad with zeros if shorter than max_len
+        if one_hot.shape[1] < max_len:
+            pad_width = max_len - one_hot.shape[1]
+            one_hot = np.pad(one_hot, ((0, 0), (0, pad_width)), mode='constant', constant_values=0)
+        # Truncate if longer than max_len
+        elif one_hot.shape[1] > max_len:
+            one_hot = one_hot[:, :max_len]
+
+        return one_hot  # shape always (4, max_len)
+
 
     def one_hot_encode_labels(self, y):
         lbArr = np.zeros(self.num_labels)
@@ -158,16 +208,12 @@ class DatasetLazyLoad(Dataset):
         if self.num_labels == 2:
             y = self.df[self.df.columns[-2]][idx]
         else:
-            y = np.asarray(self.df[self.df.columns[-2]]
-                           [idx].split(',')).astype(int)
+            y = np.asarray(self.df[self.df.columns[-2]][idx].split(',')).astype(int)
             y = self.one_hot_encode_labels(y)
         header = self.df['header'][idx]
-        X = self.df_seq_final['sequence'][self.df_seq_final['header']
-                                          == header].array[0].upper()
+        X = self.df_seq_final['sequence'][self.df_seq_final['header']== header].array[0].upper()
         seq = X
-        
-            
-        X = self.one_hot_encode(X)
+        X = self.one_hot_encode(X, max_len=600)
         return header, seq, torch.tensor(X), torch.tensor(y)
 
 

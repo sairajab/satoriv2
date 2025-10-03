@@ -160,7 +160,7 @@ class Sei_light(nn.Module):
                 nn.ReLU(inplace=True))
 
             self.dconv1 = nn.Sequential(
-                nn.Dropout(p=0.4),
+                nn.Dropout(p=0.4), 
                 nn.Conv1d(640, 640, kernel_size=5, dilation=2, padding=4),
                 nn.ReLU(inplace=True))
             self.dconv2 = nn.Sequential(
