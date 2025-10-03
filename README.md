@@ -1,5 +1,5 @@
 # SATORIv2 : Comprehensive Evaluation of SATORI 
-**SATORI v2** is based on **S**elf-**AT**tenti**O**n based deep learning model that captures **R**egulatory element **I**nteractions in genomic sequences. It can be used to infer a global landscape of interactions in a given genomic dataset, with a minimal post-processing step. This repository contains code for extensive evaluation of self-attention layer in order to predict feature interactions.
+**SATORI v2** is based on **S**elf-**AT**tenti**O**n based deep learning model that captures **R**egulatory element **I**nteractions in genomic sequences. It can be used to infer a global landscape of interactions in a given genomic dataset, with a minimal post-processing step. This repository contains code for extensive evaluation of self-attention layer in order to predict feature interactions. It provides a framework to infer interactions using both raw attention scores and attention attribution scores. 
 
 ## Original Manuscript
 Fahad Ullah, Asa Ben-Hur, A self-attention model for inferring cooperativity between regulatory features, Nucleic Acids Research, 2021;, gkab349, [https://doi.org/10.1093/nar/gkab349](https://doi.org/10.1093/nar/gkab349)
@@ -44,6 +44,84 @@ chmod +x satori.py
 export PATH=path-to-satori:$PATH
 export PYTHONPATH=path-to-satori/satori:$PYTHONPATH
 ```
+## Config file 
+```
+{
+    "verbose": true,
+    "directory": "results/Data-40/ctf_40pairs_eq0/E1/",
+    "mode": "train",
+    "deskLoad": true,
+    "numWorkers": 8,
+    "splitperc": 10,
+    "motifAnalysis": true,
+    "filterAnalysis": false,
+    "scoreCutoff": 0.65,
+    "tomtomPath": "/s/chromatin/p/nobackup/Saira/meme/src/tomtom",
+    "tfDatabase": "create_dataset/subset80clustered.meme",
+    "annotateTomTom": null,
+    "featInteractions": true,
+    "interactionsAnalysis": true,
+    "intBackground": "negative",
+    "attnCutoff": 0.04,
+    "fisCutoff": 0,
+    "intSeqLimit": 5000,
+    "storeInterCNN": true,
+    "numLabels": 2,
+    "tomtomDist": "pearson",
+    "tomtomPval": 0.05,
+    "testAll": false,
+    "useAll": false,
+    "precisionLimit": 0.5,
+    "attrBatchSize": 32,
+    "inputprefix": "data/Simulated_Data/Data-40/ctf_40pairs_eq0",
+    "hparamfile": "modelsparam/all_exps/simulated/basic/baseline_entropy_0.005.txt",
+    "pairs_file": "create_dataset/clustered_tf_pairs_80.txt",
+    "finetune_model_path": null,
+    "set_seed": true,
+    "seed": 2,
+    "load_motif_weights": false,
+    "dataset": "simulated"
+}
+```
+Description of fields
+
+| Field                  | Description                                                    |
+| ---------------------- | -------------------------------------------------------------- |
+| `verbose`              | Enable verbose output (`true`/`false`).                        |
+| `directory`            | Path to store results and outputs.                             |
+| `mode`                 | Operation mode: `"train"` or `"test"`.                         |
+| `deskLoad`             | Load dataset from disk if already processed (`true`/`false`).  |
+| `numWorkers`           | Number of worker threads for data loading.                     |
+| `splitperc`            | Percentage of data reserved for validation/testing.            |
+| `motifAnalysis`        | Enable motif analysis (`true`/`false`).                        |
+| `filterAnalysis`       | Enable filter analysis (`true`/`false`).                       |
+| `scoreCutoff`          | Minimum score threshold for motif matches.                     |
+| `tomtomPath`           | Path to Tomtom executable.                                     |
+| `tfDatabase`           | Path to transcription factor motif database.                   |
+| `annotateTomTom`       | Path for Tomtom annotation results or `null`.                  |
+| `featInteractions`     | Enable feature interaction analysis (`true`/`false`).          |
+| `interactionsAnalysis` | Enable interaction analysis (`true`/`false`).                  |
+| `intBackground`        | Background type for interaction analysis (e.g., `"negative"`). |
+| `attnCutoff`           | Attention weight threshold for interaction analysis.           |
+| `fisCutoff`            | FIS score threshold for filtering interactions.                |
+| `intSeqLimit`          | Limit on number of sequences for interaction analysis.         |
+| `storeInterCNN`        | Store intermediate CNN outputs (`true`/`false`).               |
+| `numLabels`            | Number of labels/classes.                                      |
+| `tomtomDist`           | Tomtom distance metric (e.g., `"pearson"`).                    |
+| `tomtomPval`           | Tomtom p-value threshold for motif matches.                    |
+| `testAll`              | Run all tests (`true`/`false`).                                |
+| `useAll`               | Use all available data (`true`/`false`).                       |
+| `precisionLimit`       | Precision threshold for interactions.                          |
+| `attrBatchSize`        | Batch size for attribution analysis.                           |
+| `inputprefix`          | Path prefix to input dataset.                                  |
+| `hparamfile`           | Path to hyperparameter file.                                   |
+| `pairs_file`           | File listing transcription factor pairs.                       |
+| `finetune_model_path`  | Path to pretrained model for fine-tuning, or `null`.           |
+| `set_seed`             | Fix random seed for reproducibility (`true`/`false`).          |
+| `seed`                 | Random seed value.                                             |
+| `load_motif_weights`   | Load motif weights from file (`true`/`false`).                 |
+| `dataset`              | Name of dataset being used.                                    |
+
 
 ## Usage
 ```
